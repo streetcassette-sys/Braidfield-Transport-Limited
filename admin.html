@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<!-- Braidfield Transport — Admin Dashboard | Requires session from index.html login -->
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Operations Dashboard — Braidfield Transport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous"/>
+<style>
+:root{--red:#CC1010;--grad:linear-gradient(135deg,#E01212,#C01010 55%,#8C0808);--dark:#080C14;--d2:#0F1520;--d3:#161D2E;--d4:#1E2840;--d5:#243050;--text:#B8C4D8;--muted:#5A6A80;--border:rgba(255,255,255,.07);--bdr:rgba(180,10,10,.22);--ok:#0ECB7A;--info:#3B8BEB;--warn:#F0A500;--err:#E03030;--r:14px;--rs:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:var(--dark);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+h2,h3,h4{font-family:'Poppins',sans-serif;color:#fff;line-height:1.2}
+a{text-decoration:none;color:inherit}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--dark)}::-webkit-scrollbar-thumb{background:var(--red);border-radius:3px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--rs);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .22s;text-decoration:none}
+.btn-r{background:var(--grad);color:#fff}.btn-r:hover{opacity:.9}
+.btn-o{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.18)}.btn-o:hover{border-color:var(--red);color:var(--red)}
+.btn-ok{background:linear-gradient(135deg,#0ECB7A,#0A9A5C);color:#fff}
+.btn-sm{padding:6px 12px;font-size:12px}
+.fc{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Outfit',sans-serif;font-size:13px;color:#fff;outline:none;transition:border-color .2s}
+.fc:focus{border-color:var(--red)}.fc::placeholder{color:var(--muted)}select.fc option{background:var(--d2)}textarea.fc{resize:vertical}
+.fl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:3000;display:none;align-items:flex-start;justify-content:center;padding:20px;backdrop-filter:blur(4px);overflow-y:auto}
+.modal-ov.open{display:flex}
+@keyframes su{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
+.toast-wrap{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--d3);border:1px solid var(--border);border-radius:10px;padding:11px 15px;display:flex;align-items:center;gap:10px;box-shadow:0 12px 30px rgba(0,0,0,.4);animation:su .3s ease;min-width:240px;max-width:320px}
+.t-ok .t-ic{background:rgba(14,203,122,.12);color:var(--ok)}.t-wa .t-ic{background:rgba(240,165,0,.12);color:var(--warn)}.t-er .t-ic{background:rgba(220,48,48,.12);color:var(--err)}
+.t-ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.t-ttl{font-size:13px;font-weight:700;color:#fff}.t-sub{font-size:11px;color:var(--muted)}
+.adm-top{height:60px;background:var(--d2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:14px;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:11px}
+.lm{border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;color:#fff;flex-shrink:0}
+.lt{font-family:'Poppins',sans-serif;font-weight:800;color:#fff;line-height:1.1}
+.lt small{display:block;font-weight:500;color:var(--red);letter-spacing:2px;text-transform:uppercase}
+.adm-search{flex:1;max-width:300px;position:relative}
+.adm-search input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:7px 12px 7px 32px;font-family:'Outfit',sans-serif;font-size:13px;color:#fff;outline:none}
+.adm-search input:focus{border-color:var(--red)}.adm-search input::placeholder{color:var(--muted)}
+.adm-search i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:12px;pointer-events:none}
+.adm-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+.tbb{width:34px;height:34px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:13px;position:relative;transition:all .2s}
+.tbb:hover{color:#fff;border-color:var(--bdr)}
+.nb{position:absolute;top:-4px;right:-4px;width:16px;height:16px;background:var(--red);border-radius:50%;font-size:9px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;border:2px solid var(--d2);pointer-events:none}
+.uc{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:5px 10px 5px 7px}
+.uav{width:28px;height:28px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden}
+.uav img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.unm{font-size:12px;font-weight:600;color:#fff}.url{font-size:10px;color:var(--muted)}
+.adm-body{display:flex;flex:1;overflow:hidden}
+.sidebar{width:212px;background:var(--d2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sbs{padding:14px 12px 6px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted)}
+.nvi{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;margin:1px 8px;cursor:pointer;transition:all .2s;color:var(--muted);font-size:13px;font-weight:500;user-select:none}
+.nvi:hover{background:rgba(255,255,255,.05);color:#fff}
+.nvi.active{background:rgba(180,10,10,.12);color:#fff;border:1px solid rgba(180,10,10,.2)}
+.nvi.active i{color:var(--red)}
+.nvi i{width:16px;font-size:14px;text-align:center}
+.navbg{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px}
+.sbf{margin-top:auto;padding:10px 8px;border-top:1px solid var(--border)}
+.lob{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;cursor:pointer;color:var(--muted);font-size:13px;transition:all .2s;user-select:none}
+.lob:hover{background:rgba(220,30,30,.1);color:#f87171}
+.mc{flex:1;overflow-y:auto;padding:22px;background:var(--dark)}
+.view{display:none}.view.active{display:block}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px}
+.ph h2{font-size:20px;margin-bottom:2px}.ph p{font-size:13px;color:var(--muted)}
+.pha{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.card{background:var(--d3);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:14px}
+.card:last-child{margin-bottom:0}
+.chd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px}
+.chd h3{font-size:14px;font-weight:700}
+.cb{padding:18px}
+.kg4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.kc{background:var(--d3);border:1px solid var(--border);border-radius:var(--r);padding:18px;position:relative;overflow:hidden;transition:all .2s}
+.kc:hover{transform:translateY(-2px);border-color:var(--bdr)}
+.kc::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px}
+.kr::before{background:var(--grad)}.kg::before{background:var(--ok)}.ky::before{background:var(--warn)}.kb::before{background:var(--info)}.ke::before{background:var(--err)}
+.kl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px}
+.kn{font-size:30px;font-weight:800;font-family:'Poppins',sans-serif;color:#fff;margin-bottom:5px;line-height:1}
+.ks{font-size:11px;color:var(--muted)}
+.ki{position:absolute;right:14px;top:14px;width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.kr .ki{background:rgba(180,10,10,.12);color:var(--red)}.kg .ki{background:rgba(14,203,122,.1);color:var(--ok)}.ky .ki{background:rgba(240,165,0,.1);color:var(--warn)}.kb .ki{background:rgba(59,139,235,.1);color:var(--info)}.ke .ki{background:rgba(220,48,48,.1);color:var(--err)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g31{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{padding:9px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;user-select:none}
+th.sort{cursor:pointer}.th.sort:hover{color:#fff}
+th.asc::after{content:' ↑';color:var(--red)}.sort.desc::after{content:' ↓';color:var(--red)}
+td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle;color:var(--text)}
+tr:hover td{background:rgba(255,255,255,.02)}
+tr:last-child td{border-bottom:none}
+.pl{font-family:'Poppins',sans-serif;font-weight:700;color:#fff;font-size:11px;background:var(--d4);padding:3px 8px;border-radius:5px;white-space:nowrap}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:700;white-space:nowrap}
+.sd{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.s-in{background:rgba(59,139,235,.12);color:var(--info)}.s-cr{background:rgba(14,203,122,.12);color:var(--ok)}
+.s-brd{background:rgba(240,165,0,.12);color:var(--warn)}.s-of{background:rgba(14,203,122,.18);color:var(--ok)}
+.s-dl{background:rgba(220,48,48,.15);color:var(--err)}.s-zra{background:rgba(180,10,10,.12);color:#E05050}
+.s-t1{background:rgba(240,165,0,.15);color:var(--warn)}.s-co{background:rgba(150,100,220,.12);color:#A070E0}
+.abt{display:flex;gap:4px;flex-wrap:wrap}
+.abb{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;border:none;transition:all .2s}
+.ab-u{background:rgba(14,203,122,.1);color:var(--ok)}.ab-u:hover{background:rgba(14,203,122,.25)}
+.ab-e{background:rgba(59,139,235,.1);color:var(--info)}.ab-e:hover{background:rgba(59,139,235,.25)}
+.ab-a{background:rgba(240,165,0,.1);color:var(--warn)}.ab-a:hover{background:rgba(240,165,0,.25)}
+.frow{display:flex;align-items:center;gap:8px;padding:12px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.frow label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);white-space:nowrap}
+.fsel{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:7px;padding:6px 10px;font-family:'Outfit',sans-serif;font-size:12px;color:#fff;outline:none;cursor:pointer}
+.fsel:focus{border-color:var(--red)}.fsel option{background:var(--d2)}
+/* step badge */
+.step-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+/* T1 countdown */
+.t1-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.t1-ok{background:rgba(14,203,122,.12);color:var(--ok)}.t1-warn{background:rgba(240,165,0,.15);color:var(--warn)}.t1-expired{background:rgba(220,48,48,.15);color:var(--err)}
+/* parking fine */
+.fine-chip{background:rgba(220,48,48,.15);color:var(--err);display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+/* alerts */
+.alert-banner{padding:13px 18px;border-radius:10px;margin-bottom:14px;display:flex;align-items:flex-start;gap:12px}
+.ab-warn{background:rgba(240,165,0,.08);border:1px solid rgba(240,165,0,.25)}
+.ab-err{background:rgba(220,48,48,.08);border:1px solid rgba(220,48,48,.25)}
+.alert-banner i{font-size:18px;flex-shrink:0;margin-top:1px}
+.ab-warn i{color:var(--warn)}.ab-err i{color:var(--err)}
+.alert-banner h4{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px}
+.alert-banner p{font-size:12px;color:var(--muted);line-height:1.5}
+/* notifications */
+.xni{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04);align-items:flex-start}
+.xni:last-child{border-bottom:none}
+.xni-ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.ni-s{background:rgba(14,203,122,.1);color:var(--ok)}.ni-w{background:rgba(240,165,0,.1);color:var(--warn)}.ni-d{background:rgba(220,48,48,.1);color:var(--err)}.ni-i{background:rgba(59,139,235,.1);color:var(--info)}
+.ni-ttl{font-size:12.5px;font-weight:600;color:#fff;margin-bottom:2px}.ni-sub{font-size:11.5px;color:var(--muted);line-height:1.5}.ni-time{font-size:10px;color:var(--muted);margin-top:3px}
+.ni-ur{background:rgba(180,10,10,.04);border-left:2px solid var(--red);padding-left:8px;margin-left:-10px}
+/* process step tracker */
+.proc-tracker{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding-bottom:8px;margin-bottom:16px}
+.pt-step{display:flex;flex-direction:column;align-items:center;flex:1;min-width:70px;position:relative}
+.pt-step:not(:last-child)::after{content:'';position:absolute;top:14px;left:60%;right:-40%;height:2px;background:rgba(255,255,255,.1);z-index:0}
+.pt-step.done::after{background:var(--ok)}
+.pt-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;z-index:1;flex-shrink:0}
+.pt-done{background:var(--ok);color:#fff}
+.pt-active{background:var(--grad);color:#fff;animation:tps 2s infinite}
+.pt-pending{background:var(--d4);color:var(--muted);border:2px solid rgba(255,255,255,.1)}
+.pt-lbl{font-size:9px;color:var(--muted);text-align:center;margin-top:5px;line-height:1.3;max-width:68px}
+.pt-active-lbl{color:#fff;font-weight:700}
+@keyframes tps{0%,100%{box-shadow:0 0 0 0 rgba(180,10,10,.4)}50%{box-shadow:0 0 0 6px rgba(180,10,10,.1)}}
+/* MODAL */
+.mb{background:var(--d2);border:1px solid var(--border);border-radius:var(--r);width:100%;max-width:600px;overflow:hidden;animation:su .25s ease;margin:auto}
+.mb.wide{max-width:720px}
+.mt{padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+.mt h3{font-size:15px;color:#fff;font-family:'Poppins',sans-serif;display:flex;align-items:center;gap:8px}
+.mx{background:rgba(255,255,255,.08);border:none;width:28px;height:28px;border-radius:6px;color:var(--muted);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.mx:hover{color:#fff}
+.mbd{padding:20px;max-height:72vh;overflow-y:auto}
+.mft{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.ug{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+/* PRE-DISPATCH */
+.pdh{background:var(--grad);padding:20px;text-align:center}
+.pdh h3{font-size:17px;font-weight:800;color:#fff}.pdh p{font-size:12px;color:rgba(255,255,255,.8);margin-top:3px}
+.pdm{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;padding:14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px}
+.pdm .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.pdm .v{font-size:13px;font-weight:700;color:#fff}
+.pds{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--red);margin:18px 0 10px;display:flex;align-items:center;gap:7px}
+.pds::after{content:'';flex:1;height:1px;background:rgba(180,10,10,.2)}
+.pdcl{display:flex;flex-direction:column;gap:7px;margin-bottom:4px}
+.pdci{display:flex;align-items:center;gap:10px;padding:9px 14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;font-size:12.5px;cursor:pointer;transition:all .2s}
+.pdci:hover{border-color:var(--bdr)}.pdci.ck{border-color:rgba(14,203,122,.3);background:rgba(14,203,122,.05)}
+.pdci input[type=checkbox]{accent-color:var(--ok);width:15px;height:15px;flex-shrink:0;cursor:pointer}
+.pdci label{flex:1;cursor:pointer;color:var(--text)}.pdci.ck label{color:#fff}
+.sps{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sp{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:14px}
+.spt{font-size:12px;font-weight:700;color:#fff;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.spt i{color:var(--red)}
+.sc{width:100%;height:80px;background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.15);border-radius:7px;cursor:crosshair;display:block;touch-action:none}
+.scf{margin-top:8px}
+.scf input[type=text]{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-family:'Outfit',sans-serif;font-size:12px;color:#fff;outline:none;margin-bottom:7px}
+.scf input[type=text]:focus{border-color:var(--ok)}.scf input[type=text]::placeholder{color:var(--muted)}
+.sag{display:flex;align-items:flex-start;gap:7px;font-size:11.5px;cursor:pointer;line-height:1.45}
+.sag input{accent-color:var(--ok);width:14px;height:14px;flex-shrink:0;margin-top:1px;cursor:pointer}
+.sag label{cursor:pointer;color:var(--muted)}
+.ssd{display:none;align-items:center;gap:7px;font-size:12px;color:var(--ok);font-weight:600;margin-top:7px}
+.ssd i{font-size:14px}
+.fu{border:1.5px dashed rgba(255,255,255,.15);border-radius:8px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.02)}
+.fu:hover{border-color:var(--red);background:rgba(180,10,10,.05)}
+.fu input[type=file]{display:none}
+.fu i{font-size:22px;color:var(--muted);display:block;margin-bottom:5px}
+.fu p{font-size:12px;color:var(--muted)}
+.fnm{font-size:11px;color:var(--ok);margin-top:5px;font-weight:600}
+.pdlk{display:none;align-items:center;gap:12px;padding:13px 16px;background:rgba(240,165,0,.08);border:1px solid rgba(240,165,0,.25);border-radius:10px;margin-bottom:16px}
+.pdlk i{color:var(--warn);font-size:18px;flex-shrink:0}
+.pdlk h4{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px}.pdlk p{font-size:12px;color:var(--muted)}
+.pdr{display:none;margin-top:14px;padding:12px 16px;background:rgba(14,203,122,.08);border:1px solid rgba(14,203,122,.25);border-radius:10px;align-items:center;gap:10px}
+.pdr i{color:var(--ok);font-size:18px;flex-shrink:0}
+.pdr h4{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px}.pdr p{font-size:12px;color:var(--muted)}
+/* REPORTS */
+.rpt-filter{background:var(--d3);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:18px}
+.rpt-filter h3{font-size:15px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.rpt-filter h3 i{color:var(--red)}
+.rpt-types{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.rpt-type{padding:8px 18px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;font-size:12.5px;font-weight:600;color:var(--muted);background:transparent;transition:all .2s;font-family:'Outfit',sans-serif}
+.rpt-type.active{background:rgba(180,10,10,.12);border-color:var(--bdr);color:#fff}
+.rpt-result{background:var(--d3);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.rpt-hdr{padding:16px 20px;background:var(--grad);display:flex;align-items:center;justify-content:space-between}
+.rpt-hdr h3{font-size:15px;color:#fff;font-weight:700;font-family:'Poppins',sans-serif}
+.rpt-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:18px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--border)}
+.rpt-mi{text-align:center}
+.rpt-mi .rv{font-size:22px;font-weight:800;font-family:'Poppins',sans-serif;color:#fff}
+.rpt-mi .rl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+/* close trip */
+.cts{background:rgba(14,203,122,.05);border:1px solid rgba(14,203,122,.2);border-radius:10px;padding:18px;margin-bottom:16px}
+.cts h4{font-size:13px;font-weight:700;color:var(--ok);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.ctr{display:flex;justify-content:space-between;font-size:12px;padding:4px 0}
+.ctr span:first-child{color:var(--muted)}.ctr span:last-child{color:#fff;font-weight:600}
+/* bar chart */
+.bc{display:flex;flex-direction:column;gap:10px}
+.br{display:flex;align-items:center;gap:9px}
+.brl{width:120px;color:var(--text);font-size:11px;text-align:right;flex-shrink:0}
+.brt{flex:1;height:7px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
+.brf{height:100%;border-radius:4px}
+.brv{width:40px;color:#fff;font-weight:600;font-size:11px}
+@media(max-width:1100px){.kg4{grid-template-columns:1fr 1fr}.g2,.g31,.g3{grid-template-columns:1fr}}
+@media(max-width:768px){.sidebar{display:none}.mc{padding:14px}.fg,.ug{grid-template-columns:1fr}.sps{grid-template-columns:1fr}.pdm{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="adm-top">
+  <div class="logo" style="width:196px;flex-shrink:0">
+    <div class="lm" style="width:36px;height:36px;font-size:14px">BT</div>
+    <div class="lt" style="font-size:13px">Braidfield<small style="font-size:9px">Operations</small></div>
+  </div>
+  <div class="adm-search"><i class="fa-solid fa-search"></i><input type="search" placeholder="Search client, truck, driver, T1…" oninput="admSearch(this.value)"/></div>
+  <div class="adm-r">
+    <div class="tbb" onclick="admV('notifications')" title="Notifications"><i class="fa-solid fa-bell"></i><span class="nb" id="nb-count">0</span></div>
+    <div class="uc"><div class="uav" id="adm-av">A</div><div><div class="unm" id="adm-nm">Loading…</div><div class="url" id="adm-rl">Staff</div></div></div>
+    <button class="btn btn-o btn-sm" onclick="window.location.href='index.html'"><i class="fa-solid fa-globe"></i> Site</button>
+  </div>
+</div>
+<div class="adm-body">
+  <div class="sidebar">
+    <div class="sbs">Main</div>
+    <div class="nvi active" id="n-dashboard"   onclick="admV('dashboard')"  ><i class="fa-solid fa-gauge-high"></i>Dashboard</div>
+    <div class="nvi"        id="n-fleet"        onclick="admV('fleet')"      ><i class="fa-solid fa-truck"></i>Fleet Tracker<span class="navbg" id="fleet-nb">8</span></div>
+    <div class="nvi"        id="n-alerts"       onclick="admV('alerts')"     ><i class="fa-solid fa-triangle-exclamation"></i>Alerts<span class="navbg" id="alert-nb" style="background:var(--err)">0</span></div>
+    <div class="nvi"        id="n-predispatch"  onclick="admV('predispatch')" ><i class="fa-solid fa-file-signature"></i>Pre-Dispatch</div>
+    <div class="nvi"        id="n-completed"    onclick="admV('completed')"  ><i class="fa-solid fa-circle-check"></i>Completed</div>
+    <div class="sbs">Reports</div>
+    <div class="nvi"        id="n-reports"      onclick="admV('reports')"    ><i class="fa-solid fa-chart-bar"></i>Reports</div>
+    <div class="nvi"        id="n-notifications" onclick="admV('notifications')"><i class="fa-solid fa-bell"></i>Notifications</div>
+    <div class="sbs">Admin</div>
+    <div class="nvi"        id="n-clients"      onclick="admV('clients')"    ><i class="fa-solid fa-building-user"></i>Clients</div>
+    <div class="nvi"        id="n-settings"     onclick="admV('settings')"   ><i class="fa-solid fa-gear"></i>Settings</div>
+    <div class="sbf">
+      <div style="font-size:10px;color:var(--muted);margin-bottom:7px;padding:0 4px;line-height:1.6">Updates: 07:00 · 12:00 · 17:00 CAT<br/>T1 checked every 2h</div>
+      <div class="lob" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i>Sign Out</div>
+    </div>
+  </div>
+  <div class="mc" id="mc">
+
+<!-- ══ DASHBOARD ══ -->
+<div class="view active" id="view-dashboard">
+  <div class="ph"><div><h2>Operations Dashboard</h2><p>Live fleet + ZRA process tracking — 07:00 · 12:00 · 17:00 CAT</p></div>
+    <div class="pha"><button class="btn btn-o btn-sm" onclick="admV('alerts')"><i class="fa-solid fa-triangle-exclamation"></i>Alerts</button><button class="btn btn-r btn-sm" onclick="openUpdModal()"><i class="fa-solid fa-arrows-rotate"></i>Update</button></div>
+  </div>
+  <div id="dash-alert-zone"></div>
+  <div class="kg4">
+    <div class="kc kr"><div class="kl">Active Trucks</div><div class="kn" id="kpi-total">—</div><div class="ks">All monitored</div><div class="ki"><i class="fa-solid fa-truck"></i></div></div>
+    <div class="kc ky"><div class="kl">T1 Expiring ≤2d</div><div class="kn" id="kpi-t1exp">—</div><div class="ks">Urgent action needed</div><div class="ki"><i class="fa-solid fa-hourglass-half"></i></div></div>
+    <div class="kc ke"><div class="kl">Congo Fine Active</div><div class="kn" id="kpi-fine">—</div><div class="ks">$25/day accruing</div><div class="ki"><i class="fa-solid fa-dollar-sign"></i></div></div>
+    <div class="kc kg"><div class="kl">Trips Completed</div><div class="kn" id="kpi-done">—</div><div class="ks">This session</div><div class="ki"><i class="fa-solid fa-circle-check"></i></div></div>
+  </div>
+  <div class="g31" style="margin-bottom:14px">
+    <div class="card"><div class="chd"><h3>Fleet Snapshot — Process Steps</h3><button class="btn btn-o btn-sm" onclick="admV('fleet')">View All</button></div>
+      <div class="tw"><table><thead><tr><th>Plate</th><th>Client</th><th>Driver</th><th>Process Step</th><th>T1 / Fine</th><th>Updated</th></tr></thead><tbody id="dash-tbody"></tbody></table></div>
+    </div>
+    <div class="card"><div class="chd"><h3>Schedule</h3></div><div class="cb">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)"><div><div style="font-size:14px;font-weight:700;color:#fff;font-family:'Poppins',sans-serif">07:00</div><div style="font-size:11px;color:var(--muted)">Morning CAT</div></div><span style="font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(14,203,122,.1);color:var(--ok)"><i class="fa-solid fa-check"></i> Done</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)"><div><div style="font-size:14px;font-weight:700;color:#fff;font-family:'Poppins',sans-serif">12:00</div><div style="font-size:11px;color:var(--muted)">Midday CAT</div></div><span style="font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(14,203,122,.1);color:var(--ok)"><i class="fa-solid fa-check"></i> Done</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0"><div><div style="font-size:14px;font-weight:700;color:#fff;font-family:'Poppins',sans-serif">17:00</div><div style="font-size:11px;color:var(--muted)">Evening CAT</div></div><span style="font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(240,165,0,.1);color:var(--warn)"><i class="fa-solid fa-clock"></i> Pending</span></div>
+      <button class="btn btn-r" style="width:100%;justify-content:center;margin-top:10px;font-size:12px" onclick="openUpdModal()"><i class="fa-solid fa-paper-plane"></i>Submit 17:00 Update</button>
+    </div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="chd"><h3>Recent Notifications</h3><button class="btn btn-o btn-sm" onclick="admV('notifications')">All</button></div><div class="cb" style="padding-top:6px"><div id="dash-notif"></div></div></div>
+    <div class="card"><div class="chd"><h3>Process Overview</h3></div><div class="cb"><div class="bc" id="proc-overview-chart"></div></div></div>
+  </div>
+</div>
+
+<!-- ══ FLEET TRACKER ══ -->
+<div class="view" id="view-fleet">
+  <div class="ph"><div><h2>Fleet Tracker</h2><p>Click headers to sort · All 9 process steps tracked per truck</p></div>
+    <div class="pha"><button class="btn btn-o btn-sm" onclick="openAddTruckModal()"><i class="fa-solid fa-plus"></i>Add Truck</button><button class="btn btn-r btn-sm" onclick="openUpdModal()"><i class="fa-solid fa-arrows-rotate"></i>Update</button></div>
+  </div>
+  <div class="card">
+    <div class="frow">
+      <label>Client:</label><select class="fsel" id="f-client" onchange="applyFilters()"><option value="">All Clients</option></select>
+      <label>Border:</label><select class="fsel" id="f-border" onchange="applyFilters()"><option value="">All Posts</option><option>Kasumbalesa</option><option>Nakonde</option><option>Tunduma</option><option>Sakania</option><option>Mokambo</option></select>
+      <label>Step:</label><select class="fsel" id="f-step" onchange="applyFilters()"><option value="">All Steps</option><option value="1">1 — Docs</option><option value="2">2 — Loaded</option><option value="3">3 — Exit Border</option><option value="4">4 — ZRA Entry</option><option value="5">5 — Payment</option><option value="6">6 — T1 Issued</option><option value="7">7 — Crossed</option><option value="8">8 — Congo</option><option value="9">9 — Offloaded</option></select>
+      <button class="btn btn-o btn-sm" onclick="clearFilters()"><i class="fa-solid fa-xmark"></i> Clear</button>
+      <span style="margin-left:auto;font-size:11px;color:var(--muted)" id="fleet-count"></span>
+    </div>
+    <div class="tw"><table>
+      <thead><tr>
+        <th class="sort" id="h-plate"  onclick="sortBy('plate')" >Plate</th>
+        <th class="sort" id="h-client" onclick="sortBy('client')">Client <i class="fa-solid fa-sort" style="opacity:.3;font-size:9px"></i></th>
+        <th class="sort" id="h-driver" onclick="sortBy('driver')">Driver</th>
+        <th>Route</th>
+        <th class="sort" id="h-step"   onclick="sortBy('processStep')">Step <i class="fa-solid fa-sort" style="opacity:.3;font-size:9px"></i></th>
+        <th>Status</th>
+        <th>T1 Expires</th>
+        <th>Congo Fine</th>
+        <th>Documents</th>
+        <th>Actions</th>
+      </tr></thead>
+      <tbody id="fleet-tbody"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ══ ALERTS ══ -->
+<div class="view" id="view-alerts">
+  <div class="ph"><div><h2>Active Alerts</h2><p>T1 expiry warnings and Congo 48h parking fines</p></div></div>
+  <div id="alert-list"></div>
+</div>
+
+<!-- ══ PRE-DISPATCH ══ -->
+<div class="view" id="view-predispatch">
+  <div class="ph"><div><h2>Pre-Dispatch Sheets</h2><p>Signed by Agent + Driver before any border departure (Step 6 → ZRA Release)</p></div>
+    <div class="pha"><button class="btn btn-r btn-sm" onclick="showToast('PDF Export','Sheets exported.','ok')"><i class="fa-solid fa-file-pdf"></i>Export All</button></div>
+  </div>
+  <div class="alert-banner ab-warn" style="margin-bottom:18px">
+    <i class="fa-solid fa-circle-info"></i>
+    <div><h4>Pre-Dispatch Policy</h4><p>A form must be completed at Step 3 (Exit Border) before the truck can advance to Step 4 (ZRA Entry). Captures: ETA, road toll balance, council receipt, cash paid, vehicle status. Dual signatures: Clearing Agent + Driver.</p></div>
+  </div>
+  <div class="card"><div class="chd"><h3>Pre-Dispatch Records</h3></div>
+    <div class="tw"><table><thead><tr><th>Ref No.</th><th>Plate</th><th>Client</th><th>Driver</th><th>Border</th><th>ETA Next</th><th>Toll (ZMW)</th><th>Cash (ZMW)</th><th>Vehicle</th><th>Agent ✓</th><th>Driver ✓</th><th>Date</th><th></th></tr></thead><tbody id="pd-tbody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ══ COMPLETED ══ -->
+<div class="view" id="view-completed">
+  <div class="ph"><div><h2>Completed Trips</h2><p>All 9 steps done — archived trips</p></div>
+    <div class="pha"><button class="btn btn-r btn-sm" onclick="exportReport('all',null,null)"><i class="fa-solid fa-file-pdf"></i>Export All</button></div>
+  </div>
+  <div class="kg4" style="grid-template-columns:repeat(3,1fr)">
+    <div class="kc kg"><div class="kl">Total Completed</div><div class="kn" id="ct-total">—</div><div class="ks">All time</div><div class="ki"><i class="fa-solid fa-circle-check"></i></div></div>
+    <div class="kc kb"><div class="kl">Total Revenue</div><div class="kn" id="ct-rev">—</div><div class="ks">ZMW payments</div><div class="ki"><i class="fa-solid fa-money-bill-wave"></i></div></div>
+    <div class="kc kr"><div class="kl">Avg. Duration</div><div class="kn">3.8d</div><div class="ks">Days per trip</div><div class="ki"><i class="fa-solid fa-clock"></i></div></div>
+  </div>
+  <div class="card"><div class="chd"><h3>Trip Archive</h3>
+    <select class="fsel" id="ct-f-client" onchange="renderCompleted()" style="font-size:11px"><option value="">All Clients</option></select>
+  </div>
+    <div class="tw"><table><thead><tr>
+      <th>Trip ID</th><th>Plate</th>
+      <th class="sort" onclick="sortCompleted()">Client <i class="fa-solid fa-sort" style="opacity:.3;font-size:9px"></i></th>
+      <th>Driver</th><th>Route</th><th>Border</th><th>T1 No.</th><th>ZRA Entry</th><th>TR8 No.</th>
+      <th>Payment</th><th>Departed</th><th>Completed</th><th>Duration</th><th></th>
+    </tr></thead><tbody id="ct-tbody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ══ REPORTS ══ -->
+<div class="view" id="view-reports">
+  <div class="ph"><div><h2>Reports</h2><p>Generate trip reports by client, by truck, or by both</p></div></div>
+  <div class="rpt-filter">
+    <h3><i class="fa-solid fa-chart-bar"></i>Report Generator</h3>
+    <div class="rpt-types">
+      <button class="rpt-type active" id="rpt-t-client" onclick="setRptType('client',this)"><i class="fa-solid fa-building-user"></i> By Client</button>
+      <button class="rpt-type" id="rpt-t-truck"  onclick="setRptType('truck',this)" ><i class="fa-solid fa-truck"></i> By Truck</button>
+      <button class="rpt-type" id="rpt-t-both"   onclick="setRptType('both',this)"  ><i class="fa-solid fa-link"></i> Client + Truck</button>
+      <button class="rpt-type" id="rpt-t-all"    onclick="setRptType('all',this)"   ><i class="fa-solid fa-list"></i> All Trips</button>
+    </div>
+    <div class="fg" style="align-items:end">
+      <div id="rpt-client-wrap"><label class="fl">Select Client</label><select class="fc" id="rpt-client" style="margin:0"><option value="">All Clients</option></select></div>
+      <div id="rpt-truck-wrap" style="display:none"><label class="fl">Select Truck / Plate</label><select class="fc" id="rpt-truck" style="margin:0"><option value="">All Trucks</option></select></div>
+      <div><label class="fl">Date Range</label><select class="fc" id="rpt-range" style="margin:0"><option value="all">All Time</option><option value="7">Last 7 Days</option><option value="30">Last 30 Days</option><option value="90">Last 90 Days</option></select></div>
+      <div><label class="fl">Status Filter</label><select class="fc" id="rpt-status" style="margin:0"><option value="all">Active + Completed</option><option value="active">Active Only</option><option value="done">Completed Only</option></select></div>
+    </div>
+    <button class="btn btn-r" style="margin-top:16px" onclick="generateReport()"><i class="fa-solid fa-chart-bar"></i>Generate Report</button>
+    <button class="btn btn-o" style="margin-top:16px;margin-left:8px" onclick="showToast('PDF','Report exported as PDF.','ok')"><i class="fa-solid fa-file-pdf"></i>Export PDF</button>
+  </div>
+  <div id="rpt-result-zone"></div>
+</div>
+
+<!-- ══ NOTIFICATIONS ══ -->
+<div class="view" id="view-notifications">
+  <div class="ph"><div><h2>Notifications</h2></div><div class="pha"><button class="btn btn-o btn-sm" onclick="markAllRead()"><i class="fa-solid fa-check-double"></i>Mark Read</button></div></div>
+  <div class="g31">
+    <div class="card"><div class="chd"><h3>All Notifications</h3></div><div class="cb" style="padding-top:6px"><div id="all-notif"></div></div></div>
+    <div class="card"><div class="chd"><h3>Alert Triggers</h3></div><div class="cb">
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
+        <div style="display:flex;justify-content:space-between;padding:7px;background:rgba(220,48,48,.05);border:1px solid rgba(220,48,48,.15);border-radius:7px"><span>T1 ≤ 2 days remaining</span><span style="color:var(--err);font-weight:700">AUTO</span></div>
+        <div style="display:flex;justify-content:space-between;padding:7px;background:rgba(220,48,48,.05);border:1px solid rgba(220,48,48,.15);border-radius:7px"><span>Congo 48h parking exceeded</span><span style="color:var(--err);font-weight:700">AUTO</span></div>
+        <div style="display:flex;justify-content:space-between;padding:7px;background:rgba(14,203,122,.05);border:1px solid rgba(14,203,122,.15);border-radius:7px"><span>Pre-dispatch signed</span><span style="color:var(--ok);font-weight:700">ON</span></div>
+        <div style="display:flex;justify-content:space-between;padding:7px;background:rgba(14,203,122,.05);border:1px solid rgba(14,203,122,.15);border-radius:7px"><span>Border crossing (Step 7)</span><span style="color:var(--ok);font-weight:700">ON</span></div>
+        <div style="display:flex;justify-content:space-between;padding:7px;background:rgba(14,203,122,.05);border:1px solid rgba(14,203,122,.15);border-radius:7px"><span>Trip closed (Step 9)</span><span style="color:var(--ok);font-weight:700">ON</span></div>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ══ CLIENTS ══ -->
+<div class="view" id="view-clients">
+  <div class="ph"><div><h2>Clients</h2><p>Click a row to generate that client's trip report</p></div>
+    <div class="pha"><button class="btn btn-r btn-sm" onclick="openClientModal()"><i class="fa-solid fa-plus"></i>Add Client</button></div>
+  </div>
+  <div class="card"><div class="chd"><h3>Client Directory</h3></div>
+    <div class="tw"><table><thead><tr>
+      <th class="sort" onclick="sortClients()">Company / Client <i class="fa-solid fa-sort" style="opacity:.3;font-size:9px"></i></th>
+      <th>Contact</th><th>Phone</th><th>Active Trips</th><th>Total Paid (ZMW)</th><th>Border</th><th>Country</th><th></th>
+    </tr></thead><tbody id="clients-tbody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ══ SETTINGS ══ -->
+<div class="view" id="view-settings">
+  <div class="ph"><div><h2>Settings</h2></div></div>
+  <div class="g2">
+    <div class="card"><div class="chd"><h3>T1 &amp; Fine Alerts</h3></div><div class="cb">
+      <div style="display:flex;flex-direction:column;gap:12px;font-size:13px">
+        <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer"><span>Alert when T1 has ≤ 2 days left</span><input type="checkbox" checked style="accent-color:var(--red)"/></label>
+        <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer"><span>Alert when T1 has ≤ 1 day left</span><input type="checkbox" checked style="accent-color:var(--red)"/></label>
+        <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer"><span>Alert on Congo 48h parking exceeded</span><input type="checkbox" checked style="accent-color:var(--red)"/></label>
+        <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer"><span>Show fine amount on dashboard</span><input type="checkbox" checked style="accent-color:var(--red)"/></label>
+        <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer"><span>Block step advance without pre-dispatch</span><input type="checkbox" checked style="accent-color:var(--red)"/></label>
+      </div>
+      <button class="btn btn-r" style="margin-top:16px" onclick="showToast('Saved','Settings saved.','ok')"><i class="fa-solid fa-save"></i>Save</button>
+    </div></div>
+    <div class="card"><div class="chd"><h3>Update Schedule</h3></div><div class="cb">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div><label class="fl">Morning (CAT)</label><input class="fc" type="time" value="07:00" style="margin:0"/></div>
+        <div><label class="fl">Midday (CAT)</label><input class="fc" type="time" value="12:00" style="margin:0"/></div>
+        <div><label class="fl">Evening (CAT)</label><input class="fc" type="time" value="17:00" style="margin:0"/></div>
+      </div>
+      <button class="btn btn-r" style="margin-top:14px" onclick="showToast('Saved','Schedule saved.','ok')"><i class="fa-solid fa-save"></i>Save</button>
+    </div></div>
+  </div>
+</div>
+
+  </div><!-- /mc -->
+</div><!-- /adm-body -->
+
+<!-- ══ UPDATE STATUS MODAL ══ -->
+<div class="modal-ov" id="upd-modal">
+  <div class="mb">
+    <div class="mt" style="background:var(--grad)"><h3 style="color:#fff"><i class="fa-solid fa-arrows-rotate"></i>Update Truck Status &amp; Process Step</h3><button class="mx" style="background:rgba(255,255,255,.15);color:#fff" onclick="closeM('upd-modal')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="mbd">
+      <div id="pd-lock-warn" class="pdlk"><i class="fa-solid fa-lock"></i><div><h4>Pre-Dispatch Required</h4><p>This truck needs a signed pre-dispatch form before advancing to this step.</p></div></div>
+      <div class="ug" style="margin-bottom:12px">
+        <div><label class="fl">Truck Plate</label><select class="fc" id="upd-plate" style="margin:0" onchange="onUpdTruckChange()"><option value="">Select truck…</option></select></div>
+        <div><label class="fl">New Process Step</label><select class="fc" id="upd-step" style="margin:0" onchange="checkPdReq()">
+          <option value="1">Step 1 — Documents Received</option>
+          <option value="2">Step 2 — Cargo Loaded &amp; Dispatched</option>
+          <option value="3">Step 3 — At Exit Border</option>
+          <option value="4">Step 4 — ZRA Ascuyda Entry Created</option>
+          <option value="5">Step 5 — Payment Made</option>
+          <option value="6">Step 6 — T1 &amp; Release Order Generated</option>
+          <option value="7">Step 7 — Crossed to Congo / Tanzania</option>
+          <option value="8">Step 8 — Congo Final Destination</option>
+          <option value="9">Step 9 — Offloaded at Destination</option>
+        </select></div>
+        <div><label class="fl">ZRA Entry No.</label><input class="fc" type="text" id="upd-zra" placeholder="ZRA-2026-…" style="margin:0"/></div>
+        <div><label class="fl">T1 Number</label><input class="fc" type="text" id="upd-t1" placeholder="T1-2026-…" style="margin:0"/></div>
+        <div><label class="fl">T1 Issue Date</label><input class="fc" type="date" id="upd-t1date" style="margin:0"/></div>
+        <div><label class="fl">Payment Ref / Amount</label><input class="fc" type="text" id="upd-pay" placeholder="PAY-2026-… / ZMW" style="margin:0"/></div>
+        <div><label class="fl">TR8 Number (Congo)</label><input class="fc" type="text" id="upd-tr8" placeholder="TR8-2026-…" style="margin:0"/></div>
+        <div><label class="fl">Congo Arrival Date/Time</label><input class="fc" type="datetime-local" id="upd-congo" style="margin:0"/></div>
+        <div><label class="fl">Location</label><input class="fc" type="text" id="upd-loc" placeholder="e.g. Ndola, Kasumbalesa…" style="margin:0"/></div>
+        <div><label class="fl">ETA Next Checkpoint</label><input class="fc" type="datetime-local" id="upd-eta" style="margin:0"/></div>
+      </div>
+      <div><label class="fl">Notes</label><textarea class="fc" id="upd-notes" rows="2" placeholder="Additional details…" style="margin:0"></textarea></div>
+    </div>
+    <div class="mft">
+      <button class="btn btn-o btn-sm" onclick="closeM('upd-modal')">Cancel</button>
+      <button class="btn btn-o btn-sm" id="open-pd-btn" onclick="openPdFromUpd()" style="display:none"><i class="fa-solid fa-file-signature"></i>Pre-Dispatch Form</button>
+      <button class="btn btn-r btn-sm" id="submit-upd-btn" onclick="submitUpdate()"><i class="fa-solid fa-paper-plane"></i>Submit Update</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PRE-DISPATCH MODAL ══ -->
+<div class="modal-ov" id="pd-modal">
+  <div class="mb wide" style="position:relative">
+    <div class="pdh">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div><h3><i class="fa-solid fa-file-signature" style="margin-right:8px"></i>Pre-Dispatch Sheet</h3><p>Step 3 → Step 4 Border Departure Form</p></div>
+        <div style="text-align:right"><div style="font-size:10px;color:rgba(255,255,255,.7)">Reference</div><div style="font-size:15px;font-weight:800;color:#fff" id="pd-ref">PD-2026-0001</div></div>
+      </div>
+    </div>
+    <button class="mx" style="position:absolute;top:14px;right:14px;background:rgba(255,255,255,.15);color:#fff;z-index:1" onclick="closeM('pd-modal')"><i class="fa-solid fa-xmark"></i></button>
+    <div class="mbd">
+      <div class="pdm">
+        <div class="pdm"><div class="l">Plate</div><div class="v" id="pd-plate">—</div></div>
+        <div class="pdm"><div class="l">Client</div><div class="v" id="pd-client">—</div></div>
+        <div class="pdm"><div class="l">Driver</div><div class="v" id="pd-driver">—</div></div>
+        <div class="pdm"><div class="l">Border Post</div><div class="v" id="pd-border">—</div></div>
+        <div class="pdm"><div class="l">Date</div><div class="v" id="pd-date">—</div></div>
+        <div class="pdm"><div class="l">Destination</div><div class="v" id="pd-dest">—</div></div>
+      </div>
+      <div class="pds"><i class="fa-solid fa-clipboard-list"></i>Section 1 — Pre-Departure Information</div>
+      <div class="fg" style="margin-bottom:14px">
+        <div><label class="fl">1. ETA to Next Destination</label><input class="fc" type="datetime-local" id="pd-eta" style="margin:0"/></div>
+        <div><label class="fl">2. Road Toll Balance (ZMW)</label><input class="fc" type="number" id="pd-toll" placeholder="e.g. 2500.00" min="0" step="0.01" style="margin:0"/></div>
+        <div><label class="fl">4. Cash Paid for Trip (ZMW)</label><input class="fc" type="number" id="pd-cash" placeholder="e.g. 5000.00" min="0" step="0.01" style="margin:0"/></div>
+        <div><label class="fl">5. Vehicle Status</label><select class="fc" id="pd-vst" style="margin:0"><option value="">Select…</option><option value="Good">✅ Good</option><option value="Minor Issues">⚠️ Minor Issues — Road Worthy</option><option value="Needs Maintenance">🔧 Needs Maintenance</option><option value="Breakdown Risk">🚨 Breakdown Risk</option></select></div>
+      </div>
+      <div class="pds"><i class="fa-solid fa-receipt"></i>Section 2 — Council Receipt (Item 3)</div>
+      <div class="fu" onclick="document.getElementById('pd-receipt').click()">
+        <input type="file" id="pd-receipt" accept="image/*,.pdf" onchange="handleReceipt(this)"/>
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+        <p>Click to upload Council Receipt<br/><span style="font-size:10px">JPG, PNG or PDF</span></p>
+        <div class="fnm" id="pd-fname" style="display:none"></div>
+      </div>
+      <div class="pds"><i class="fa-solid fa-check-double"></i>Section 3 — Pre-Departure Checklist</div>
+      <div class="pdcl">
+        <div class="pdci" id="c-1" onclick="tgCheck('c-1')"><input type="checkbox" id="cb1" onclick="event.stopPropagation();tgCheck('c-1')"/><label for="cb1">Cargo sealed and secured on truck</label></div>
+        <div class="pdci" id="c-2" onclick="tgCheck('c-2')"><input type="checkbox" id="cb2" onclick="event.stopPropagation();tgCheck('c-2')"/><label for="cb2">All customs documents verified and stamped</label></div>
+        <div class="pdci" id="c-3" onclick="tgCheck('c-3')"><input type="checkbox" id="cb3" onclick="event.stopPropagation();tgCheck('c-3')"/><label for="cb3">Road toll balance confirmed and recorded</label></div>
+        <div class="pdci" id="c-4" onclick="tgCheck('c-4')"><input type="checkbox" id="cb4" onclick="event.stopPropagation();tgCheck('c-4')"/><label for="cb4">Council receipt uploaded and verified</label></div>
+        <div class="pdci" id="c-5" onclick="tgCheck('c-5')"><input type="checkbox" id="cb5" onclick="event.stopPropagation();tgCheck('c-5')"/><label for="cb5">Vehicle inspection completed</label></div>
+        <div class="pdci" id="c-6" onclick="tgCheck('c-6')"><input type="checkbox" id="cb6" onclick="event.stopPropagation();tgCheck('c-6')"/><label for="cb6">Driver has received cash payment for trip</label></div>
+        <div class="pdci" id="c-7" onclick="tgCheck('c-7')"><input type="checkbox" id="cb7" onclick="event.stopPropagation();tgCheck('c-7')"/><label for="cb7">ETA confirmed and communicated to dispatch</label></div>
+      </div>
+      <div class="pds"><i class="fa-solid fa-pen-to-square"></i>Section 4 — Dual Signatures (Both Required)</div>
+      <div class="sps">
+        <div class="sp"><div class="spt"><i class="fa-solid fa-user-tie"></i>Clearing Agent</div>
+          <canvas class="sc" id="sig-agent" width="260" height="80"></canvas>
+          <button class="btn btn-o btn-sm" onclick="clearSig('agent')" style="width:100%;justify-content:center;margin-top:6px;font-size:11px"><i class="fa-solid fa-eraser"></i>Clear</button>
+          <div class="scf">
+            <input type="text" id="agent-name" placeholder="Clearing Agent Full Name"/>
+            <label class="sag"><input type="checkbox" id="agent-agree" onchange="checkSig()"/><label for="agent-agree">I confirm this form is accurate and complete.</label></label>
+            <div class="ssd" id="agent-signed"><i class="fa-solid fa-circle-check"></i>Agent Signed ✓</div>
+          </div>
+        </div>
+        <div class="sp"><div class="spt"><i class="fa-solid fa-truck"></i>Driver</div>
+          <canvas class="sc" id="sig-driver" width="260" height="80"></canvas>
+          <button class="btn btn-o btn-sm" onclick="clearSig('driver')" style="width:100%;justify-content:center;margin-top:6px;font-size:11px"><i class="fa-solid fa-eraser"></i>Clear</button>
+          <div class="scf">
+            <input type="text" id="driver-name-sig" placeholder="Driver Full Name"/>
+            <label class="sag"><input type="checkbox" id="driver-agree" onchange="checkSig()"/><label for="driver-agree">I confirm details are correct and I am ready to depart.</label></label>
+            <div class="ssd" id="driver-signed"><i class="fa-solid fa-circle-check"></i>Driver Signed ✓</div>
+          </div>
+        </div>
+      </div>
+      <div class="pdr" id="pd-ready"><i class="fa-solid fa-circle-check"></i><div><h4>Both Parties Have Signed</h4><p>Form complete. You may now advance to Step 4 — ZRA Ascuyda Entry.</p></div></div>
+    </div>
+    <div class="mft">
+      <button class="btn btn-o btn-sm" onclick="closeM('pd-modal')">Cancel</button>
+      <button class="btn btn-o btn-sm" onclick="showToast('PDF','Form exported.','ok')"><i class="fa-solid fa-file-pdf"></i>Export PDF</button>
+      <button class="btn btn-r btn-sm" id="pd-submit-btn" onclick="submitPD()" disabled style="opacity:.5"><i class="fa-solid fa-check-circle"></i>Complete &amp; Advance to Step 4</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CLOSE TRIP MODAL ══ -->
+<div class="modal-ov" id="ct-modal">
+  <div class="mb">
+    <div class="mt" style="background:linear-gradient(135deg,#0ECB7A,#0A9A5C)"><h3 style="color:#fff"><i class="fa-solid fa-circle-check"></i>Close &amp; Archive Trip (Step 9)</h3><button class="mx" style="background:rgba(255,255,255,.15);color:#fff" onclick="closeM('ct-modal')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="mbd">
+      <div class="cts"><h4><i class="fa-solid fa-clipboard-check"></i>Trip Summary</h4>
+        <div class="ctr"><span>Plate</span><span id="ct-plate">—</span></div>
+        <div class="ctr"><span>Client</span><span id="ct-client">—</span></div>
+        <div class="ctr"><span>Driver</span><span id="ct-driver">—</span></div>
+        <div class="ctr"><span>Route</span><span id="ct-route">—</span></div>
+        <div class="ctr"><span>ZRA Entry</span><span id="ct-zra">—</span></div>
+        <div class="ctr"><span>T1 Number</span><span id="ct-t1">—</span></div>
+        <div class="ctr"><span>TR8 Number</span><span id="ct-tr8">—</span></div>
+        <div class="ctr"><span>Payment</span><span id="ct-pay">—</span></div>
+        <div class="ctr"><span>Congo Fine</span><span id="ct-fine">—</span></div>
+      </div>
+      <div class="ug">
+        <div><label class="fl">Delivery Date &amp; Time</label><input class="fc" type="datetime-local" id="ct-dt" style="margin:0"/></div>
+        <div><label class="fl">Final Location</label><input class="fc" type="text" id="ct-loc" placeholder="Offloading point" style="margin:0"/></div>
+      </div>
+      <div style="margin-top:12px"><label class="fl">Closing Notes</label><textarea class="fc" id="ct-notes" rows="2" style="margin:0"></textarea></div>
+    </div>
+    <div class="mft">
+      <button class="btn btn-o btn-sm" onclick="closeM('ct-modal')">Cancel</button>
+      <button class="btn btn-ok btn-sm" onclick="confirmClose()"><i class="fa-solid fa-circle-check"></i>Close &amp; Archive</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ADD TRUCK MODAL ══ -->
+<div class="modal-ov" id="add-modal">
+  <div class="mb">
+    <div class="mt" style="background:var(--grad)"><h3 style="color:#fff"><i class="fa-solid fa-plus"></i>Add Truck to Fleet</h3><button class="mx" onclick="closeM('add-modal')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="mbd">
+      <div class="ug" style="margin-bottom:12px">
+        <div><label class="fl">Plate Number</label><input class="fc" id="nt-plate" type="text" placeholder="e.g. ABZ 1234 ZM" style="margin:0"/></div>
+        <div><label class="fl">Client</label><select class="fc" id="nt-client" style="margin:0"><option value="">Select client…</option></select></div>
+        <div><label class="fl">Driver Name</label><input class="fc" id="nt-driver" type="text" placeholder="Full name" style="margin:0"/></div>
+        <div><label class="fl">Driver Phone</label><input class="fc" id="nt-phone" type="tel" placeholder="+260…" style="margin:0"/></div>
+        <div><label class="fl">Origin</label><input class="fc" id="nt-origin" type="text" placeholder="e.g. Lusaka" style="margin:0"/></div>
+        <div><label class="fl">Destination</label><input class="fc" id="nt-dest" type="text" placeholder="e.g. Lubumbashi, DRC" style="margin:0"/></div>
+        <div><label class="fl">Border Post</label><select class="fc" id="nt-border" style="margin:0"><option>Kasumbalesa</option><option>Nakonde</option><option>Tunduma</option><option>Sakania</option><option>Mokambo</option></select></div>
+        <div><label class="fl">Start at Step</label><select class="fc" id="nt-step" style="margin:0"><option value="1">Step 1 — Documents</option><option value="2">Step 2 — Loaded</option><option value="3">Step 3 — Exit Border</option></select></div>
+      </div>
+    </div>
+    <div class="mft"><button class="btn btn-o btn-sm" onclick="closeM('add-modal')">Cancel</button><button class="btn btn-r btn-sm" onclick="addTruck()"><i class="fa-solid fa-plus"></i>Add to Fleet</button></div>
+  </div>
+</div>
+
+<!-- ══ ADD CLIENT MODAL ══ -->
+<div class="modal-ov" id="client-modal">
+  <div class="mb">
+    <div class="mt" style="background:var(--grad)"><h3 style="color:#fff"><i class="fa-solid fa-building-user"></i>Add New Client</h3><button class="mx" onclick="closeM('client-modal')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="mbd">
+      <div class="ug" style="margin-bottom:12px">
+        <div><label class="fl">Company / Client Name</label><input class="fc" id="nc-name" type="text" placeholder="e.g. Copperbelt Mining Ltd" style="margin:0"/></div>
+        <div><label class="fl">Contact Person</label><input class="fc" id="nc-contact" type="text" placeholder="Full name" style="margin:0"/></div>
+        <div><label class="fl">Phone</label><input class="fc" id="nc-phone" type="tel" placeholder="+260…" style="margin:0"/></div>
+        <div><label class="fl">Email</label><input class="fc" id="nc-email" type="email" placeholder="contact@company.com" style="margin:0"/></div>
+        <div><label class="fl">Preferred Border</label><select class="fc" id="nc-border" style="margin:0"><option value="">No preference</option><option>Kasumbalesa</option><option>Nakonde</option><option>Tunduma</option><option>Sakania</option><option>Mokambo</option></select></div>
+        <div><label class="fl">Country</label><select class="fc" id="nc-country" style="margin:0"><option>Zambia</option><option>DR Congo</option><option>Tanzania</option><option>Other</option></select></div>
+      </div>
+    </div>
+    <div class="mft"><button class="btn btn-o btn-sm" onclick="closeM('client-modal')">Cancel</button><button class="btn btn-r btn-sm" onclick="addClient()"><i class="fa-solid fa-plus"></i>Save Client</button></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+<script src="shared.js"></script>
+<script>
+/* ── SESSION CHECK ── */
+const session = getSession();
+if (!session || session.type !== 'staff') window.location.href = 'index.html';
+
+/* ── STATE ── */
+let FLEET = getFleet(), CLIENTS = getClients(), COMPLETED = getCompleted();
+let PD_RECORDS = JSON.parse(sessionStorage.getItem('bt_pd')||'null') || [];
+let NOTIFS = JSON.parse(sessionStorage.getItem('bt_notifs')||'null') || [...DEFAULT_NOTIFS.map(n=>({...n}))];
+const DEFAULT_NOTIFS = [
+  {type:'d',icon:'fa-hourglass-half',ttl:'T1 Expiring: ABB 9012 ZM',     msg:'T1-2026-00871 expires 23 May — 1 day left!',       time:'Just now', read:false},
+  {type:'d',icon:'fa-dollar-sign',   ttl:'Congo Fine: ALZ 7890 ZM',       msg:'Cargo at Kolwezi >48h — $25/day fine accruing.',   time:'2h ago',   read:false},
+  {type:'s',icon:'fa-check-circle',  ttl:'ABZ 0123 ZM Offloaded',         msg:'Step 9 complete. Ready to close trip.',            time:'3h ago',   read:true},
+  {type:'i',icon:'fa-database',      ttl:'ZRA Entry: ABZ 1234 ZM',        msg:'ZRA-2026-001247 created in Ascuyda system.',       time:'4h ago',   read:true},
+];
+let sortState={col:null,dir:'asc'}, ctSortDir='asc', clientSortDir='asc';
+let pdTruckId=null, closeTruckId=null, pdRefNo=5, rptType='client';
+let sigCtx={},sigDraw={};
+
+const STEP_LABELS=['','Docs','Loaded','Exit Border','ZRA Entry','Payment','T1 Issued','Crossed','Congo','Offloaded'];
+const STEP_COLORS=['','#3B8BEB','#F0A500','#F0A500','#CC1010','#0ECB7A','#F0A500','#0ECB7A','#E03030','#0ECB7A'];
+
+function saveAll(){setFleet(FLEET);setClients(CLIENTS);setCompleted(COMPLETED);sessionStorage.setItem('bt_pd',JSON.stringify(PD_RECORDS));sessionStorage.setItem('bt_notifs',JSON.stringify(NOTIFS));}
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded',()=>{
+  const av=document.getElementById('adm-av');
+  if(av){if(session.picture)av.innerHTML=`<img src="${session.picture}" alt="" onerror="this.parentElement.textContent='${session.initials||'U'}'"/>`;else av.textContent=session.initials||'U';}
+  if(document.getElementById('adm-nm'))document.getElementById('adm-nm').textContent=session.name||'User';
+  if(document.getElementById('adm-rl'))document.getElementById('adm-rl').textContent=ROLE_LABELS[session.role]||'Staff';
+  renderAll(); updateKPIs(); populateFilters();
+  checkAlerts();
+});
+
+/* ── NAV ── */
+function admV(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nvi').forEach(n=>n.classList.remove('active'));
+  document.getElementById('view-'+name)?.classList.add('active');
+  document.getElementById('n-'+name)?.classList.add('active');
+  if(name==='reports'){populateRptFilters();}
+}
+function openM(id){document.getElementById(id)?.classList.add('open');}
+function closeM(id){document.getElementById(id)?.classList.remove('open');}
+
+/* ── STEP BADGE ── */
+function stepBadge(step){
+  const color=STEP_COLORS[step]||'#888';
+  return `<span class="step-badge" style="background:${color}22;color:${color};border:1px solid ${color}44">${step}/9 — ${STEP_LABELS[step]||'?'}</span>`;
+}
+
+/* ── T1 CHIP ── */
+function t1Chip(truck){
+  if(!truck.t1Number) return '<span style="font-size:10px;color:var(--muted)">No T1</span>';
+  const d=t1DaysLeft(truck.t1Expires);
+  if(d===null) return `<span style="font-size:10px;color:var(--muted)">${truck.t1Number}</span>`;
+  if(d<=0) return `<span class="t1-chip t1-expired"><i class="fa-solid fa-xmark"></i>EXPIRED</span>`;
+  if(d<=2) return `<span class="t1-chip t1-warn"><i class="fa-solid fa-hourglass-half"></i>${d}d left</span>`;
+  return `<span class="t1-chip t1-ok"><i class="fa-solid fa-check"></i>${d}d left</span>`;
+}
+
+/* ── FINE CHIP ── */
+function fineChip(truck){
+  if(!truck.congoArrival||truck.processStep<8) return '<span style="font-size:10px;color:var(--muted)">—</span>';
+  const f=parkingFine(truck.congoArrival);
+  if(f.fine>0) return `<span class="fine-chip"><i class="fa-solid fa-dollar-sign"></i>$${f.fine} (${Math.ceil(f.overHours/24)}d over)</span>`;
+  const remain=Math.max(0,48-f.hours);
+  return `<span style="font-size:10px;color:var(--warn)">⏱ ${remain}h free left</span>`;
+}
+
+/* ── DOCS CHIP ── */
+function docsChip(docs){
+  if(!docs) return '<span style="font-size:10px;color:var(--muted)">—</span>';
+  const keys=['invoice','deliveryNote','customsT1','movementSheet'];
+  const done=keys.filter(k=>docs[k]).length;
+  const all=done===4;
+  return `<span class="chip" style="background:${all?'rgba(14,203,122,.12)':'rgba(240,165,0,.12)'};color:${all?'var(--ok)':'var(--warn)'};font-size:10px">${done}/4 docs</span>`;
+}
+
+/* ── KPIs ── */
+function updateKPIs(){
+  const active=FLEET.filter(f=>!f.closed);
+  const t1Exp=active.filter(f=>{const d=t1DaysLeft(f.t1Expires);return d!==null&&d<=2&&d>=0;}).length;
+  const fines=active.filter(f=>{if(!f.congoArrival)return false;return parkingFine(f.congoArrival).fine>0;}).length;
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('kpi-total',active.length); set('kpi-t1exp',t1Exp); set('kpi-fine',fines); set('kpi-done',COMPLETED.length);
+  set('fleet-nb',active.length); set('ct-total',COMPLETED.length);
+  // Total revenue
+  const rev=COMPLETED.reduce((s,c)=>s+(c.paymentAmount||0),0);
+  set('ct-rev','ZMW '+rev.toLocaleString());
+  // Alert badge
+  const alertCount=t1Exp+fines;
+  set('alert-nb',alertCount);
+  if(alertCount>0){const el=document.getElementById('alert-nb');if(el)el.style.background='var(--err)';}
+}
+
+/* ── ALERTS ── */
+function checkAlerts(){
+  const active=FLEET.filter(f=>!f.closed);
+  const zone=document.getElementById('dash-alert-zone'); if(!zone) return;
+  let html='';
+  active.forEach(f=>{
+    const d=t1DaysLeft(f.t1Expires);
+    if(d!==null&&d<=2&&d>=0) html+=`<div class="alert-banner ab-err"><i class="fa-solid fa-hourglass-half"></i><div><h4>⚠ T1 Expiring: ${f.plate}</h4><p>${f.t1Number} expires in ${d} day${d!==1?'s':''} (${f.t1Expires}). Truck: ${f.driver} · Client: ${f.client}. <strong style="color:var(--err)">Action required immediately.</strong></p></div></div>`;
+    if(d!==null&&d<0) html+=`<div class="alert-banner ab-err"><i class="fa-solid fa-xmark-circle"></i><div><h4>🚨 T1 EXPIRED: ${f.plate}</h4><p>${f.t1Number} has expired. Truck: ${f.driver} · Contact ZRA immediately.</p></div></div>`;
+    if(f.congoArrival){const fi=parkingFine(f.congoArrival);if(fi.fine>0)html+=`<div class="alert-banner ab-err"><i class="fa-solid fa-dollar-sign"></i><div><h4>🚨 Congo Parking Fine: ${f.plate}</h4><p>Cargo at Congo destination for ${Math.floor(fi.hours)}h — ${Math.ceil(fi.overHours/24)} days over 48h limit. <strong style="color:var(--err)">Fine accrued: $${fi.fine}</strong>. Client: ${f.client}. Escalate immediately.</p></div></div>`;}
+  });
+  zone.innerHTML=html;
+  // Alerts view
+  const al=document.getElementById('alert-list'); if(al) al.innerHTML=html||'<div class="card"><div class="cb" style="text-align:center;padding:40px;color:var(--muted)"><i class="fa-solid fa-circle-check" style="font-size:32px;color:var(--ok);display:block;margin-bottom:10px"></i><strong style="color:#fff">No active alerts</strong><br/>All T1 documents valid and no Congo parking fines.</div></div>';
+}
+
+/* ── SORT & FILTER ── */
+function sortBy(col){
+  if(sortState.col===col)sortState.dir=sortState.dir==='asc'?'desc':'asc';else{sortState.col=col;sortState.dir='asc';}
+  document.querySelectorAll('[id^="h-"]').forEach(th=>th.classList.remove('asc','desc'));
+  document.getElementById('h-'+col)?.classList.add(sortState.dir);
+  renderFleet();
+}
+function sortCompleted(){ctSortDir=ctSortDir==='asc'?'desc':'asc';renderCompleted();}
+function sortClients(){clientSortDir=clientSortDir==='asc'?'desc':'asc';renderClients();}
+function applyFilters(){renderFleet();}
+function clearFilters(){['f-client','f-border','f-step'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});sortState={col:null,dir:'asc'};document.querySelectorAll('[id^="h-"]').forEach(th=>th.classList.remove('asc','desc'));renderFleet();}
+function populateFilters(){
+  const clients=[...new Set(FLEET.filter(f=>!f.closed).map(f=>f.client).filter(Boolean))].sort();
+  const fc=document.getElementById('f-client');
+  if(fc){const cur=fc.value;fc.innerHTML='<option value="">All Clients</option>'+clients.map(c=>`<option value="${c}">${c}</option>`).join('');if(cur)fc.value=cur;}
+  const ctfc=document.getElementById('ct-f-client');
+  if(ctfc){const all=[...new Set([...FLEET,...COMPLETED].map(f=>f.client).filter(Boolean))].sort();const cur=ctfc.value;ctfc.innerHTML='<option value="">All Clients</option>'+all.map(c=>`<option value="${c}">${c}</option>`).join('');if(cur)ctfc.value=cur;}
+  const ntc=document.getElementById('nt-client');
+  if(ntc)ntc.innerHTML='<option value="">Select client…</option>'+CLIENTS.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
+}
+function admSearch(v){
+  if(!v){renderFleet();return;}
+  const q=v.toLowerCase();
+  renderFleet(FLEET.filter(f=>!f.closed&&[f.plate,f.client,f.driver,f.t1Number,f.zraEntry,f.tr8Number,f.border].some(x=>(x||'').toLowerCase().includes(q))));
+}
+
+/* ── RENDER ALL ── */
+function renderAll(){renderDashTable();renderFleet();renderNotifs('dash-notif',4);renderNotifs('all-notif');renderPdTable();renderCompleted();renderClients();renderProcChart();}
+
+function renderFleet(base){
+  let data=(base||FLEET.filter(f=>!f.closed)).slice();
+  const cf=document.getElementById('f-client')?.value||'';
+  const bf=document.getElementById('f-border')?.value||'';
+  const sf=document.getElementById('f-step')?.value||'';
+  if(cf)data=data.filter(f=>f.client===cf);
+  if(bf)data=data.filter(f=>f.border===bf);
+  if(sf)data=data.filter(f=>f.processStep==parseInt(sf));
+  if(sortState.col)data.sort((a,b)=>{
+    const va=String(a[sortState.col]||'').toLowerCase(),vb=String(b[sortState.col]||'').toLowerCase();
+    return sortState.dir==='asc'?va.localeCompare(vb):vb.localeCompare(va);
+  });
+  const fc=document.getElementById('fleet-count');
+  if(fc)fc.textContent=data.length+' truck'+(data.length!==1?'s':'');
+  const t=document.getElementById('fleet-tbody');if(!t)return;
+  t.innerHTML=data.map(f=>`<tr>
+    <td><span class="pl">${f.plate}</span></td>
+    <td style="font-size:11.5px;font-weight:600;color:#fff">${f.client||'—'}</td>
+    <td><div style="font-weight:700;color:#fff;font-size:12px">${f.driver}</div><div style="font-size:10px;color:var(--muted)">${f.phone}</div></td>
+    <td style="font-size:11px;color:var(--muted)">${f.origin||'—'} → ${f.dest||'—'}</td>
+    <td>${stepBadge(f.processStep)}</td>
+    <td style="font-size:11.5px;max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.status||'—'}</td>
+    <td>${t1Chip(f)}</td>
+    <td>${fineChip(f)}</td>
+    <td>${docsChip(f.docs)}</td>
+    <td><div class="abt">
+      <button class="abb ab-u" onclick="quickUpd(${f.id})" title="Update Step"><i class="fa-solid fa-arrows-rotate"></i></button>
+      ${f.processStep===3?`<button class="abb ab-a" onclick="openPdModal(${f.id})" title="Pre-Dispatch"><i class="fa-solid fa-file-signature"></i></button>`:''}
+      ${f.processStep===9||f.processStep>=7?`<button class="abb" style="background:rgba(14,203,122,.1);color:var(--ok)" onclick="openCloseModal(${f.id})" title="Close Trip"><i class="fa-solid fa-circle-check"></i></button>`:''}
+    </div></td>
+  </tr>`).join('');
+}
+
+function renderDashTable(){
+  const t=document.getElementById('dash-tbody');if(!t)return;
+  t.innerHTML=FLEET.filter(f=>!f.closed).slice(0,6).map(f=>`<tr>
+    <td><span class="pl">${f.plate}</span></td>
+    <td style="color:#fff;font-weight:600;font-size:12px">${f.client||'—'}</td>
+    <td style="font-size:12px">${f.driver}</td>
+    <td>${stepBadge(f.processStep)}</td>
+    <td>${t1Chip(f)} ${fineChip(f)!=='<span style="font-size:10px;color:var(--muted)">—</span>'?fineChip(f):''}</td>
+    <td style="font-size:11px;color:var(--muted)">${f.lastUpdate||'—'}</td>
+  </tr>`).join('');
+}
+
+function renderNotifs(id,limit){
+  const el=document.getElementById(id);if(!el)return;
+  const all=NOTIFS.length?NOTIFS:DEFAULT_NOTIFS;
+  const data=limit?all.slice(0,limit):all;
+  const nc={s:'ni-s',d:'ni-d',i:'ni-i',w:'ni-w'};
+  el.innerHTML=data.map(n=>`<div class="xni ${!n.read?'ni-ur':''}"><div class="xni-ic ${nc[n.type]||'ni-i'}"><i class="fa-solid ${n.icon}"></i></div><div style="flex:1"><div class="ni-ttl">${n.ttl}</div><div class="ni-sub">${n.msg}</div><div class="ni-time">${n.time}</div></div>${!n.read?'<div style="width:7px;height:7px;background:var(--red);border-radius:50%;margin-top:4px;flex-shrink:0"></div>':''}</div>`).join('');
+  const unread=all.filter(n=>!n.read).length;
+  const nb=document.getElementById('nb-count');if(nb)nb.textContent=unread;
+}
+
+function renderPdTable(){
+  const t=document.getElementById('pd-tbody');if(!t)return;
+  if(!PD_RECORDS.length){t.innerHTML='<tr><td colspan="13" style="text-align:center;padding:30px;color:var(--muted)">No pre-dispatch records yet. Pre-dispatch forms appear here when completed at Step 3.</td></tr>';return;}
+  t.innerHTML=PD_RECORDS.map(p=>`<tr>
+    <td style="font-weight:700;color:var(--red);font-size:11px">${p.ref}</td>
+    <td><span class="pl">${p.plate}</span></td>
+    <td style="font-size:11.5px;font-weight:600;color:#fff">${p.client||'—'}</td>
+    <td style="font-size:12px">${p.driver}</td>
+    <td style="font-size:11px">${p.border}</td>
+    <td style="font-size:11px">${p.eta||'—'}</td>
+    <td style="font-size:11px">ZMW ${p.toll||'—'}</td>
+    <td style="font-size:11px">ZMW ${p.cash||'—'}</td>
+    <td><span class="chip" style="background:${(p.vstatus||'')==='Good'?'rgba(14,203,122,.1)':'rgba(240,165,0,.1)'};color:${(p.vstatus||'')==='Good'?'var(--ok)':'var(--warn)'};font-size:10px">${p.vstatus||'—'}</span></td>
+    <td><span style="color:var(--ok);font-size:12px"><i class="fa-solid fa-check-circle"></i> Signed</span></td>
+    <td><span style="color:var(--ok);font-size:12px"><i class="fa-solid fa-check-circle"></i> Signed</span></td>
+    <td style="font-size:10px;color:var(--muted)">${p.date||'—'}</td>
+    <td><button class="btn btn-o btn-sm" onclick="showToast('PDF','Form exported.','ok')"><i class="fa-solid fa-file-pdf"></i></button></td>
+  </tr>`).join('');
+}
+
+function renderCompleted(){
+  const t=document.getElementById('ct-tbody');if(!t)return;
+  const cf=document.getElementById('ct-f-client')?.value||'';
+  let data=COMPLETED.slice();
+  if(cf)data=data.filter(c=>c.client===cf);
+  data.sort((a,b)=>ctSortDir==='asc'?a.client.localeCompare(b.client):b.client.localeCompare(a.client));
+  t.innerHTML=data.map(c=>`<tr>
+    <td style="font-weight:700;color:var(--ok);font-size:11px">${c.tripId||'—'}</td>
+    <td><span class="pl">${c.plate}</span></td>
+    <td style="font-size:11.5px;font-weight:600;color:#fff">${c.client||'—'}</td>
+    <td style="font-size:12px">${c.driver||'—'}</td>
+    <td style="font-size:11px;color:var(--muted)">${c.origin||'—'} → ${c.dest||'—'}</td>
+    <td style="font-size:11px">${c.border||'—'}</td>
+    <td style="font-size:10px;color:var(--info)">${c.t1Number||'—'}</td>
+    <td style="font-size:10px;color:var(--muted)">${c.zraEntry||'—'}</td>
+    <td style="font-size:10px;color:var(--warn)">${c.tr8Number||'—'}</td>
+    <td style="font-size:11px;color:var(--ok);font-weight:600">${c.paymentAmount?'ZMW '+c.paymentAmount.toLocaleString():'—'}</td>
+    <td style="font-size:11px;color:var(--muted)">${c.startDate||'—'}</td>
+    <td style="font-size:11px;color:var(--ok);font-weight:600">${c.completedDate||'—'}</td>
+    <td style="font-size:11px">${c.duration||'—'}</td>
+    <td><button class="btn btn-o btn-sm" onclick="showToast('PDF','Trip report exported.','ok')"><i class="fa-solid fa-file-pdf"></i></button></td>
+  </tr>`).join('');
+}
+
+function renderClients(){
+  const t=document.getElementById('clients-tbody');if(!t)return;
+  const data=CLIENTS.slice().sort((a,b)=>clientSortDir==='asc'?a.name.localeCompare(b.name):b.name.localeCompare(a.name));
+  t.innerHTML=data.map(c=>{
+    const trips=FLEET.filter(f=>!f.closed&&f.client===c.name).length;
+    const totalPaid=COMPLETED.filter(x=>x.client===c.name).reduce((s,x)=>s+(x.paymentAmount||0),0);
+    return `<tr>
+      <td style="font-weight:700;color:#fff;cursor:pointer" onclick="filterByClient('${c.name.replace(/'/g,"\\'")}')">
+        ${c.name} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:9px;color:var(--red);margin-left:5px"></i>
+      </td>
+      <td style="font-size:12px">${c.contact||'—'}</td>
+      <td style="font-size:12px;color:var(--muted)">${c.phone||'—'}</td>
+      <td style="text-align:center"><span class="chip ${trips>0?'s-in':'s-brd'}">${trips}</span></td>
+      <td style="font-size:11px;color:var(--ok);font-weight:600">${totalPaid?'ZMW '+totalPaid.toLocaleString():'—'}</td>
+      <td style="font-size:11px">${c.border||'—'}</td>
+      <td style="font-size:11px;color:var(--muted)">${c.country||'—'}</td>
+      <td><button class="btn btn-o btn-sm" onclick="generateReportForClient('${c.name.replace(/'/g,"\\'")}')"><i class="fa-solid fa-chart-bar"></i>Report</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderProcChart(){
+  const el=document.getElementById('proc-overview-chart');if(!el)return;
+  const active=FLEET.filter(f=>!f.closed);
+  const counts=Array(10).fill(0);
+  active.forEach(f=>counts[f.processStep]=(counts[f.processStep]||0)+1);
+  const max=Math.max(...counts.slice(1),1);
+  el.innerHTML=STEP_LABELS.slice(1).map((lbl,i)=>{
+    const n=i+1,c=counts[n]||0;
+    return `<div class="br"><span class="brl">Step ${n}</span><div class="brt"><div class="brf" style="width:${Math.round(c/max*100)}%;background:${STEP_COLORS[n]}"></div></div><span class="brv" style="color:${STEP_COLORS[n]}">${c}</span></div>`;
+  }).join('');
+}
+
+function filterByClient(name){admV('fleet');setTimeout(()=>{const el=document.getElementById('f-client');if(el){el.value=name;applyFilters();}},100);}
+function markAllRead(){NOTIFS.forEach(n=>n.read=true);renderNotifs('dash-notif',4);renderNotifs('all-notif');showToast('All read','Notifications marked as read.','ok');}
+function pushNotif(type,icon,ttl,msg){NOTIFS.unshift({type,icon,ttl,msg,time:'Just now',read:false});renderNotifs('dash-notif',4);renderNotifs('all-notif');}
+
+/* ── UPDATE MODAL ── */
+function populatePlates(){const s=document.getElementById('upd-plate');if(!s)return;s.innerHTML='<option value="">Select truck…</option>'+FLEET.filter(f=>!f.closed).map(f=>`<option value="${f.id}">${f.plate} — ${f.driver} (${f.client||'?'}) · Step ${f.processStep}</option>`).join('');}
+function openUpdModal(){populatePlates();document.getElementById('pd-lock-warn').style.display='none';document.getElementById('open-pd-btn').style.display='none';document.getElementById('submit-upd-btn').style.display='inline-flex';openM('upd-modal');}
+function quickUpd(id){openUpdModal();setTimeout(()=>{const s=document.getElementById('upd-plate');if(s){s.value=id;onUpdTruckChange();}},60);}
+function onUpdTruckChange(){
+  const id=parseInt(document.getElementById('upd-plate')?.value);
+  const truck=FLEET.find(f=>f.id===id);
+  if(!truck)return;
+  const step=document.getElementById('upd-step');if(step)step.value=String(Math.min(9,truck.processStep+1));
+  if(truck.zraEntry&&document.getElementById('upd-zra'))document.getElementById('upd-zra').value=truck.zraEntry;
+  if(truck.t1Number&&document.getElementById('upd-t1'))document.getElementById('upd-t1').value=truck.t1Number;
+  checkPdReq();
+}
+function checkPdReq(){
+  const id=parseInt(document.getElementById('upd-plate')?.value);
+  const newStep=parseInt(document.getElementById('upd-step')?.value);
+  const truck=FLEET.find(f=>f.id===id);
+  const needs=truck&&truck.processStep===3&&newStep>=4&&!truck.pdCompleted;
+  document.getElementById('pd-lock-warn').style.display=needs?'flex':'none';
+  document.getElementById('open-pd-btn').style.display=needs?'inline-flex':'none';
+  document.getElementById('submit-upd-btn').style.display=needs?'none':'inline-flex';
+}
+function submitUpdate(){
+  const id=parseInt(document.getElementById('upd-plate')?.value);
+  const newStep=parseInt(document.getElementById('upd-step')?.value);
+  if(!id||!newStep){showToast('Missing fields','Select truck and step.','er');return;}
+  const truck=FLEET.find(f=>f.id===id);if(!truck)return;
+  truck.processStep=newStep;
+  truck.status=STEP_LABELS[newStep];
+  const zra=document.getElementById('upd-zra')?.value;if(zra)truck.zraEntry=zra;
+  const t1=document.getElementById('upd-t1')?.value;if(t1)truck.t1Number=t1;
+  const t1date=document.getElementById('upd-t1date')?.value;
+  if(t1date){truck.t1Generated=t1date;const d=new Date(t1date);d.setDate(d.getDate()+5);truck.t1Expires=d.toISOString().split('T')[0];}
+  const pay=document.getElementById('upd-pay')?.value;if(pay)truck.paymentRef=pay;
+  const tr8=document.getElementById('upd-tr8')?.value;if(tr8)truck.tr8Number=tr8;
+  const congo=document.getElementById('upd-congo')?.value;if(congo)truck.congoArrival=congo;
+  const loc=document.getElementById('upd-loc')?.value;if(loc)truck.location=loc;
+  truck.lastUpdate='Just now';
+  saveAll();
+  pushNotif('i','fa-arrows-rotate',`${truck.plate} → Step ${newStep}`,`${STEP_LABELS[newStep]} — ${truck.client}`);
+  renderAll();updateKPIs();populateFilters();checkAlerts();
+  closeM('upd-modal');showToast('Updated',`${truck.plate} → Step ${newStep}: ${STEP_LABELS[newStep]}`,'ok');
+}
+function openPdFromUpd(){const id=parseInt(document.getElementById('upd-plate')?.value);if(id){closeM('upd-modal');openPdModal(id);}}
+function openAddTruckModal(){populateFilters();openM('add-modal');}
+
+/* ── PRE-DISPATCH ── */
+function openPdModal(truckId){
+  pdTruckId=truckId;
+  const truck=FLEET.find(f=>f.id===truckId);if(!truck)return;
+  const ref='PD-2026-00'+String(pdRefNo).padStart(2,'0');
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('pd-ref',ref);set('pd-plate',truck.plate);set('pd-client',truck.client||'—');set('pd-driver',truck.driver);
+  set('pd-border',truck.border+' Border Post');set('pd-date',new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}));set('pd-dest',truck.dest||'—');
+  ['pd-eta','pd-toll','pd-cash','pd-vst'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const fn=document.getElementById('pd-fname');if(fn)fn.style.display='none';
+  document.querySelectorAll('.pdci').forEach(el=>{el.classList.remove('ck');const cb=el.querySelector('input');if(cb)cb.checked=false;});
+  clearSig('agent');clearSig('driver');
+  const an=document.getElementById('agent-name');if(an)an.value='';
+  const dn=document.getElementById('driver-name-sig');if(dn)dn.value=truck.driver;
+  ['agent-agree','driver-agree'].forEach(id=>{const el=document.getElementById(id);if(el)el.checked=false;});
+  ['agent-signed','driver-signed'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  const pr=document.getElementById('pd-ready');if(pr)pr.style.display='none';
+  const sb=document.getElementById('pd-submit-btn');if(sb){sb.disabled=true;sb.style.opacity='.5';}
+  closeM('upd-modal');openM('pd-modal');
+  setTimeout(()=>{initSig('agent');initSig('driver');},100);
+}
+function handleReceipt(input){
+  if(input.files&&input.files[0]){
+    const fn=document.getElementById('pd-fname');if(fn){fn.textContent='✅ '+input.files[0].name;fn.style.display='block';}
+    const c4=document.getElementById('c-4');if(c4){c4.classList.add('ck');const cb=c4.querySelector('input');if(cb)cb.checked=true;}
+  }
+}
+function tgCheck(id){const el=document.getElementById(id);el.classList.toggle('ck');const cb=el.querySelector('input');if(cb)cb.checked=el.classList.contains('ck');}
+function checkSig(){
+  const aOk=document.getElementById('agent-agree')?.checked&&document.getElementById('agent-name')?.value.trim();
+  const dOk=document.getElementById('driver-agree')?.checked&&document.getElementById('driver-name-sig')?.value.trim();
+  const as=document.getElementById('agent-signed');if(as)as.style.display=aOk?'flex':'none';
+  const ds=document.getElementById('driver-signed');if(ds)ds.style.display=dOk?'flex':'none';
+  const both=aOk&&dOk;
+  const pr=document.getElementById('pd-ready');if(pr)pr.style.display=both?'flex':'none';
+  const sb=document.getElementById('pd-submit-btn');if(sb){sb.disabled=!both;sb.style.opacity=both?'1':'.5';}
+}
+function submitPD(){
+  const eta=document.getElementById('pd-eta')?.value,toll=document.getElementById('pd-toll')?.value,cash=document.getElementById('pd-cash')?.value,vstatus=document.getElementById('pd-vst')?.value;
+  if(!eta||!toll||!cash||!vstatus){showToast('Fill required fields','ETA, toll, cash, and vehicle status required.','er');return;}
+  const ref='PD-2026-00'+String(pdRefNo).padStart(2,'0');pdRefNo++;
+  const truck=FLEET.find(f=>f.id===pdTruckId);
+  if(truck){
+    truck.pdCompleted=true;truck.pdRef=ref;truck.processStep=4;truck.status='ZRA Entry — Pending';
+    PD_RECORDS.unshift({ref,plate:truck.plate,client:truck.client||'—',driver:truck.driver,border:truck.border,
+      eta:eta.replace('T',' · ').substring(0,16),toll:parseFloat(toll).toLocaleString(),cash:parseFloat(cash).toLocaleString(),vstatus,
+      date:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' · '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})});
+    saveAll();
+  }
+  pushNotif('s','fa-file-signature',`Pre-Dispatch ${ref} Signed`,`${truck?.plate} cleared for ZRA Entry (Step 4). Both signatures captured.`);
+  renderAll();updateKPIs();
+  closeM('pd-modal');showToast('Pre-Dispatch Complete!',`${ref} — advancing to Step 4: ZRA Entry.`,'ok');
+}
+function initSig(who){
+  const canvas=document.getElementById('sig-'+who);if(!canvas)return;
+  const ctx=canvas.getContext('2d');ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.lineCap='round';ctx.lineJoin='round';
+  sigCtx[who]=ctx;sigDraw[who]=false;
+  let lx=0,ly=0;
+  const pos=e=>{const r=canvas.getBoundingClientRect();const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*(canvas.width/r.width),y:(s.clientY-r.top)*(canvas.height/r.height)};};
+  canvas.onmousedown=e=>{sigDraw[who]=true;const p=pos(e);lx=p.x;ly=p.y;};
+  canvas.onmousemove=e=>{if(!sigDraw[who])return;const p=pos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;};
+  canvas.onmouseup=()=>{sigDraw[who]=false;};
+  canvas.onmouseleave=()=>{sigDraw[who]=false;};
+  canvas.ontouchstart=e=>{e.preventDefault();sigDraw[who]=true;const p=pos(e);lx=p.x;ly=p.y;};
+  canvas.ontouchmove=e=>{e.preventDefault();if(!sigDraw[who])return;const p=pos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;};
+  canvas.ontouchend=()=>{sigDraw[who]=false;};
+}
+function clearSig(who){const canvas=document.getElementById('sig-'+who);if(!canvas)return;canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);}
+
+/* ── CLOSE TRIP ── */
+function openCloseModal(truckId){
+  closeTruckId=truckId;
+  const truck=FLEET.find(f=>f.id===truckId);if(!truck)return;
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('ct-plate',truck.plate);set('ct-client',truck.client||'—');set('ct-driver',truck.driver);
+  set('ct-route',(truck.origin||'—')+' → '+(truck.dest||'—'));
+  set('ct-zra',truck.zraEntry||'—');set('ct-t1',truck.t1Number||'—');
+  set('ct-tr8',truck.tr8Number||'—');
+  set('ct-pay',truck.paymentRef?truck.paymentRef+(truck.paymentAmount?' — ZMW '+truck.paymentAmount.toLocaleString():''):'—');
+  const fi=truck.congoArrival?parkingFine(truck.congoArrival):{fine:0};
+  const fineEl=document.getElementById('ct-fine');
+  if(fineEl)fineEl.innerHTML=fi.fine>0?`<span style="color:var(--err);font-weight:700">$${fi.fine} accrued</span>`:'<span style="color:var(--ok)">None</span>';
+  const dt=document.getElementById('ct-dt');if(dt)dt.value='';
+  const loc=document.getElementById('ct-loc');if(loc)loc.value=truck.dest||'';
+  openM('ct-modal');
+}
+function confirmClose(){
+  const truck=FLEET.find(f=>f.id===closeTruckId);if(!truck)return;
+  const dt=document.getElementById('ct-dt')?.value;if(!dt){showToast('Enter date','Enter the delivery date and time.','er');return;}
+  const completedDate=new Date(dt).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  const diff=Math.max(1,Math.round((new Date(dt)-new Date(truck.startDate||'2026-05-15'))/86400000));
+  const fi=truck.congoArrival?parkingFine(truck.congoArrival):{fine:0};
+  COMPLETED.unshift({
+    tripId:'BT-TRIP-00'+String(43+COMPLETED.length),plate:truck.plate,client:truck.client||'—',driver:truck.driver,
+    origin:truck.origin||'—',dest:truck.dest||'—',border:truck.border||'—',
+    t1Number:truck.t1Number||null,zraEntry:truck.zraEntry||null,tr8Number:truck.tr8Number||null,
+    paymentRef:truck.paymentRef||null,paymentAmount:truck.paymentAmount||null,
+    startDate:truck.startDate||'—',completedDate,duration:diff+'d',
+    allStepsDone:truck.processStep===9,parkingFine:fi.fine
+  });
+  truck.closed=true;saveAll();
+  pushNotif('s','fa-circle-check',`Trip Closed: ${truck.plate}`,`All 9 steps complete. ${truck.origin} → ${truck.dest}. Archived.`);
+  renderAll();updateKPIs();populateFilters();
+  closeM('ct-modal');showToast('Trip Archived!',`${truck.plate} — trip closed and saved.`,'ok');
+}
+
+/* ── ADD TRUCK / CLIENT ── */
+function addTruck(){
+  const plate=document.getElementById('nt-plate')?.value.trim().toUpperCase();
+  const driver=document.getElementById('nt-driver')?.value.trim();
+  if(!plate||!driver){showToast('Missing fields','Plate and driver required.','er');return;}
+  FLEET.unshift({id:FLEET.length+1,plate,client:document.getElementById('nt-client')?.value||'—',
+    driver,phone:document.getElementById('nt-phone')?.value||'—',
+    origin:document.getElementById('nt-origin')?.value||'—',dest:document.getElementById('nt-dest')?.value||'—',
+    border:document.getElementById('nt-border')?.value||'Kasumbalesa',
+    processStep:parseInt(document.getElementById('nt-step')?.value||'1'),
+    status:'Documents Received',location:'Depot',eta:'TBD',lastUpdate:'Just now',
+    pdCompleted:false,pdRef:null,closed:false,startDate:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}),
+    zraEntry:null,paymentRef:null,t1Number:null,t1Generated:null,t1Expires:null,tr8Number:null,congoArrival:null,
+    docs:{invoice:false,deliveryNote:false,customsT1:false,movementSheet:false}});
+  saveAll();populateFilters();renderAll();updateKPIs();
+  closeM('add-modal');showToast('Truck Added',`${plate} added at Step 1.`,'ok');
+}
+function openClientModal(){openM('client-modal');}
+function addClient(){
+  const name=document.getElementById('nc-name')?.value.trim();if(!name){showToast('Name required','Client name required.','er');return;}
+  CLIENTS.push({id:CLIENTS.length+1,name,contact:document.getElementById('nc-contact')?.value||'—',phone:document.getElementById('nc-phone')?.value||'—',email:document.getElementById('nc-email')?.value||'—',border:document.getElementById('nc-border')?.value||'—',country:document.getElementById('nc-country')?.value||'Zambia'});
+  saveAll();renderClients();populateFilters();closeM('client-modal');showToast('Client Added',`${name} saved.`,'ok');
+}
+
+/* ══ REPORTS ══ */
+function setRptType(type,btn){
+  rptType=type;
+  document.querySelectorAll('.rpt-type').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('rpt-client-wrap').style.display=(type==='client'||type==='both')?'block':'none';
+  document.getElementById('rpt-truck-wrap').style.display=(type==='truck'||type==='both')?'block':'none';
+}
+function populateRptFilters(){
+  const rc=document.getElementById('rpt-client');
+  if(rc){const all=[...new Set([...FLEET,...COMPLETED].map(f=>f.client).filter(Boolean))].sort();rc.innerHTML='<option value="">All Clients</option>'+all.map(c=>`<option value="${c}">${c}</option>`).join('');}
+  const rt=document.getElementById('rpt-truck');
+  if(rt){const all=[...new Set([...FLEET,...COMPLETED].map(f=>f.plate).filter(Boolean))].sort();rt.innerHTML='<option value="">All Trucks</option>'+all.map(p=>`<option value="${p}">${p}</option>`).join('');}
+}
+function generateReportForClient(name){
+  admV('reports');
+  setTimeout(()=>{
+    setRptType('client',document.getElementById('rpt-t-client'));
+    const el=document.getElementById('rpt-client');if(el)el.value=name;
+    generateReport();
+  },100);
+}
+function generateReport(){
+  const clientF=document.getElementById('rpt-client')?.value||'';
+  const truckF=document.getElementById('rpt-truck')?.value||'';
+  const statusF=document.getElementById('rpt-status')?.value||'all';
+  let active=FLEET.filter(f=>!f.closed);
+  let done=COMPLETED.slice();
+  if(clientF){active=active.filter(f=>f.client===clientF);done=done.filter(f=>f.client===clientF);}
+  if(truckF){active=active.filter(f=>f.plate===truckF);done=done.filter(f=>f.plate===truckF);}
+  let trips=[];
+  if(statusF==='all'||statusF==='active') trips=[...trips,...active.map(f=>({...f,_status:'active'}))];
+  if(statusF==='all'||statusF==='done')   trips=[...trips,...done.map(f=>({...f,_status:'done'}))];
+  const title=clientF&&truckF?`${clientF} — ${truckF}`:clientF?`Client: ${clientF}`:truckF?`Truck: ${truckF}`:'All Trips';
+  const totalPaid=done.filter(f=>(!clientF||f.client===clientF)&&(!truckF||f.plate===truckF)).reduce((s,f)=>s+(f.paymentAmount||0),0);
+  const t1Issues=active.filter(f=>(!clientF||f.client===clientF)&&(!truckF||f.plate===truckF)).filter(f=>{const d=t1DaysLeft(f.t1Expires);return d!==null&&d<=2;}).length;
+  const fines=active.filter(f=>(!clientF||f.client===clientF)&&(!truckF||f.plate===truckF)).filter(f=>f.congoArrival&&parkingFine(f.congoArrival).fine>0).length;
+  const zone=document.getElementById('rpt-result-zone');if(!zone)return;
+  zone.innerHTML=`
+    <div class="rpt-result">
+      <div class="rpt-hdr">
+        <h3><i class="fa-solid fa-chart-bar" style="margin-right:8px"></i>${title}</h3>
+        <div style="font-size:11px;color:rgba(255,255,255,.7)">Generated ${new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
+      </div>
+      <div class="rpt-meta">
+        <div class="rpt-mi"><div class="rv">${trips.length}</div><div class="rl">Total Trips</div></div>
+        <div class="rpt-mi"><div class="rv">${active.filter(f=>(!clientF||f.client===clientF)&&(!truckF||f.plate===truckF)).length}</div><div class="rl">Active</div></div>
+        <div class="rpt-mi"><div class="rv" style="color:var(--ok)">${done.filter(f=>(!clientF||f.client===clientF)&&(!truckF||f.plate===truckF)).length}</div><div class="rl">Completed</div></div>
+        <div class="rpt-mi"><div class="rv" style="color:var(--ok)">${totalPaid?'ZMW '+totalPaid.toLocaleString():'—'}</div><div class="rl">Total Paid</div></div>
+      </div>
+      ${t1Issues>0?`<div class="alert-banner ab-err" style="margin:16px;border-radius:8px"><i class="fa-solid fa-hourglass-half"></i><div><h4>T1 Alert: ${t1Issues} truck${t1Issues>1?'s':''} with T1 expiring ≤ 2 days</h4></div></div>`:''}
+      ${fines>0?`<div class="alert-banner ab-err" style="margin:0 16px 16px;border-radius:8px"><i class="fa-solid fa-dollar-sign"></i><div><h4>Congo Parking Fine: ${fines} truck${fines>1?'s':''} with active fines ($25/day)</h4></div></div>`:''}
+      <div class="tw"><table>
+        <thead><tr><th>Trip/Plate</th><th>Client</th><th>Driver</th><th>Route</th><th>Border</th><th>Step/Status</th><th>T1 No.</th><th>ZRA Entry</th><th>TR8</th><th>Payment</th><th>Date</th><th>T1/Fine</th></tr></thead>
+        <tbody>${trips.map(f=>{
+          const isActive=f._status==='active';
+          const fi=f.congoArrival?parkingFine(f.congoArrival):{fine:0};
+          return`<tr>
+            <td><span class="pl">${f.plate}</span></td>
+            <td style="font-size:11.5px;font-weight:600;color:#fff">${f.client||'—'}</td>
+            <td style="font-size:12px">${f.driver||'—'}</td>
+            <td style="font-size:11px;color:var(--muted)">${(f.origin||f.route||'—')} → ${f.dest||'—'}</td>
+            <td style="font-size:11px">${f.border||'—'}</td>
+            <td>${isActive?stepBadge(f.processStep):'<span class="chip s-of"><span class="sd" style="background:var(--ok)"></span>Complete</span>'}</td>
+            <td style="font-size:10px;color:var(--info)">${f.t1Number||'—'}</td>
+            <td style="font-size:10px;color:var(--muted)">${f.zraEntry||'—'}</td>
+            <td style="font-size:10px;color:var(--warn)">${f.tr8Number||'—'}</td>
+            <td style="font-size:11px;color:var(--ok);font-weight:600">${f.paymentAmount?'ZMW '+f.paymentAmount.toLocaleString():(f.paymentRef||'—')}</td>
+            <td style="font-size:10px;color:var(--muted)">${f.completedDate||f.startDate||f.lastUpdate||'—'}</td>
+            <td>${isActive?t1Chip(f)+' '+fineChip(f):'<span style="font-size:10px;color:var(--ok)">✓ Closed</span>'}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table></div>
+    </div>`;
+}
+function exportReport(type,client,truck){showToast('PDF Export','Report exported as PDF.','ok');}
+</script>
+</body>
+</html>
