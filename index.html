@@ -1,15 +1,12 @@
 <!DOCTYPE html>
-<!--
-  Braidfield Transport Limited — braidfieldtransport.com
-  Single-file website. Ready to launch.
-  SETUP: Replace YOUR_GOOGLE_CLIENT_ID below with your real Google OAuth Client ID.
-  GitHub Pages: Upload this ONE file → Settings → Pages → Deploy from main branch.
--->
+<!-- Braidfield Transport Limited | braidfieldtransport.com
+     Single file — upload to GitHub Pages or any host.
+     BEFORE LAUNCH: replace YOUR_GOOGLE_CLIENT_ID in the <script> section. -->
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<meta name="description" content="Braidfield Transport Limited — Zambia's trusted cross-border freight. 9-step ZRA Ascuyda process, T1 tracking, real-time GPS."/>
+<meta name="description" content="Braidfield Transport Limited — Zambia cross-border logistics. ZRA Ascuyda, T1 tracking, Congo 48h alerts, real-time GPS."/>
 <title>Braidfield Transport Limited | Cross-Border Logistics Zambia</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
@@ -18,8 +15,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin="anonymous"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
-/* === PUBLIC SITE === */
-
+/* ── PUBLIC SITE ── */
 :root{--red:#CC1010;--grad:linear-gradient(135deg,#E01212,#C01010 55%,#8C0808);--dark:#080C14;--d2:#0F1520;--d3:#161D2E;--d4:#1E2840;--text:#B8C4D8;--muted:#5A6A80;--border:rgba(255,255,255,.07);--bdr:rgba(180,10,10,.22);--ok:#0ECB7A;--info:#3B8BEB;--warn:#F0A500;--err:#E03030;--r:14px;--rs:8px}
 *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
 body{font-family:'Outfit',sans-serif;background:var(--dark);color:var(--text);overflow-x:hidden;line-height:1.65}
@@ -264,14 +260,13 @@ footer{background:var(--dark);border-top:1px solid var(--border);padding:56px 0 
 @media(max-width:1024px){.proc-grid{grid-template-columns:1fr 1fr}.track-layout{grid-template-columns:1fr}#truck-map{height:380px}.bg{grid-template-columns:1fr}.foot-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:768px){.nav-links,.nav-act .btn{display:none}.ham{display:flex}.hero-c{grid-template-columns:1fr}.hero-card-wrap{display:none}.proc-grid{grid-template-columns:1fr}.why-grid,.ct-grid,.book-layout,.fg{grid-template-columns:1fr}.foot-grid{grid-template-columns:1fr}.cta-wrap{padding:40px 22px}}
 
-/* === ADMIN PANEL === */
-
+/* ── ADMIN PANEL ── */
 :root{--red:#CC1010;--grad:linear-gradient(135deg,#E01212,#C01010 55%,#8C0808);--dark:#080C14;--d2:#0F1520;--d3:#161D2E;--d4:#1E2840;--d5:#243050;--text:#B8C4D8;--muted:#5A6A80;--border:rgba(255,255,255,.07);--bdr:rgba(180,10,10,.22);--ok:#0ECB7A;--info:#3B8BEB;--warn:#F0A500;--err:#E03030;--r:14px;--rs:8px}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Outfit',sans-serif;background:var(--dark);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column}
-h2,h3,h4{font-family:'Poppins',sans-serif;color:#fff;line-height:1.2}
-a{text-decoration:none;color:inherit}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--dark)}::-webkit-scrollbar-thumb{background:var(--red);border-radius:3px}
+
+
+
+
 .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--rs);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .22s;text-decoration:none}
 .btn-r{background:var(--grad);color:#fff}.btn-r:hover{opacity:.9}
 .btn-o{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.18)}.btn-o:hover{border-color:var(--red);color:var(--red)}
@@ -290,10 +285,10 @@ a{text-decoration:none;color:inherit}
 .t-ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
 .t-ttl{font-size:13px;font-weight:700;color:#fff}.t-sub{font-size:11px;color:var(--muted)}
 .adm-top{height:60px;background:var(--d2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:14px;flex-shrink:0}
-.logo{display:flex;align-items:center;gap:11px}
-.lm{border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;color:#fff;flex-shrink:0}
-.lt{font-family:'Poppins',sans-serif;font-weight:800;color:#fff;line-height:1.1}
-.lt small{display:block;font-weight:500;color:var(--red);letter-spacing:2px;text-transform:uppercase}
+
+
+
+
 .adm-search{flex:1;max-width:300px;position:relative}
 .adm-search input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:7px 12px 7px 32px;font-family:'Outfit',sans-serif;font-size:13px;color:#fff;outline:none}
 .adm-search input:focus{border-color:var(--red)}.adm-search input::placeholder{color:var(--muted)}
@@ -306,7 +301,7 @@ a{text-decoration:none;color:inherit}
 .uav{width:28px;height:28px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden}
 .uav img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .unm{font-size:12px;font-weight:600;color:#fff}.url{font-size:10px;color:var(--muted)}
-.adm-body{display:flex;flex:1;overflow:hidden}
+.adm-
 .sidebar{width:212px;background:var(--d2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
 .sbs{padding:14px 12px 6px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted)}
 .nvi{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;margin:1px 8px;cursor:pointer;transition:all .2s;color:var(--muted);font-size:13px;font-weight:500;user-select:none}
@@ -476,20 +471,19 @@ tr:last-child td{border-bottom:none}
 @media(max-width:1100px){.kg4{grid-template-columns:1fr 1fr}.g2,.g31,.g3{grid-template-columns:1fr}}
 @media(max-width:768px){.sidebar{display:none}.mc{padding:14px}.fg,.ug{grid-template-columns:1fr}.sps{grid-template-columns:1fr}.pdm{grid-template-columns:1fr 1fr}}
 
-/* === DRIVER PORTAL === */
-
+/* ── DRIVER PORTAL ── */
 :root{--red:#CC1010;--grad:linear-gradient(135deg,#E01212,#C01010 55%,#8C0808);--dark:#080C14;--d2:#0F1520;--d3:#161D2E;--d4:#1E2840;--text:#B8C4D8;--muted:#5A6A80;--border:rgba(255,255,255,.07);--bdr:rgba(180,10,10,.22);--ok:#0ECB7A;--info:#3B8BEB;--warn:#F0A500;--err:#E03030;--r:14px;--rs:8px}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Outfit',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;display:flex;flex-direction:column;line-height:1.65}
-h2,h3,h4{font-family:'Poppins',sans-serif;color:#fff;line-height:1.2}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--dark)}::-webkit-scrollbar-thumb{background:var(--red);border-radius:3px}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--rs);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .22s;text-decoration:none}
-.btn-r{background:var(--grad);color:#fff}.btn-r:hover{opacity:.9}
-.btn-o{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.18)}.btn-o:hover{border-color:var(--red);color:var(--red)}
-.btn-sm{padding:6px 12px;font-size:12px}
-.fc{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Outfit',sans-serif;font-size:13px;color:#fff;outline:none;transition:border-color .2s}
-.fc:focus{border-color:var(--red)}.fc::placeholder{color:var(--muted)}
-.fl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px}
+
+
+
+
+
+
+
+
+.fc::placeholder{color:var(--muted)}
+
 @keyframes su{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 @keyframes tps{0%,100%{box-shadow:0 0 0 0 rgba(180,10,10,.4)}50%{box-shadow:0 0 0 8px rgba(180,10,10,.1)}}
@@ -499,9 +493,9 @@ h2,h3,h4{font-family:'Poppins',sans-serif;color:#fff;line-height:1.2}
 .t-ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
 .t-ttl{font-size:13px;font-weight:700;color:#fff}.t-sub{font-size:11px;color:var(--muted)}
 .drv-nav{background:var(--d2);border-bottom:1px solid var(--border);padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0}
-.logo{display:flex;align-items:center;gap:11px}
-.lm{width:36px;height:36px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;font-size:14px;color:#fff;flex-shrink:0}
-.lt{font-family:'Poppins',sans-serif;font-weight:800;font-size:13px;color:#fff;line-height:1.1}
+
+
+
 .lt small{display:block;font-size:9px;font-weight:500;color:var(--red);letter-spacing:2px;text-transform:uppercase}
 .drv-content{flex:1;padding:24px 20px;max-width:640px;margin:0 auto;width:100%;overflow-y:auto}
 /* Plate card */
@@ -569,15 +563,15 @@ h2,h3,h4{font-family:'Poppins',sans-serif;color:#fff;line-height:1.2}
 .dcb-call{background:var(--d4);color:#fff;border:1px solid var(--border)}.dcb-call:hover{border-color:var(--red);color:var(--red)}
 @media(max-width:480px){.status-grid,.doc-grid,.drv-cbtns{grid-template-columns:1fr}}
 
-/* === SHARED OVERRIDES === */
-#admin-panel { display:none; height:100vh; flex-direction:column; overflow:hidden }
-#admin-panel.visible { display:flex }
-#driver-portal { display:none; flex-direction:column; min-height:100vh }
-#driver-portal.visible { display:flex }
+/* ── PANEL VISIBILITY — these are the ONLY rules that touch display/overflow on the panels ── */
+#admin-panel  { display:none; }
+#admin-panel.visible  { display:flex; height:100vh; flex-direction:column; overflow:hidden; }
+#driver-portal { display:none; }
+#driver-portal.visible { display:flex; flex-direction:column; min-height:100vh; }
+body.admin-mode { overflow:hidden; height:100vh; }
 </style>
 </head>
 <body>
-
 
 <nav class="site-nav" id="nav">
   <div class="nav-in">
@@ -1026,8 +1020,7 @@ h2,h3,h4{font-family:'Poppins',sans-serif;color:#fff;line-height:1.2}
 
 
 
-<!-- LOGIN MODAL -->
-<div class="overlay" id="login-overlay">
+<!-- LOGIN MODAL --><div class="overlay" id="login-overlay">
   <div class="lm-box">
     <button class="lm-x" onclick="closeLogin()"><i class="fa-solid fa-xmark"></i></button>
     <div class="lm-top">
@@ -1038,8 +1031,50 @@ h2,h3,h4{font-family:'Poppins',sans-serif;color:#fff;line-height:1.2}
         <button class="ltab" id="lt-driver" onclick="switchLTab('driver')"><i class="fa-solid fa-truck"></i> Driver Login</button>
       </div>
     </div>
+    <div class="lm-body">
+      <div class="lpane active" id="pane-staff">
+        <div class="note-box"><i class="fa-solid fa-lock"></i><span>Restricted to <strong>@braidfieldtransport.com</strong> Google Workspace accounts. All sign-ins are logged.</span></div>
+        <button class="g-btn" onclick="triggerGoogleLogin()">
+          <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34.5 6.5 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34.5 6.5 29.6 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.5 0 10.4-2.1 14.1-5.5l-6.5-5.5C29.5 34.9 26.9 36 24 36c-5.2 0-9.6-3.3-11.3-8H6.3C9.6 35.5 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.1-2.1 4-3.9 5.4l6.5 5.5C42 34.8 44 29.8 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
+          Sign in with Google (@braidfieldtransport.com)
+        </button>
+        <p id="g-note" style="display:none;text-align:center;font-size:11px;color:var(--warn);margin-top:4px">⚠ Replace GOOGLE_CLIENT_ID in shared.js to activate Google Sign-In.</p>
+        <div class="divider">or email &amp; password</div>
+        <div style="margin-bottom:12px"><label class="fl">Work Email</label><input class="fc" type="email" id="s-email" placeholder="yourname@braidfieldtransport.com" onkeydown="if(event.key==='Enter')doStaffLogin()"/></div>
+        <div style="margin-bottom:14px"><label class="fl">Password</label><input class="fc" type="password" id="s-pass" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doStaffLogin()"/></div>
+        <button class="btn btn-r" onclick="doStaffLogin()" style="width:100%;justify-content:center"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Dashboard</button>
+        <div class="demo-block"><div class="demo-hd">Demo Staff Accounts</div>
+          <div class="demo-row"><span class="d-id">admin@braidfieldtransport.com</span><span class="d-pw">admin123</span></div>
+          <div class="demo-row"><span class="d-id">ops@braidfieldtransport.com</span><span class="d-pw">ops123</span></div>
+        </div>
+      </div>
+      <div class="lpane" id="pane-driver">
+        <div class="note-box"><i class="fa-solid fa-truck"></i><span>Use your <strong>phone</strong>, <strong>username</strong>, or <strong>plate number</strong> + password.</span></div>
+        <div style="margin-bottom:10px">
+          <label class="fl">Identify With</label>
+          <div class="did-row">
+            <button class="did-btn active" onclick="setDid('phone',this)"><i class="fa-solid fa-phone"></i> Phone</button>
+            <button class="did-btn" onclick="setDid('user',this)"><i class="fa-solid fa-user"></i> Username</button>
+            <button class="did-btn" onclick="setDid('plate',this)"><i class="fa-solid fa-hashtag"></i> Plate</button>
+          </div>
+          <input class="fc" type="text" id="d-id" placeholder="Enter your phone number…" style="margin:0"/>
+        </div>
+        <div style="margin-bottom:16px"><label class="fl">Password</label><input class="fc" type="password" id="d-pass" placeholder="Your assigned password" style="margin:0" onkeydown="if(event.key==='Enter')doDriverLogin()"/></div>
+        <button class="btn btn-r" onclick="doDriverLogin()" style="width:100%;justify-content:center"><i class="fa-solid fa-truck"></i> Sign In as Driver</button>
+        <div class="demo-block"><div class="demo-hd">Demo Drivers</div>
+          <div class="demo-row"><span class="d-id">0971234567 · john.banda · ABZ 1234 ZM</span><span class="d-pw">jb1234</span></div>
+          <div class="demo-row"><span class="d-id">0972345678 · peter.mwale · GRZ 5678 ZM</span><span class="d-pw">pm5678</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast-wrap"></div>
 
 
+<!-- ADMIN PANEL -->
+<div id="admin-panel">
 <div class="adm-top">
   <div class="logo" style="width:196px;flex-shrink:0">
     <div class="lm" style="width:36px;height:36px;font-size:14px">BT</div>
@@ -1435,12 +1470,11 @@ h2,h3,h4{font-family:'Poppins',sans-serif;color:#fff;line-height:1.2}
   </div>
 </div>
 
+<div class="toast-wrap" id="toast-wrap"></div>
+</div>
 
-
-
-
-
-
+<!-- DRIVER PORTAL -->
+<div id="driver-portal">
 <div class="drv-nav">
   <div class="logo"><div class="lm">BT</div><div class="lt">Braidfield Transport<small>Driver Portal</small></div></div>
   <div style="display:flex;align-items:center;gap:10px">
@@ -1542,19 +1576,17 @@ h2,h3,h4{font-family:'Poppins',sans-serif;color:#fff;line-height:1.2}
   </div>
 
 </div><!-- /drv-content -->
-
-
-
-
+<div class="toast-wrap" id="toast-wrap"></div>
+</div>
 
 <div class="toast-wrap" id="toast-wrap"></div>
 
 <script>
 /* ============================================================
-   BRAIDFIELD TRANSPORT — All JavaScript (shared + pages)
-   Replace GOOGLE_CLIENT_ID before deploying to production.
+   BRAIDFIELD TRANSPORT — All JavaScript
    ============================================================ */
 
+/* ── SHARED DATA + AUTH ── */
 /* ============================================================
    Braidfield Transport — shared.js
    Loaded by all 3 HTML pages. Contains: data, auth, helpers.
@@ -1826,7 +1858,82 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 
-/* === PUBLIC SITE === */
+/* ── MULTI-PANEL CONTROLLER ── */
+function showSite() {
+  document.getElementById('site').style.display = 'block';
+  document.getElementById('site').style.visibility = 'visible';
+  document.getElementById('site').style.pointerEvents = 'auto';
+  document.getElementById('admin-panel').classList.remove('visible');
+  document.getElementById('driver-portal').classList.remove('visible');
+  document.body.classList.remove('admin-mode');
+  document.body.style.overflow = '';
+  window.scrollTo(0, 0);
+}
+function showAdmin() {
+  document.getElementById('site').style.display = 'none';
+  document.getElementById('driver-portal').classList.remove('visible');
+  document.getElementById('admin-panel').classList.add('visible');
+  document.body.classList.add('admin-mode');
+}
+function showDriver() {
+  document.getElementById('site').style.display = 'none';
+  document.getElementById('admin-panel').classList.remove('visible');
+  document.body.classList.remove('admin-mode');
+  document.body.style.overflow = '';
+  document.getElementById('driver-portal').classList.add('visible');
+}
+
+/* ── AUTH OVERRIDES (replace shared.js versions to use panel controller) ── */
+function doLogout() {
+  if (typeof google !== 'undefined' && google.accounts) {
+    try { google.accounts.id.disableAutoSelect(); } catch(e) {}
+  }
+  sessionStorage.clear();
+  showSite();
+  showToast('Signed out', 'See you next time.', 'ok');
+}
+
+function loginStaff(user) {
+  if (!sessionStorage.getItem('bt_fleet'))   setFleet(DEFAULT_FLEET.map(f=>({...f})));
+  if (!sessionStorage.getItem('bt_clients')) setClients(DEFAULT_CLIENTS.map(c=>({...c})));
+  if (!sessionStorage.getItem('bt_done'))    setCompleted(DEFAULT_COMPLETED.map(c=>({...c})));
+  sessionStorage.setItem('bt_session', JSON.stringify(user));
+  closeLogin();
+  // Populate admin UI
+  const av = document.getElementById('adm-av');
+  if (av) {
+    if (user.picture) av.innerHTML = `<img src="${user.picture}" alt="" onerror="this.parentElement.textContent='${user.initials||'U'}'"/>`;
+    else av.textContent = user.initials || 'U';
+  }
+  const nm = document.getElementById('adm-nm'); if (nm) nm.textContent = user.name || 'User';
+  const rl = document.getElementById('adm-rl'); if (rl) rl.textContent = ROLE_LABELS[user.role] || 'Staff';
+  showAdmin();
+  FLEET = getFleet(); CLIENTS = getClients(); COMPLETED = getCompleted();
+  PD_RECORDS = JSON.parse(sessionStorage.getItem('bt_pd')||'[]');
+  NOTIFS = JSON.parse(sessionStorage.getItem('bt_notifs')||'null') || DEFAULT_NOTIFS.slice();
+  initAdmin();
+  showToast('Welcome, ' + user.name.split(' ')[0] + '!', 'Operations dashboard ready.', 'ok');
+}
+
+function doDriverLoginOverride() {
+  const raw  = (document.getElementById('d-id')?.value||'').trim().toLowerCase().replace(/\s+/g,'');
+  const pass = (document.getElementById('d-pass')?.value||'').trim();
+  if (!raw || !pass) { showToast('Fill all fields','Identifier and password required.','er'); return; }
+  const dr = DRIVER_ACCOUNTS.find(d =>
+    d.phone.replace(/\s+/g,'') === raw || d.username === raw ||
+    d.plate.toLowerCase().replace(/\s+/g,'') === raw
+  );
+  if (!dr || dr.pass !== pass) { showToast('Login Failed','Incorrect credentials.','er'); return; }
+  if (!sessionStorage.getItem('bt_fleet')) setFleet(DEFAULT_FLEET.map(f=>({...f})));
+  sessionStorage.setItem('bt_session', JSON.stringify({...dr, type:'driver'}));
+  closeLogin();
+  showDriver();
+  DRV_TRUCK_ID = dr.truckId;
+  initDriverPortal();
+  showToast('Welcome, ' + dr.name.split(' ')[0] + '!', 'Driver portal ready.', 'ok');
+}
+
+/* ── PUBLIC SITE JS ── */
 
 /* ── PUBLIC SITE JS ── */
 window.addEventListener('scroll',()=>document.getElementById('nav')?.classList.toggle('scrolled',scrollY>40));
@@ -1927,11 +2034,20 @@ window.addEventListener('load',()=>{
 });
 
 
-/* === ADMIN === */
+/* ── ADMIN JS ── */
+var FLEET=[], CLIENTS=[], COMPLETED=[], PD_RECORDS=[], NOTIFS=[];
+var DEFAULT_NOTIFS = [
+  {type:'d',icon:'fa-hourglass-half',ttl:'T1 Expiring: ABB 9012 ZM',msg:'T1-2026-00871 expires 23 May — 1 day left!',time:'Now',read:false},
+  {type:'d',icon:'fa-dollar-sign',   ttl:'Congo Fine: ALZ 7890 ZM', msg:'Cargo at Kolwezi >48h — $25/day accruing.',time:'2h ago',read:false},
+  {type:'s',icon:'fa-check-circle',  ttl:'ABZ 0123 ZM Offloaded',   msg:'Step 9 complete. Ready to close trip.',time:'3h ago',read:true},
+  {type:'i',icon:'fa-database',      ttl:'ZRA Entry: ABZ 1234 ZM',  msg:'ZRA-2026-001247 created in Ascuyda.',time:'4h ago',read:true},
+];
+var sortState={col:null,dir:'asc'}, ctSortDir='asc', clientSortDir='asc';
+var pdTruckId=null, closeTruckId=null, pdRefNo=5, rptType='client';
+var sigCtx={},sigDraw={};
 
 /* ── SESSION CHECK ── */
-const session = getSession();
-if (!session || session.type !== 'staff') window.location.href = 'index.html';
+
 
 /* ── STATE ── */
 let FLEET = getFleet(), CLIENTS = getClients(), COMPLETED = getCompleted();
@@ -2458,12 +2574,12 @@ function generateReport(){
 }
 function exportReport(type,client,truck){showToast('PDF Export','Report exported as PDF.','ok');}
 
-
-/* === DRIVER PORTAL === */
+/* ── DRIVER JS ── */
+var DRV_TRUCK_ID = null;
+var selectedDrvStatus = '';
 
 /* ── SESSION CHECK ── */
-const dSession = getSession();
-if (!dSession || dSession.type !== 'driver') window.location.href = 'index.html';
+
 
 let selectedStatus = '';
 let DRIVER_FLEET = getFleet();
@@ -2643,28 +2759,49 @@ function submitDrvUpd() {
   document.getElementById('drv-pd-warn').style.display = 'none';
 }
 
+/* Replace doDriverLogin with our override */
+var doDriverLogin = doDriverLoginOverride;
 
-/* === INIT === */
-window.addEventListener('load', function() {
-  // Public site init
-  if (typeof initMap === 'function') {
-    if (typeof L !== 'undefined') { initMap(); setInterval(animateMap, 2000); }
-    else {
-      const el = document.getElementById('truck-map');
-      if (el) el.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#5A6A80;flex-direction:column;gap:10px"><i class="fa-solid fa-map" style="font-size:30px;opacity:.2"></i><span style="font-size:13px">Map requires internet.</span></div>';
-    }
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded', function() {
+  initGoogle();
+  // Make sure site is visible and scrollable by default
+  document.getElementById('site').style.display = 'block';
+  document.getElementById('site').style.pointerEvents = 'auto';
+  document.body.style.overflow = '';
+
+  // Close modals on backdrop click
+  document.getElementById('login-overlay')?.addEventListener('click', function(e) {
+    if (e.target === this) closeLogin();
+  });
+  document.querySelectorAll('.modal-ov').forEach(el =>
+    el.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('open'); })
+  );
+
+  // Public site map + animations
+  if (typeof L !== 'undefined') {
+    initMap();
+    setInterval(animateMap, 2000);
+  } else {
+    const el = document.getElementById('truck-map');
+    if (el) el.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#5A6A80;flex-direction:column;gap:10px"><i class="fa-solid fa-map" style="font-size:30px;opacity:.2"></i><span style="font-size:13px">Map requires internet.</span></div>';
   }
-  // Scroll animations for public site
+
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) { e.target.style.opacity='1'; e.target.style.transform='translateY(0)'; }
     });
   }, {threshold:0.08});
-  document.querySelectorAll('.proc-step, .b-item, .wi, .testi').forEach(el => {
+  document.querySelectorAll('.proc-step,.b-item,.wi,.testi').forEach(el => {
     el.style.opacity='0'; el.style.transform='translateY(16px)';
-    el.style.transition='opacity .5s ease, transform .5s ease';
+    el.style.transition='opacity .5s ease,transform .5s ease';
     obs.observe(el);
   });
+
+  // Nav scroll effect
+  window.addEventListener('scroll', () =>
+    document.getElementById('nav')?.classList.toggle('scrolled', scrollY > 40)
+  );
 });
 </script>
 </body>
