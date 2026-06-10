@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Driver Portal — Braidfield Transport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous"/>
+<style>
+:root{--red:#CC1010;--grad:linear-gradient(135deg,#E01212,#C01010 55%,#8C0808);--dark:#080C14;--d2:#0F1520;--d3:#161D2E;--d4:#1E2840;--text:#B8C4D8;--muted:#5A6A80;--border:rgba(255,255,255,.07);--bdr:rgba(180,10,10,.22);--ok:#0ECB7A;--info:#3B8BEB;--warn:#F0A500;--err:#E03030;--r:14px;--rs:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;display:flex;flex-direction:column;line-height:1.65}
+h2,h3,h4{font-family:'Poppins',sans-serif;color:#fff;line-height:1.2}
+a{text-decoration:none;color:inherit}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--dark)}::-webkit-scrollbar-thumb{background:var(--red);border-radius:3px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--rs);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .22s;text-decoration:none;line-height:1}
+.btn-r{background:var(--grad);color:#fff}.btn-r:hover{opacity:.9;transform:translateY(-1px)}
+.btn-o{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.18)}.btn-o:hover{border-color:var(--red);color:var(--red)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.fc{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Outfit',sans-serif;font-size:13px;color:#fff;outline:none;transition:border-color .2s}
+.fc:focus{border-color:var(--red)}.fc::placeholder{color:var(--muted)}textarea.fc{resize:vertical}
+.fl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px}
+@keyframes su{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes tps{0%,100%{box-shadow:0 0 0 0 rgba(180,10,10,.4)}50%{box-shadow:0 0 0 8px rgba(180,10,10,.1)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* TOAST */
+.toast-wrap{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--d3);border:1px solid var(--border);border-radius:10px;padding:11px 15px;display:flex;align-items:center;gap:10px;box-shadow:0 12px 30px rgba(0,0,0,.4);animation:su .3s ease;min-width:240px;max-width:320px}
+.t-ok .t-ic{background:rgba(14,203,122,.12);color:var(--ok)}.t-wa .t-ic{background:rgba(240,165,0,.12);color:var(--warn)}.t-er .t-ic{background:rgba(220,48,48,.12);color:var(--err)}
+.t-ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.t-ttl{font-size:13px;font-weight:700;color:#fff}.t-sub{font-size:11px;color:var(--muted)}
+/* NAV */
+.drv-nav{background:var(--d2);border-bottom:1px solid var(--border);padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:11px}
+.lm{width:36px;height:36px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;font-size:14px;color:#fff;flex-shrink:0}
+.lt{font-family:'Poppins',sans-serif;font-weight:800;font-size:13px;color:#fff;line-height:1.1}
+.lt small{display:block;font-size:9px;font-weight:500;color:var(--red);letter-spacing:2px;text-transform:uppercase}
+/* CONTENT */
+.drv-content{flex:1;padding:20px;max-width:640px;margin:0 auto;width:100%}
+/* PLATE CARD */
+.drv-plate-card{background:var(--grad);border-radius:var(--r);padding:24px;margin-bottom:14px;position:relative;overflow:hidden}
+.drv-plate-card::before{content:'';position:absolute;top:-30%;right:-10%;width:220px;height:220px;background:rgba(255,255,255,.06);border-radius:50%;pointer-events:none}
+.drv-plate-card::after{content:'';position:absolute;bottom:-20%;left:-5%;width:160px;height:160px;background:rgba(0,0,0,.08);border-radius:50%;pointer-events:none}
+.drv-plate-badge{display:inline-block;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.35);border-radius:8px;padding:6px 18px;font-family:'Poppins',sans-serif;font-weight:800;font-size:22px;color:#fff;letter-spacing:3px;margin-bottom:12px;position:relative;z-index:1}
+.drv-route{font-size:14px;color:rgba(255,255,255,.85);margin-bottom:8px;position:relative;z-index:1}
+.drv-step-now{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;color:#fff;position:relative;z-index:1}
+.ld{width:6px;height:6px;background:#fff;border-radius:50%;animation:blink 1.4s infinite}
+.drv-card-meta{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;position:relative;z-index:1}
+.dcm{background:rgba(255,255,255,.1);border-radius:6px;padding:4px 10px;font-size:11px;color:rgba(255,255,255,.85);font-weight:600}
+/* TABS */
+.drv-tabs{display:flex;gap:3px;background:var(--d4);border-radius:10px;padding:4px;margin-bottom:16px}
+.drv-tab{flex:1;padding:9px 8px;border-radius:7px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;color:var(--muted);background:transparent;transition:all .2s;text-align:center;white-space:nowrap}
+.drv-tab.active{background:var(--grad);color:#fff}
+.drv-tab-pane{display:none}.drv-tab-pane.active{display:block}
+/* ALERT BANNERS */
+.drv-alert{padding:14px 16px;border-radius:10px;margin-bottom:12px;display:none;align-items:flex-start;gap:10px}
+.drv-alert.show{display:flex}
+.drv-alert-err{background:rgba(220,48,48,.1);border:1px solid rgba(220,48,48,.3)}
+.drv-alert-warn{background:rgba(240,165,0,.08);border:1px solid rgba(240,165,0,.25)}
+.drv-alert-ok{background:rgba(14,203,122,.06);border:1px solid rgba(14,203,122,.2)}
+.drv-alert i{font-size:18px;flex-shrink:0;margin-top:2px}
+.drv-alert-err i{color:var(--err)}.drv-alert-warn i{color:var(--warn)}.drv-alert-ok i{color:var(--ok)}
+.drv-alert h4{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px}.drv-alert p{font-size:12px;color:var(--muted);line-height:1.5}
+/* SECTION */
+.drv-sec{background:var(--d3);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:12px;position:relative;overflow:hidden}
+.drv-sec::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad)}
+.drv-sec h3{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.drv-sec h3 i{color:var(--red)}
+/* T1 + FINE BOXES */
+.t1-box{background:rgba(240,165,0,.08);border:1px solid rgba(240,165,0,.25);border-radius:10px;padding:14px;margin-bottom:12px;display:none}
+.t1-box.show{display:block}
+.t1-box.expired{background:rgba(220,48,48,.1);border-color:rgba(220,48,48,.3)}
+.fine-box{background:rgba(220,48,48,.1);border:1px solid rgba(220,48,48,.3);border-radius:10px;padding:14px;margin-bottom:12px;display:none}
+.fine-box.show{display:block}
+/* STEP TRACKER */
+.step-tracker{display:flex;flex-direction:column;gap:0}
+.st-row{display:flex;gap:12px;padding:11px 14px;border-radius:8px;transition:all .2s;position:relative;margin-bottom:3px}
+.st-row.done{background:rgba(14,203,122,.05);border:1px solid rgba(14,203,122,.15)}
+.st-row.active-step{background:rgba(180,10,10,.08);border:1px solid rgba(180,10,10,.25);animation:tps 2.5s infinite}
+.st-row.pending{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05)}
+.st-dot{width:28px;height:28px;min-width:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.st-done-dot{background:var(--ok);color:#fff}
+.st-active-dot{background:var(--red);color:#fff;animation:tps 2s infinite}
+.st-pending-dot{background:var(--d4);color:var(--muted);border:2px solid rgba(255,255,255,.1)}
+.st-content{flex:1;min-width:0}
+.st-title{font-size:13px;font-weight:700;margin-bottom:2px}
+.st-row.pending .st-title{color:var(--muted);font-weight:500}
+.st-desc{font-size:11.5px;color:var(--muted);line-height:1.45}
+.st-alert{font-size:11px;font-weight:700;margin-top:5px;padding:4px 8px;border-radius:6px;display:inline-flex;align-items:center;gap:5px}
+.st-alert-warn{background:rgba(240,165,0,.12);color:var(--warn)}
+.st-alert-err{background:rgba(220,48,48,.12);color:var(--err)}
+.st-meta{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+.st-doc{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px}
+/* STATUS GRID */
+.status-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.so{padding:11px 12px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;font-size:12px;font-weight:600;text-align:center;transition:all .2s;color:var(--text);background:rgba(255,255,255,.02);user-select:none}
+.so:hover{border-color:var(--red);color:var(--red);background:rgba(180,10,10,.06)}
+.so.selected{border-color:var(--red);background:rgba(180,10,10,.12);color:#fff}
+.so.brd{border-color:rgba(240,165,0,.25);color:var(--warn)}
+.so.brd:hover,.so.brd.selected{border-color:var(--warn);background:rgba(240,165,0,.1)}
+.so.danger{border-color:rgba(220,48,48,.3);color:var(--err)}
+.so.danger:hover,.so.danger.selected{border-color:var(--err);background:rgba(220,48,48,.1)}
+/* DOC GRID */
+.doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.doc-item{display:flex;align-items:center;gap:8px;padding:11px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;transition:all .2s}
+.doc-item:hover{border-color:var(--bdr)}.doc-item.yes{border-color:rgba(14,203,122,.3);background:rgba(14,203,122,.06)}
+.doc-item input[type=checkbox]{accent-color:var(--ok);width:14px;height:14px;flex-shrink:0;cursor:pointer}
+.doc-item label{flex:1;cursor:pointer;color:var(--text)}.doc-item.yes label{color:#fff;font-weight:600}
+/* COMPLIANCE */
+.comp-item{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px}
+.comp-item.warn{border-color:rgba(240,165,0,.3);background:rgba(240,165,0,.04)}
+.comp-item.expired{border-color:rgba(220,48,48,.3);background:rgba(220,48,48,.05)}
+.comp-item.ok{border-color:rgba(14,203,122,.2)}
+.comp-row{display:flex;justify-content:space-between;align-items:center;font-size:12.5px}
+.comp-label{color:var(--muted)}
+.comp-val{font-weight:700}
+/* CONTACT BUTTONS */
+.drv-cbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.dcb{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:10px;font-family:'Outfit',sans-serif;font-weight:600;font-size:13px;cursor:pointer;border:none;transition:all .2s;text-decoration:none}
+.dcb-wa{background:#25D366;color:#fff}.dcb-wa:hover{background:#20c45e;transform:translateY(-1px)}
+.dcb-call{background:var(--d4);color:#fff;border:1px solid var(--border)}.dcb-call:hover{border-color:var(--red);color:var(--red)}
+/* SLA BAR */
+.sla-bar{background:rgba(255,255,255,.06);border-radius:6px;height:6px;overflow:hidden;margin-top:6px}
+.sla-fill{height:100%;border-radius:6px;transition:width .5s}
+/* HISTORY ROW */
+.hist-row{display:flex;justify-content:space-between;font-size:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.hist-row:last-child{border-bottom:none}
+/* CHIP */
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:700}
+.c-ok{background:rgba(14,203,122,.12);color:var(--ok)}.c-warn{background:rgba(240,165,0,.12);color:var(--warn)}.c-err{background:rgba(220,48,48,.12);color:var(--err)}.c-info{background:rgba(59,139,235,.12);color:var(--info)}
+@media(max-width:480px){.status-grid,.doc-grid,.drv-cbtns{grid-template-columns:1fr}.drv-tabs{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="drv-nav">
+  <div class="logo">
+    <div class="lm">BT</div>
+    <div class="lt">Braidfield Transport<small>Driver Portal</small></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="font-size:12px;font-weight:600;color:#fff" id="drv-welcome">Welcome</span>
+    <a href="index.html" class="btn btn-o btn-sm"><i class="fa-solid fa-globe"></i></a>
+    <button class="btn btn-o btn-sm" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+  </div>
+</div>
+
+<div class="drv-content">
+
+  <!-- PLATE CARD -->
+  <div class="drv-plate-card" id="plate-card">
+    <div style="position:relative;z-index:1">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.6);margin-bottom:8px">Your Active Truck</div>
+      <div class="drv-plate-badge" id="drv-plate">— — —</div>
+      <div class="drv-route" id="drv-route"><i class="fa-solid fa-route" style="margin-right:7px;opacity:.7"></i>Loading…</div>
+      <div class="drv-step-now"><span class="ld"></span><span id="drv-cur-step">Loading…</span></div>
+      <div class="drv-card-meta" id="drv-card-meta"></div>
+    </div>
+  </div>
+
+  <!-- T1 COUNTDOWN -->
+  <div class="t1-box" id="t1-box">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <i class="fa-solid fa-hourglass-half" id="t1-icon" style="font-size:18px;color:var(--warn)"></i>
+      <h4 style="font-size:13px;font-weight:700;color:#fff;flex:1" id="t1-title">T1 Transit Timer</h4>
+    </div>
+    <div id="t1-body" style="font-size:12px;color:var(--muted);line-height:1.6"></div>
+    <div id="t1-progress-wrap" style="margin-top:8px;display:none">
+      <div class="sla-bar"><div class="sla-fill" id="t1-bar" style="width:0%"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px"><span>Issued</span><span>5 days</span></div>
+    </div>
+  </div>
+
+  <!-- CONGO PARKING FINE -->
+  <div class="fine-box" id="fine-box">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <i class="fa-solid fa-dollar-sign" style="font-size:18px;color:var(--err)"></i>
+      <h4 style="font-size:13px;font-weight:700;color:#fff">Congo Parking Fine Active</h4>
+    </div>
+    <div id="fine-body" style="font-size:12px;color:var(--muted);line-height:1.6"></div>
+  </div>
+
+  <!-- PRE-DISPATCH NOTICE -->
+  <div class="drv-alert drv-alert-warn" id="drv-pd-notice">
+    <i class="fa-solid fa-file-signature"></i>
+    <div><h4>Pre-Dispatch Form Required</h4><p>Your truck is at Step 3 — Exit Border. The clearing agent must complete and sign the pre-dispatch form with you before departing. Contact dispatch to initiate this.</p></div>
+  </div>
+
+  <!-- TABS -->
+  <div class="drv-tabs">
+    <button class="drv-tab active" onclick="swDTab('trip')"><i class="fa-solid fa-diagram-project"></i> My Trip</button>
+    <button class="drv-tab" onclick="swDTab('update')"><i class="fa-solid fa-arrows-rotate"></i> Report Status</button>
+    <button class="drv-tab" onclick="swDTab('docs')"><i class="fa-solid fa-file-invoice"></i> Documents</button>
+    <button class="drv-tab" onclick="swDTab('compliance')"><i class="fa-solid fa-id-card"></i> My Compliance</button>
+    <button class="drv-tab" onclick="swDTab('contact')"><i class="fa-solid fa-headset"></i> Contact</button>
+  </div>
+
+  <!-- TAB: MY TRIP -->
+  <div class="drv-tab-pane active" id="dtab-trip">
+    <div class="drv-sec">
+      <h3><i class="fa-solid fa-diagram-project"></i>9-Step Process — Your Trip</h3>
+      <div class="step-tracker" id="step-tracker"></div>
+    </div>
+  </div>
+
+  <!-- TAB: REPORT STATUS -->
+  <div class="drv-tab-pane" id="dtab-update">
+    <div class="drv-sec">
+      <h3><i class="fa-solid fa-arrows-rotate"></i>Report Your Current Status</h3>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px">Tap your current situation. Updates go directly to dispatch.</p>
+      <div class="status-grid">
+        <div class="so" onclick="selDrvSt(this,'At depot — loading cargo')"><i class="fa-solid fa-warehouse" style="margin-right:6px;color:var(--muted)"></i>At Depot — Loading</div>
+        <div class="so" onclick="selDrvSt(this,'En route to exit border')"><i class="fa-solid fa-truck-fast" style="margin-right:6px;color:var(--muted)"></i>En Route to Border</div>
+        <div class="so brd" onclick="selDrvSt(this,'At exit border — documents being processed')"><i class="fa-solid fa-passport" style="margin-right:6px"></i>At Exit Border</div>
+        <div class="so brd" onclick="selDrvSt(this,'At ZRA office — Ascuyda entry in progress')"><i class="fa-solid fa-database" style="margin-right:6px"></i>ZRA Office</div>
+        <div class="so brd" onclick="selDrvSt(this,'Payment made — awaiting T1 release order')"><i class="fa-solid fa-money-bill-wave" style="margin-right:6px"></i>Payment Made</div>
+        <div class="so" onclick="selDrvSt(this,'T1 received — departing border en route')"><i class="fa-solid fa-file-signature" style="margin-right:6px;color:var(--muted)"></i>T1 Received</div>
+        <div class="so" onclick="selDrvSt(this,'Crossed border — in transit')"><i class="fa-solid fa-flag-checkered" style="margin-right:6px;color:var(--muted)"></i>Crossed Border</div>
+        <div class="so brd" onclick="selDrvSt(this,'At Congo destination — awaiting customs declaration')"><i class="fa-solid fa-flag" style="margin-right:6px"></i>At Congo Destination</div>
+        <div class="so" onclick="selDrvSt(this,'Truck offloaded — trip complete')" style="grid-column:span 1"><i class="fa-solid fa-box-open" style="margin-right:6px;color:var(--muted)"></i>Offloaded ✓</div>
+        <div class="so danger" onclick="selDrvSt(this,'DELAYED — issue reported on road')"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px"></i>⚠ Delayed / Issue</div>
+      </div>
+      <div id="drv-pd-warn" style="display:none;margin-top:10px;padding:10px 14px;background:rgba(240,165,0,.08);border:1px solid rgba(240,165,0,.25);border-radius:8px;font-size:12px;color:var(--warn)">
+        <i class="fa-solid fa-lock" style="margin-right:6px"></i>Pre-dispatch form required at Step 3. Contact clearing agent before advancing to ZRA or beyond.
+      </div>
+      <div style="margin-top:14px">
+        <label class="fl">Current Location</label>
+        <input class="fc" type="text" id="drv-loc" placeholder="e.g. Kasumbalesa border gate, Ndola town, Mbeya…" style="margin:0 0 10px"/>
+        <label class="fl">Additional Notes (optional)</label>
+        <textarea class="fc" id="drv-notes" placeholder="Any delays, issues, or important information for dispatch…" style="margin:0;min-height:70px"></textarea>
+      </div>
+      <button class="btn btn-r" onclick="submitDrvUpd()" style="width:100%;justify-content:center;margin-top:12px"><i class="fa-solid fa-paper-plane"></i>Submit Update to Dispatch</button>
+      <div id="upd-confirm" style="display:none;margin-top:10px;padding:10px 14px;background:rgba(14,203,122,.06);border:1px solid rgba(14,203,122,.2);border-radius:8px;font-size:12px;color:var(--ok)"></div>
+    </div>
+  </div>
+
+  <!-- TAB: DOCUMENTS -->
+  <div class="drv-tab-pane" id="dtab-docs">
+    <div class="drv-sec">
+      <h3><i class="fa-solid fa-file-invoice"></i>Document Checklist — Step 1</h3>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px">Confirm all four required documents are on file and ready. All four must be present before Step 2.</p>
+      <div class="doc-grid">
+        <div class="doc-item" id="doc-invoice"       onclick="tgDoc('invoice')"><input type="checkbox" id="cb-invoice" onclick="event.stopPropagation();tgDoc('invoice')"/><label for="cb-invoice"><i class="fa-solid fa-file-invoice" style="color:var(--muted);margin-right:6px"></i>Commercial Invoice</label></div>
+        <div class="doc-item" id="doc-deliveryNote"  onclick="tgDoc('deliveryNote')"><input type="checkbox" id="cb-deliveryNote" onclick="event.stopPropagation();tgDoc('deliveryNote')"/><label for="cb-deliveryNote"><i class="fa-solid fa-file-lines" style="color:var(--muted);margin-right:6px"></i>Delivery Note</label></div>
+        <div class="doc-item" id="doc-customsT1"     onclick="tgDoc('customsT1')"><input type="checkbox" id="cb-customsT1" onclick="event.stopPropagation();tgDoc('customsT1')"/><label for="cb-customsT1"><i class="fa-solid fa-stamp" style="color:var(--muted);margin-right:6px"></i>Customs T1 Document</label></div>
+        <div class="doc-item" id="doc-movementSheet" onclick="tgDoc('movementSheet')"><input type="checkbox" id="cb-movementSheet" onclick="event.stopPropagation();tgDoc('movementSheet')"/><label for="cb-movementSheet"><i class="fa-solid fa-map-location-dot" style="color:var(--muted);margin-right:6px"></i>Movement Sheet</label></div>
+      </div>
+      <div id="doc-status" style="margin-top:12px;font-size:12px;color:var(--muted)"></div>
+    </div>
+
+    <!-- ZRA & T1 DETAILS -->
+    <div class="drv-sec" id="zra-details-sec" style="display:none">
+      <h3><i class="fa-solid fa-database"></i>ZRA &amp; T1 Details</h3>
+      <div id="zra-details-body"></div>
+    </div>
+  </div>
+
+  <!-- TAB: MY COMPLIANCE -->
+  <div class="drv-tab-pane" id="dtab-compliance">
+    <div class="drv-sec">
+      <h3><i class="fa-solid fa-id-card"></i>My Document Compliance</h3>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px">Track your Fitness Certificate, Road Tax, and Identity document expiry dates. Expired documents prevent border clearance.</p>
+      <div id="drv-compliance-body"><div style="text-align:center;padding:20px;color:var(--muted);font-size:13px"><i class="fa-solid fa-spinner" style="animation:spin 1s linear infinite;margin-right:8px"></i>Loading…</div></div>
+    </div>
+  </div>
+
+  <!-- TAB: CONTACT -->
+  <div class="drv-tab-pane" id="dtab-contact">
+    <div class="drv-sec">
+      <h3><i class="fa-solid fa-headset"></i>Contact Dispatch</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px">For pre-dispatch coordination, ZRA queries, urgent route issues, or any support.</p>
+      <div class="drv-cbtns">
+        <a href="https://wa.me/260964809809?text=Hello%20Braidfield%20Dispatch%2C%20I%20am%20a%20driver%20and%20need%20assistance." target="_blank" rel="noopener" class="dcb dcb-wa"><i class="fa-brands fa-whatsapp" style="font-size:17px"></i>WhatsApp Dispatch</a>
+        <a href="tel:+260964809809" class="dcb dcb-call"><i class="fa-solid fa-phone"></i>Call Dispatch</a>
+      </div>
+      <div style="padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--muted);text-align:center;margin-bottom:14px">
+        <i class="fa-solid fa-clock" style="color:var(--red);margin-right:5px"></i>
+        Updates expected at <strong style="color:#fff">07:00 · 12:00 · 17:00 CAT</strong> — available 24/7 for emergencies
+      </div>
+    </div>
+
+    <div class="drv-sec">
+      <h3><i class="fa-solid fa-envelope"></i>Send a Message to Dispatch</h3>
+      <div style="margin-bottom:12px">
+        <label class="fl">Subject</label>
+        <select class="fc" id="msg-subj" style="margin:0 0 10px">
+          <option value="">Select a subject…</option>
+          <option>Pre-dispatch form request</option>
+          <option>ZRA / customs query</option>
+          <option>T1 document issue</option>
+          <option>Route / toll query</option>
+          <option>Delay notification</option>
+          <option>Vehicle breakdown</option>
+          <option>Congo parking — need support</option>
+          <option>Document missing</option>
+          <option>General query</option>
+        </select>
+        <label class="fl">Message</label>
+        <textarea class="fc" id="msg-body" placeholder="Describe your situation or query…" style="min-height:90px;margin:0"></textarea>
+      </div>
+      <button class="btn btn-r" onclick="sendDispatchMsg()" style="width:100%;justify-content:center"><i class="fa-solid fa-paper-plane"></i>Send Message</button>
+    </div>
+
+    <div class="drv-sec">
+      <h3><i class="fa-solid fa-building"></i>Company Details</h3>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:13px">
+        <div class="hist-row"><span style="color:var(--muted)">Address</span><span style="color:#fff;text-align:right">Suite 220, Goldman House,<br>Arcades, Lusaka, Zambia</span></div>
+        <div class="hist-row"><span style="color:var(--muted)">Email</span><a href="mailto:admin@braidfieldtransport.com" style="color:var(--red)">admin@braidfieldtransport.com</a></div>
+        <div class="hist-row"><span style="color:var(--muted)">Website</span><a href="https://braidfieldtransport.com" target="_blank" style="color:var(--red)">braidfieldtransport.com</a></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /drv-content -->
+
+<div class="toast-wrap" id="toast-wrap"></div>
+<script src="shared.js"></script>
+<script>
+/* ── SESSION CHECK ── */
+var dSession = getSession();
+if (!dSession || dSession.type !== 'driver') { window.location.href = 'index.html'; }
+
+var selectedStatus = '';
+var DRIVER_FLEET = getFleet();
+var myTruck = DRIVER_FLEET.filter(function(f){ return f.id === dSession.truckId; })[0];
+
+/* Find my driver compliance data from clients */
+var myDriverData = null;
+(function(){
+  var clients = getClients();
+  clients.forEach(function(c){
+    (c.drivers||[]).forEach(function(d){
+      if(d.plate_horse === dSession.plate || d.name === dSession.name) myDriverData = d;
+    });
+  });
+})();
+
+var STEP_LABELS_FULL = ['',
+  'Step 1 — Documents Received',
+  'Step 2 — Cargo Loaded & Dispatched',
+  'Step 3 — At Exit Border',
+  'Step 4 — ZRA Ascuyda Entry',
+  'Step 5 — Payment Made',
+  'Step 6 — T1 & Release Order',
+  'Step 7 — Crossed to Congo / Tanzania',
+  'Step 8 — Congo Final Destination',
+  'Step 9 — Offloaded ✓',
+];
+var STEP_DESCS = ['',
+  'Client provides: commercial invoice, delivery note, customs T1, movement sheet. All 4 required.',
+  'Cargo loaded and released from depot to exit border. All items verified against documents.',
+  'Exit border agent acquits all documents and officially releases cargo. Pre-dispatch form required here.',
+  'Braidfield creates the entry in ZRA Ascuyda system. Shipment registered with Zambia Revenue Authority.',
+  'Payment made for ZRA entry. Payment reference recorded and receipt attached to trip file.',
+  'Release order generated → T1 document issued for 5-day transit. Timer starts from this moment.',
+  'Cargo acquitted at Zambia border → crosses to Congo/Tanzania side. New transit leg begins.',
+  'Buyer declares to Congolese customs → TR8 generated. 48h free parking — $25/day fine after.',
+  'T1 finalised → truck proceeds to offloading point. Cargo received, signed off. Trip officially closed.',
+];
+var STEP_ALERTS = {
+  6: { text:'⏱ 5-day T1 transit timer starts NOW', cls:'st-alert-warn' },
+  8: { text:'⚠ 48h free parking — $25/day fine after', cls:'st-alert-err' },
+};
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('drv-welcome').textContent = 'Hi, ' + dSession.name.split(' ')[0];
+
+  if (!myTruck) {
+    document.getElementById('drv-plate').textContent = 'No Truck';
+    document.getElementById('drv-route').innerHTML = '<i class="fa-solid fa-circle-exclamation" style="margin-right:7px;color:var(--err)"></i>No active truck found for your account.';
+    document.getElementById('drv-cur-step').textContent = 'Contact dispatch';
+    return;
+  }
+
+  /* Plate card */
+  document.getElementById('drv-plate').textContent = myTruck.plate;
+  document.getElementById('drv-route').innerHTML = '<i class="fa-solid fa-route" style="margin-right:7px;opacity:.7"></i>' + (myTruck.origin||'—') + ' → ' + (myTruck.dest||'—');
+  document.getElementById('drv-cur-step').textContent = STEP_LABELS_FULL[myTruck.processStep] || 'Unknown';
+
+  /* Card meta badges */
+  var meta = document.getElementById('drv-card-meta');
+  if(myTruck.border)  meta.innerHTML += '<div class="dcm"><i class="fa-solid fa-map-pin" style="margin-right:5px;opacity:.7"></i>' + myTruck.border + '</div>';
+  if(myTruck.client)  meta.innerHTML += '<div class="dcm"><i class="fa-solid fa-building" style="margin-right:5px;opacity:.7"></i>' + myTruck.client + '</div>';
+
+  /* Pre-dispatch notice for step 3 */
+  if (myTruck.processStep === 3 && !myTruck.pdCompleted) {
+    document.getElementById('drv-pd-notice').classList.add('show');
+  }
+
+  /* T1 countdown */
+  if (myTruck.t1Number && myTruck.t1Expires) {
+    var d = t1DaysLeft(myTruck.t1Expires);
+    var box = document.getElementById('t1-box');
+    box.classList.add('show');
+    var progWrap = document.getElementById('t1-progress-wrap');
+    progWrap.style.display = 'block';
+    var pct = d !== null ? Math.max(0, Math.min(100, Math.round((d/5)*100))) : 0;
+    var bar = document.getElementById('t1-bar');
+    bar.style.width = pct + '%';
+    bar.style.background = d <= 0 ? 'var(--err)' : d <= 2 ? 'var(--warn)' : 'var(--ok)';
+    if (d <= 0) {
+      box.classList.add('expired');
+      document.getElementById('t1-icon').style.color = 'var(--err)';
+      document.getElementById('t1-title').textContent = '🚨 T1 EXPIRED — Contact Dispatch Now';
+      document.getElementById('t1-body').innerHTML = '<strong style="color:var(--err)">' + myTruck.t1Number + '</strong> has expired. Your ZRA 5-day transit window has closed. Contact dispatch immediately to avoid penalties.';
+    } else if (d <= 2) {
+      document.getElementById('t1-title').textContent = '⚠ T1 Expiring — ' + d + ' Day' + (d !== 1 ? 's' : '') + ' Left';
+      document.getElementById('t1-body').innerHTML = '<strong style="color:var(--warn)">' + myTruck.t1Number + '</strong> expires <strong style="color:#fff">' + myTruck.t1Expires + '</strong>. You have <strong style="color:var(--warn)">' + d + ' day' + (d !== 1 ? 's' : '') + '</strong> to complete transit through Zambia. Alert dispatch if you may be delayed.';
+    } else {
+      document.getElementById('t1-body').innerHTML = '<strong style="color:var(--ok)">' + myTruck.t1Number + '</strong> — expires <strong style="color:#fff">' + myTruck.t1Expires + '</strong>. <span style="color:var(--ok)">' + d + ' days remaining.</span> You are within the 5-day transit window.';
+    }
+  }
+
+  /* Congo fine */
+  if (myTruck.congoArrival && myTruck.processStep >= 8) {
+    var fi = parkingFine(myTruck.congoArrival);
+    if (fi.fine > 0 || fi.hours >= 40) {
+      document.getElementById('fine-box').classList.add('show');
+      var fineMsg = fi.fine > 0
+        ? '<strong style="color:var(--err)">$' + fi.fine + ' fine accrued</strong> (' + Math.ceil(fi.overHours/24) + ' day' + (Math.ceil(fi.overHours/24) !== 1 ? 's' : '') + ' over the 48h free limit). The $25/day charge continues until cargo is declared and offloaded. Contact dispatch urgently.'
+        : '<span style="color:var(--warn)">Approaching the 48h free parking limit — <strong>' + Math.max(0, 48 - fi.hours) + ' hours</strong> remaining before $25/day charges begin.</span>';
+      document.getElementById('fine-body').innerHTML = fineMsg + '<br/><br/>Ensure the buyer declares to Congolese customs (TR8) as soon as possible.';
+    }
+  }
+
+  renderStepTracker();
+  loadDocChecklist();
+  renderZRADetails();
+  renderCompliance();
+});
+
+/* ── STEP TRACKER ── */
+function renderStepTracker() {
+  if (!myTruck) return;
+  var cur = myTruck.processStep;
+  var el = document.getElementById('step-tracker'); if (!el) return;
+  var html = '';
+  for (var n = 1; n <= 9; n++) {
+    var done   = n < cur;
+    var active = n === cur;
+    var cls    = done ? 'done' : active ? 'active-step' : 'pending';
+    var dotCls = done ? 'st-done-dot' : active ? 'st-active-dot' : 'st-pending-dot';
+    var dotContent = done ? '<i class="fa-solid fa-check" style="font-size:10px"></i>' : n;
+    var color = STEP_COLORS[n] || '#888';
+    var alertInfo = STEP_ALERTS[n];
+    var alertHtml = alertInfo && (active || (done && n >= 6)) ? '<div class="st-alert ' + alertInfo.cls + '"><i class="fa-solid fa-triangle-exclamation"></i>' + alertInfo.text + '</div>' : '';
+    /* Step badges */
+    var badges = '';
+    if (n === 1 && myTruck.docs) {
+      var cnt = ['invoice','deliveryNote','customsT1','movementSheet'].filter(function(k){ return myTruck.docs[k]; }).length;
+      badges += '<span class="st-doc" style="background:' + (cnt===4?'rgba(14,203,122,.12)':'rgba(240,165,0,.12)') + ';color:' + (cnt===4?'var(--ok)':'var(--warn)') + '">' + cnt + '/4 docs</span>';
+    }
+    if (n === 4 && myTruck.zraEntry) badges += '<span class="st-doc" style="background:rgba(180,10,10,.12);color:var(--red)">' + myTruck.zraEntry + '</span>';
+    if (n === 6 && myTruck.t1Number) badges += '<span class="st-doc" style="background:rgba(59,139,235,.12);color:var(--info)">' + myTruck.t1Number + '</span>';
+    if (n === 9 && myTruck.tr8Number) badges += '<span class="st-doc" style="background:rgba(14,203,122,.12);color:var(--ok)">TR8: ' + myTruck.tr8Number + '</span>';
+    html += '<div class="st-row ' + cls + '">'
+      + '<div class="st-dot ' + dotCls + '">' + dotContent + '</div>'
+      + '<div class="st-content">'
+      + '<div class="st-title" style="color:' + (active?'#fff':done?'var(--ok)':'var(--muted)') + '">' + STEP_LABELS_FULL[n] + '</div>'
+      + (active || done ? '<div class="st-desc">' + STEP_DESCS[n] + '</div>' : '')
+      + alertHtml
+      + '</div>'
+      + '<div class="st-meta">' + badges + '</div>'
+      + '</div>';
+  }
+  el.innerHTML = html;
+}
+
+/* ── DOCUMENTS ── */
+function loadDocChecklist() {
+  if (!myTruck || !myTruck.docs) return;
+  ['invoice','deliveryNote','customsT1','movementSheet'].forEach(function(k) {
+    if (myTruck.docs[k]) {
+      var el = document.getElementById('doc-' + k);
+      var cb = document.getElementById('cb-' + k);
+      if (el) el.classList.add('yes');
+      if (cb) cb.checked = true;
+    }
+  });
+  updateDocStatus();
+}
+function tgDoc(key) {
+  if (!myTruck) return;
+  if (!myTruck.docs) myTruck.docs = {};
+  myTruck.docs[key] = !myTruck.docs[key];
+  var el = document.getElementById('doc-' + key);
+  var cb = document.getElementById('cb-' + key);
+  if (el) el.classList.toggle('yes', myTruck.docs[key]);
+  if (cb) cb.checked = myTruck.docs[key];
+  /* Sync to session fleet */
+  DRIVER_FLEET = getFleet();
+  var t = DRIVER_FLEET.filter(function(f){ return f.id === myTruck.id; })[0];
+  if (t) { if (!t.docs) t.docs = {}; t.docs[key] = myTruck.docs[key]; setFleet(DRIVER_FLEET); }
+  updateDocStatus();
+  var labels = { invoice:'Commercial Invoice', deliveryNote:'Delivery Note', customsT1:'Customs T1', movementSheet:'Movement Sheet' };
+  toast(myTruck.docs[key] ? 'Document Confirmed' : 'Document Removed', labels[key] || key, 'ok');
+}
+function updateDocStatus() {
+  var el = document.getElementById('doc-status'); if (!el || !myTruck || !myTruck.docs) return;
+  var keys = ['invoice','deliveryNote','customsT1','movementSheet'];
+  var done = keys.filter(function(k){ return myTruck.docs[k]; }).length;
+  var missing = keys.filter(function(k){ return !myTruck.docs[k]; }).map(function(k){ return ({invoice:'Invoice',deliveryNote:'Delivery Note',customsT1:'Customs T1',movementSheet:'Movement Sheet'})[k]; });
+  el.innerHTML = done === 4
+    ? '<span style="color:var(--ok)"><i class="fa-solid fa-check-circle"></i> All 4 documents confirmed — ready for Step 2.</span>'
+    : '<span style="color:var(--warn)"><i class="fa-solid fa-triangle-exclamation"></i> ' + done + '/4 confirmed. Missing: ' + missing.join(', ') + '.</span>';
+}
+function renderZRADetails() {
+  var sec = document.getElementById('zra-details-sec');
+  if (!myTruck || (!myTruck.zraEntry && !myTruck.t1Number)) { if(sec) sec.style.display='none'; return; }
+  if (sec) sec.style.display = 'block';
+  var body = document.getElementById('zra-details-body'); if (!body) return;
+  var rows = [
+    { label:'ZRA Ascuyda Entry', val:myTruck.zraEntry, color:'var(--red)' },
+    { label:'Payment Ref', val:myTruck.paymentRef, color:'var(--ok)' },
+    { label:'T1 Number', val:myTruck.t1Number, color:'var(--info)' },
+    { label:'T1 Issued', val:myTruck.t1Generated, color:null },
+    { label:'T1 Expires', val:myTruck.t1Expires, color: myTruck.t1Expires && t1DaysLeft(myTruck.t1Expires) <= 2 ? 'var(--warn)' : null },
+    { label:'TR8 Number', val:myTruck.tr8Number, color:'var(--ok)' },
+  ];
+  body.innerHTML = rows.filter(function(r){ return r.val; }).map(function(r){
+    return '<div class="hist-row"><span style="color:var(--muted)">' + r.label + '</span><span style="color:' + (r.color||'#fff') + ';font-weight:700">' + r.val + '</span></div>';
+  }).join('');
+}
+
+/* ── COMPLIANCE ── */
+function renderCompliance() {
+  var el = document.getElementById('drv-compliance-body'); if (!el) return;
+  if (!myDriverData) {
+    el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px"><i class="fa-solid fa-circle-info" style="margin-right:6px"></i>No compliance data found for your driver profile. Contact dispatch to update your details.</div>';
+    return;
+  }
+  var checks = [
+    { label:'Fitness Certificate',  date:myDriverData.fitness  },
+    { label:'Road Tax',             date:myDriverData.roadTax  },
+    { label:'Identity Document',    date:myDriverData.identity },
+  ];
+  var html = '';
+  checks.forEach(function(c) {
+    var days = complianceDays(c.date);
+    var s    = complianceStatus(days);
+    var cls  = !s ? '' : s.level === 'expired' || s.level === 'critical' ? 'expired' : s.level === 'warning' ? 'warn' : 'ok';
+    html += '<div class="comp-item ' + cls + '">'
+      + '<div class="comp-row"><span class="comp-label">' + c.label + '</span>'
+      + '<span class="comp-val" style="color:' + (s ? s.color : '#fff') + '">' + (s ? s.label : '—') + '</span></div>'
+      + '<div class="comp-row" style="margin-top:4px"><span style="font-size:11px;color:var(--muted)">Expires</span>'
+      + '<span style="font-size:11px;color:#fff">' + (c.date || 'Not set') + '</span></div>'
+      + (s && (s.level === 'expired' || s.level === 'critical') ? '<div style="margin-top:6px;font-size:11px;color:var(--err)"><i class="fa-solid fa-triangle-exclamation" style="margin-right:4px"></i>Renew immediately — expired documents prevent border clearance.</div>' : '')
+      + (s && s.level === 'warning' ? '<div style="margin-top:6px;font-size:11px;color:var(--warn)"><i class="fa-solid fa-hourglass-half" style="margin-right:4px"></i>Expiring soon — arrange renewal before your next trip.</div>' : '')
+      + '</div>';
+  });
+  /* Plate info */
+  html += '<div style="margin-top:14px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px">'
+    + '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px">Vehicle Details</div>'
+    + '<div class="hist-row"><span style="color:var(--muted)">Horse Plate</span><span style="color:#fff;font-weight:700">' + (myDriverData.plate_horse || dSession.plate) + '</span></div>'
+    + '<div class="hist-row"><span style="color:var(--muted)">Trailer Plate</span><span style="color:#fff">' + (myDriverData.plate_trailer || '—') + '</span></div>'
+    + '<div class="hist-row"><span style="color:var(--muted)">WhatsApp</span><a href="tel:' + (myDriverData.whatsapp||'') + '" style="color:var(--ok)">' + (myDriverData.whatsapp || '—') + '</a></div>'
+    + '</div>';
+  el.innerHTML = html;
+}
+
+/* ── STATUS UPDATE ── */
+function selDrvSt(el, status) {
+  document.querySelectorAll('.so').forEach(function(o){ o.classList.remove('selected'); });
+  el.classList.add('selected');
+  selectedStatus = status;
+  var needsPd = status.toLowerCase().includes('zra') || status.toLowerCase().includes('t1') || status.toLowerCase().includes('crossed');
+  document.getElementById('drv-pd-warn').style.display = (needsPd && myTruck && myTruck.processStep === 3 && !myTruck.pdCompleted) ? 'block' : 'none';
+}
+function submitDrvUpd() {
+  if (!selectedStatus) { toast('Select a status', 'Tap your current status first.', 'er'); return; }
+  if (selectedStatus.toLowerCase().includes('zra') && myTruck && myTruck.processStep === 3 && !myTruck.pdCompleted) {
+    toast('Pre-Dispatch Required', 'Contact your clearing agent to complete the pre-dispatch form first.', 'er'); return;
+  }
+  var loc   = (document.getElementById('drv-loc')  || {}).value || '';
+  var notes = (document.getElementById('drv-notes') || {}).value || '';
+  if (myTruck) {
+    DRIVER_FLEET = getFleet();
+    var t = DRIVER_FLEET.filter(function(f){ return f.id === myTruck.id; })[0];
+    if (t) { t.status = selectedStatus; if (loc) t.location = loc; t.lastUpdate = 'Just now'; setFleet(DRIVER_FLEET); }
+    myTruck.status = selectedStatus;
+    document.getElementById('drv-cur-step').textContent = selectedStatus;
+  }
+  var confirm = document.getElementById('upd-confirm');
+  if (confirm) {
+    confirm.style.display = 'block';
+    confirm.innerHTML = '<i class="fa-solid fa-check-circle" style="margin-right:6px"></i><strong>Update sent to dispatch:</strong> ' + selectedStatus + (loc ? ' — ' + loc : '') + (notes ? ' · ' + notes : '');
+    setTimeout(function(){ confirm.style.display = 'none'; }, 5000);
+  }
+  toast('Update Sent ✓', 'Dispatch has been notified.', 'ok');
+  document.querySelectorAll('.so').forEach(function(o){ o.classList.remove('selected'); });
+  selectedStatus = '';
+  if (document.getElementById('drv-loc'))   document.getElementById('drv-loc').value = '';
+  if (document.getElementById('drv-notes')) document.getElementById('drv-notes').value = '';
+  document.getElementById('drv-pd-warn').style.display = 'none';
+}
+
+/* ── SEND MESSAGE ── */
+function sendDispatchMsg() {
+  var subj = (document.getElementById('msg-subj') || {}).value || '';
+  var body = (document.getElementById('msg-body') || {}).value || '';
+  if (!subj || !body) { toast('Fill all fields', 'Subject and message are both required.', 'er'); return; }
+  /* In production: POST to API / email. For now open WhatsApp with prefilled text */
+  var text = encodeURIComponent('[' + subj + '] Driver: ' + dSession.name + ' (' + dSession.plate + ')\\n\\n' + body);
+  window.open('https://wa.me/260964809809?text=' + text, '_blank');
+  toast('Message Sent', 'Opening WhatsApp with your message.', 'ok');
+  if (document.getElementById('msg-body')) document.getElementById('msg-body').value = '';
+}
+
+/* ── TAB SWITCH ── */
+function swDTab(t) {
+  document.querySelectorAll('.drv-tab').forEach(function(b, i){
+    b.classList.toggle('active', ['trip','update','docs','compliance','contact'][i] === t);
+  });
+  document.querySelectorAll('.drv-tab-pane').forEach(function(p){
+    p.classList.toggle('active', p.id === 'dtab-' + t);
+  });
+}
+</script>
+</body>
+</html>

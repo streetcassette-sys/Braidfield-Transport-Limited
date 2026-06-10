@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Client Portal — Braidfield Transport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous"/>
+<style>
+:root{--red:#CC1010;--grad:linear-gradient(135deg,#E01212,#C01010 55%,#8C0808);--dark:#080C14;--d2:#0F1520;--d3:#161D2E;--d4:#1E2840;--text:#B8C4D8;--muted:#5A6A80;--border:rgba(255,255,255,.07);--bdr:rgba(180,10,10,.22);--ok:#0ECB7A;--info:#3B8BEB;--warn:#F0A500;--err:#E03030;--r:14px;--rs:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+h1,h2,h3,h4{font-family:'Poppins',sans-serif;color:#fff;line-height:1.2}
+a{text-decoration:none;color:inherit}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--dark)}::-webkit-scrollbar-thumb{background:var(--red);border-radius:3px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--rs);font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;border:none;transition:all .22s;text-decoration:none;line-height:1}
+.btn-r{background:var(--grad);color:#fff}.btn-r:hover{opacity:.9}
+.btn-o{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.2)}.btn-o:hover{border-color:var(--red);color:var(--red)}
+.btn-ok{background:linear-gradient(135deg,#0ECB7A,#0A9A5C);color:#fff}
+.btn-sm{padding:6px 14px;font-size:12px}
+.btn-full{width:100%;justify-content:center}
+.fc{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Outfit',sans-serif;font-size:13px;color:#fff;outline:none;transition:border-color .2s;margin:0}
+.fc:focus{border-color:var(--red)}.fc::placeholder{color:var(--muted)}select.fc option{background:var(--d2)}
+.fl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.fgrp{display:flex;flex-direction:column;gap:6px}
+@keyframes su{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast-wrap{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:var(--d3);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 12px 30px rgba(0,0,0,.4);animation:su .3s ease;min-width:240px;pointer-events:auto}
+.t-ok .t-ic{background:rgba(14,203,122,.12);color:var(--ok)}.t-wa .t-ic{background:rgba(240,165,0,.12);color:var(--warn)}.t-er .t-ic{background:rgba(220,48,48,.12);color:var(--err)}
+.t-ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.t-ttl{font-size:13px;font-weight:700;color:#fff}.t-sub{font-size:11px;color:var(--muted)}
+/* TOP NAV */
+.cnav{background:var(--d2);border-bottom:1px solid var(--border);height:60px;display:flex;align-items:center;padding:0 24px;justify-content:space-between;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:11px}
+.lm{width:38px;height:38px;border-radius:9px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;font-size:14px;color:#fff;flex-shrink:0}
+.lt{font-family:'Poppins',sans-serif;font-weight:800;font-size:14px;color:#fff;line-height:1.1}
+.lt small{display:block;font-size:9px;font-weight:500;color:var(--red);letter-spacing:2px;text-transform:uppercase}
+.cnav-r{display:flex;align-items:center;gap:10px}
+.uinfo{font-size:12px;color:var(--muted)}
+.uinfo strong{color:#fff}
+/* SCREENS */
+.screen{display:none;flex:1;padding:32px 24px;max-width:800px;margin:0 auto;width:100%}
+.screen.active{display:block}
+/* AUTH SCREEN */
+.auth-wrap{max-width:460px;margin:60px auto 0}
+.auth-tabs{display:flex;gap:3px;background:var(--d4);border-radius:10px;padding:4px;margin-bottom:24px}
+.auth-tab{flex:1;padding:9px 16px;border-radius:7px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:var(--muted);background:transparent;transition:all .2s;text-align:center}
+.auth-tab.active{background:var(--grad);color:#fff}
+.auth-pane{display:none}.auth-pane.active{display:block}
+.auth-box{background:var(--d3);border:1px solid var(--border);border-radius:var(--r);padding:28px;position:relative;overflow:hidden}
+.auth-box::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad)}
+.auth-box h3{font-size:18px;margin-bottom:6px}
+.auth-box p{font-size:13px;color:var(--muted);margin-bottom:22px}
+.input-row{margin-bottom:14px}
+.wa-note{display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(37,211,102,.06);border:1px solid rgba(37,211,102,.18);border-radius:8px;font-size:12px;color:var(--muted);margin-bottom:16px}
+.wa-note i{color:#25D366;font-size:16px;flex-shrink:0}
+/* ONBOARDING */
+.ob-header{text-align:center;margin-bottom:32px}
+.ob-header h2{font-size:24px;margin-bottom:8px}
+.ob-header p{font-size:14px;color:var(--muted)}
+.step-bar{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:36px}
+.sb-step{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;position:relative}
+.sb-step:not(:last-child)::after{content:'';position:absolute;top:14px;left:60%;right:-40%;height:2px;background:var(--border);z-index:0}
+.sb-step.done::after{background:var(--ok)}
+.sb-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;z-index:1;flex-shrink:0;border:2px solid var(--border);background:var(--d4);color:var(--muted)}
+.sb-step.done .sb-dot{background:var(--ok);border-color:var(--ok);color:#fff}
+.sb-step.active .sb-dot{background:var(--grad);border-color:var(--red);color:#fff}
+.sb-lbl{font-size:10px;color:var(--muted);text-align:center;white-space:nowrap}
+.sb-step.active .sb-lbl{color:#fff;font-weight:600}
+.ob-section{background:var(--d3);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:16px;position:relative;overflow:hidden}
+.ob-section::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad)}
+.ob-section h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.ob-section h3 i{color:var(--red)}
+.ob-section p{font-size:12.5px;color:var(--muted);margin-bottom:18px}
+.driver-card{background:var(--d4);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:12px;position:relative}
+.driver-card-n{font-size:13px;font-weight:700;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.driver-card-n i{color:var(--red)}
+.comp-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.comp-row:last-child{border-bottom:none}
+.comp-lbl{color:var(--muted)}.comp-val{color:#fff;font-weight:600}
+.comp-chip{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+.add-driver-btn{display:flex;align-items:center;gap:8px;padding:12px 16px;border:1.5px dashed rgba(255,255,255,.15);border-radius:10px;cursor:pointer;color:var(--muted);font-size:13px;font-weight:500;transition:all .2s;width:100%;background:transparent;font-family:'Outfit',sans-serif;justify-content:center;margin-bottom:16px}
+.add-driver-btn:hover{border-color:var(--red);color:var(--red)}
+.doc-upload{border:1.5px dashed rgba(255,255,255,.15);border-radius:8px;padding:16px;text-align:center;cursor:pointer;background:rgba(255,255,255,.02);transition:all .2s;margin-bottom:10px}
+.doc-upload:hover{border-color:var(--red);background:rgba(180,10,10,.04)}
+.doc-upload input[type=file]{display:none}
+.doc-upload i{font-size:24px;color:var(--muted);display:block;margin-bottom:6px}
+.doc-upload p{font-size:12px;color:var(--muted)}
+.doc-upload.uploaded{border-color:rgba(14,203,122,.4);background:rgba(14,203,122,.04)}
+.doc-upload.uploaded i{color:var(--ok)}
+/* PENDING */
+.pending-wrap{text-align:center;padding:60px 20px}
+.pending-icon{width:80px;height:80px;border-radius:50%;background:rgba(240,165,0,.12);border:2px solid rgba(240,165,0,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:32px;color:var(--warn);animation:blink 2s infinite}
+.pending-wrap h2{font-size:22px;margin-bottom:10px}
+.pending-wrap p{font-size:14px;color:var(--muted);line-height:1.7;max-width:480px;margin:0 auto 28px}
+.pending-steps{text-align:left;background:var(--d3);border:1px solid var(--border);border-radius:var(--r);padding:20px;max-width:420px;margin:0 auto 24px}
+.pending-step{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px}
+.pending-step:last-child{border-bottom:none}
+.pending-step i{color:var(--warn);width:16px;flex-shrink:0;margin-top:2px}
+/* DASHBOARD */
+.dash-header{margin-bottom:24px}
+.dash-header h2{font-size:22px;margin-bottom:4px}
+.dash-header p{font-size:13px;color:var(--muted)}
+.status-card{border-radius:var(--r);padding:24px;margin-bottom:18px;position:relative;overflow:hidden}
+.sc-clearing{background:linear-gradient(135deg,rgba(240,165,0,.12),rgba(240,165,0,.04));border:1px solid rgba(240,165,0,.3)}
+.sc-transiting{background:linear-gradient(135deg,rgba(14,203,122,.12),rgba(14,203,122,.04));border:1px solid rgba(14,203,122,.3)}
+.sc-none{background:var(--d3);border:1px solid var(--border)}
+.sc-badge{display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:14px}
+.sc-clearing .sc-badge{background:rgba(240,165,0,.15);color:var(--warn)}
+.sc-transiting .sc-badge{background:rgba(14,203,122,.15);color:var(--ok)}
+.sc-dot{width:7px;height:7px;border-radius:50%;animation:blink 1.5s infinite;flex-shrink:0}
+.sc-clearing .sc-dot{background:var(--warn)}.sc-transiting .sc-dot{background:var(--ok)}
+.sc-title{font-size:18px;font-weight:700;color:#fff;margin-bottom:8px}
+.sc-sub{font-size:13px;color:var(--muted);margin-bottom:16px}
+.sc-meta{display:flex;gap:20px;flex-wrap:wrap}
+.sc-m{font-size:12px}
+.sc-m span:first-child{color:var(--muted);display:block;margin-bottom:2px}
+.sc-m span:last-child{color:#fff;font-weight:600}
+.cards-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.mini-card{background:var(--d3);border:1px solid var(--border);border-radius:var(--r);padding:18px}
+.mini-card .mk{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px}
+.mini-card .mv{font-size:26px;font-weight:800;font-family:'Poppins',sans-serif;color:#fff;margin-bottom:4px;line-height:1}
+.mini-card .ms{font-size:11px;color:var(--muted)}
+.section-box{background:var(--d3);border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px;overflow:hidden}
+.section-box .shd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px}
+.section-box .shd h3{font-size:14px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px}
+.section-box .shd h3 i{color:var(--red)}
+.section-box .sbody{padding:18px}
+.comp-list{display:flex;flex-direction:column;gap:10px}
+.comp-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid var(--border);flex-wrap:wrap;gap:8px}
+.comp-item-l{display:flex;align-items:center;gap:10px}
+.comp-ic{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.comp-item-name{font-size:13px;font-weight:600;color:#fff}
+.comp-item-sub{font-size:11px;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:700;white-space:nowrap}
+.c-ok{background:rgba(14,203,122,.12);color:var(--ok)}.c-warn{background:rgba(240,165,0,.12);color:var(--warn)}.c-err{background:rgba(220,48,48,.12);color:var(--err)}.c-info{background:rgba(59,139,235,.12);color:var(--info)}
+.trip-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);flex-wrap:wrap;gap:8px}
+.trip-row:last-child{border-bottom:none}
+.trip-id{font-size:11px;font-weight:700;color:var(--red)}
+.trip-info{font-size:12px;color:var(--text)}
+.trip-meta{font-size:11px;color:var(--muted)}
+.submit-btn-row{margin-top:10px}
+.notify-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04);align-items:flex-start}
+.notify-item:last-child{border-bottom:none}
+.ni-ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.ni-t{font-size:12.5px;font-weight:600;color:#fff;margin-bottom:2px}
+.ni-s{font-size:11.5px;color:var(--muted);line-height:1.5}
+.ni-tm{font-size:10px;color:var(--muted);margin-top:3px}
+.tab-nav{display:flex;gap:4px;background:var(--d4);border-radius:10px;padding:4px;margin-bottom:20px;flex-wrap:wrap}
+.tn-btn{padding:8px 16px;border-radius:7px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:var(--muted);background:transparent;transition:all .2s}
+.tn-btn.active{background:var(--grad);color:#fff}
+.tab-content{display:none}.tab-content.active{display:block}
+.supp-form{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:14px}
+.supp-form h4{font-size:13px;font-weight:700;color:#fff;margin-bottom:14px}
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:2000;display:none;align-items:flex-start;justify-content:center;padding:20px;backdrop-filter:blur(4px);overflow-y:auto}
+.modal-ov.open{display:flex}
+.mb{background:var(--d2);border:1px solid var(--border);border-radius:var(--r);width:100%;max-width:560px;overflow:hidden;animation:su .25s ease;margin:auto}
+.mt{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;background:var(--d3);border-bottom:1px solid var(--border)}
+.mt h3{font-size:15px;color:#fff;font-family:'Poppins',sans-serif;display:flex;align-items:center;gap:8px}
+.mx{background:rgba(255,255,255,.08);border:none;width:28px;height:28px;border-radius:6px;color:var(--muted);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center}
+.mx:hover{color:#fff}
+.mbd{padding:20px}
+.mft{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+@media(max-width:640px){.fg,.fg3,.cards-row{grid-template-columns:1fr}.screen{padding:20px 16px}}
+</style>
+</head>
+<body>
+<!-- TOP NAV -->
+<div class="cnav">
+  <div class="logo"><div class="lm">BT</div><div class="lt">Braidfield Transport<small>Client Portal</small></div></div>
+  <div class="cnav-r">
+    <div class="uinfo" id="nav-user" style="display:none">Logged in as <strong id="nav-name"></strong></div>
+    <a href="index.html" class="btn btn-o btn-sm"><i class="fa-solid fa-globe"></i> Main Site</a>
+    <button class="btn btn-o btn-sm" id="logout-btn" onclick="doLogout()" style="display:none"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button>
+  </div>
+</div>
+
+<!-- ── SCREEN 1: AUTH ── -->
+<div class="screen active" id="screen-auth" style="padding-top:0">
+  <div class="auth-wrap">
+    <div style="text-align:center;margin-bottom:28px;padding-top:40px">
+      <div class="lm" style="width:56px;height:56px;font-size:22px;margin:0 auto 14px">BT</div>
+      <h2 style="font-size:22px;margin-bottom:6px">Client Portal</h2>
+      <p style="font-size:14px;color:var(--muted)">Manage your shipments with Braidfield Transport</p>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuth('login')">Sign In</button>
+      <button class="auth-tab" onclick="switchAuth('register')">Register</button>
+    </div>
+    <!-- LOGIN -->
+    <div class="auth-pane active" id="auth-login">
+      <div class="auth-box">
+        <h3>Welcome Back</h3>
+        <p>Sign in to track your shipments and manage documents.</p>
+        <div class="input-row"><label class="fl">Email Address</label><input class="fc" type="email" id="c-email" placeholder="your@email.com" onkeydown="if(event.key==='Enter')doClientLogin()"/></div>
+        <div class="input-row"><label class="fl">Password</label><input class="fc" type="password" id="c-pass" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doClientLogin()"/></div>
+        <button class="btn btn-r btn-full" onclick="doClientLogin()" style="margin-bottom:12px"><i class="fa-solid fa-arrow-right-to-bracket"></i>Sign In</button>
+        <p style="font-size:11px;color:var(--muted);text-align:center">Forgot password? Contact <a href="https://wa.me/260964809809" target="_blank" style="color:var(--red)">support on WhatsApp</a></p>
+        <div style="margin-top:16px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:11px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:7px">Demo Accounts</div>
+          <div style="font-size:11px;display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)"><span style="color:var(--text)">mulenga@copperbeltmining.co.zm</span><span style="color:var(--muted);font-family:monospace">client123</span></div>
+          <div style="font-size:11px;display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--text)">amina@tzfreight.co.tz</span><span style="color:var(--muted);font-family:monospace">client123</span></div>
+        </div>
+      </div>
+    </div>
+    <!-- REGISTER -->
+    <div class="auth-pane" id="auth-register">
+      <div class="auth-box">
+        <h3>Create an Account</h3>
+        <p>Register to start shipping with Braidfield Transport. Your account will be reviewed within 24 hours.</p>
+        <div class="fg">
+          <div class="fgrp"><label class="fl">Company / Client Name</label><input class="fc" type="text" id="reg-company" placeholder="e.g. Copperbelt Mining Ltd"/></div>
+          <div class="fgrp"><label class="fl">Contact Person Name</label><input class="fc" type="text" id="reg-name" placeholder="Your full name"/></div>
+          <div class="fgrp"><label class="fl">Email Address</label><input class="fc" type="email" id="reg-email" placeholder="your@company.com"/></div>
+          <div class="fgrp"><label class="fl">WhatsApp Number</label><input class="fc" type="tel" id="reg-wa" placeholder="+260 XXX XXX XXX"/></div>
+          <div class="fgrp"><label class="fl">Password</label><input class="fc" type="password" id="reg-pass" placeholder="Create a password"/></div>
+          <div class="fgrp"><label class="fl">Confirm Password</label><input class="fc" type="password" id="reg-pass2" placeholder="Confirm password"/></div>
+        </div>
+        <div class="wa-note" style="margin-top:14px"><i class="fa-brands fa-whatsapp"></i><span>After registration you will be prompted to complete your truck and driver details. Your account will be reviewed before activation.</span></div>
+        <button class="btn btn-r btn-full" onclick="doRegister()"><i class="fa-solid fa-user-plus"></i>Create Account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SCREEN 2: ONBOARDING ── -->
+<div class="screen" id="screen-onboard">
+  <div class="ob-header">
+    <h2>Complete Your Onboarding</h2>
+    <p>Provide your truck and driver details to activate your account. All fields are required.</p>
+  </div>
+  <div class="step-bar">
+    <div class="sb-step done" id="ob-s1"><div class="sb-dot"><i class="fa-solid fa-check" style="font-size:10px"></i></div><div class="sb-lbl">Account</div></div>
+    <div class="sb-step active" id="ob-s2"><div class="sb-dot">2</div><div class="sb-lbl">Truck Details</div></div>
+    <div class="sb-step" id="ob-s3"><div class="sb-dot">3</div><div class="sb-lbl">Documents</div></div>
+    <div class="sb-step" id="ob-s4"><div class="sb-dot">4</div><div class="sb-lbl">Review</div></div>
+  </div>
+
+  <!-- OB STEP 2: TRUCK + DRIVER -->
+  <div id="ob-step2" class="ob-step-content">
+    <div class="ob-section">
+      <h3><i class="fa-solid fa-truck"></i>Truck &amp; Driver Information</h3>
+      <p>Add all trucks and drivers that will be operating under your account. You can add more later.</p>
+      <div id="drivers-list">
+        <div class="driver-card" id="driver-0">
+          <div class="driver-card-n"><i class="fa-solid fa-person"></i>Driver 1</div>
+          <div class="fg" style="margin-bottom:12px">
+            <div class="fgrp"><label class="fl">Driver Full Name</label><input class="fc" type="text" id="drv-name-0" placeholder="Full name"/></div>
+            <div class="fgrp"><label class="fl">Driver WhatsApp</label><input class="fc" type="tel" id="drv-wa-0" placeholder="+260 XXX XXX XXX"/></div>
+            <div class="fgrp"><label class="fl">Driver Email</label><input class="fc" type="email" id="drv-email-0" placeholder="driver@email.com"/></div>
+            <div class="fgrp"><label class="fl">Number Plate — Horse (Truck)</label><input class="fc" type="text" id="drv-horse-0" placeholder="e.g. ABZ 1234 ZM"/></div>
+            <div class="fgrp"><label class="fl">Number Plate — Trailer</label><input class="fc" type="text" id="drv-trailer-0" placeholder="e.g. TRL-001 ZM"/></div>
+          </div>
+          <div class="fg3">
+            <div class="fgrp"><label class="fl"><i class="fa-solid fa-triangle-exclamation" style="color:var(--warn)"></i> Fitness Due Date</label><input class="fc" type="date" id="drv-fitness-0"/></div>
+            <div class="fgrp"><label class="fl"><i class="fa-solid fa-triangle-exclamation" style="color:var(--warn)"></i> Road Tax Due Date</label><input class="fc" type="date" id="drv-roadtax-0"/></div>
+            <div class="fgrp"><label class="fl"><i class="fa-solid fa-triangle-exclamation" style="color:var(--warn)"></i> Identity Due Date</label><input class="fc" type="date" id="drv-identity-0"/></div>
+          </div>
+        </div>
+      </div>
+      <button class="add-driver-btn" onclick="addDriverForm()"><i class="fa-solid fa-plus"></i>Add Another Driver / Truck</button>
+    </div>
+    <button class="btn btn-r" onclick="goObStep(3)" style="float:right"><i class="fa-solid fa-arrow-right"></i>Next — Upload Documents</button>
+    <div style="clear:both"></div>
+  </div>
+
+  <!-- OB STEP 3: DOCUMENTS -->
+  <div id="ob-step3" class="ob-step-content" style="display:none">
+    <div class="ob-section">
+      <h3><i class="fa-solid fa-folder-open"></i>Client Onboarding Documents</h3>
+      <p>Upload the required documents. All documents are reviewed by our team before account activation.</p>
+      <div class="fg" style="margin-bottom:14px">
+        <div>
+          <label class="fl">Business Registration Certificate</label>
+          <div class="doc-upload" id="doc-brc" onclick="trigUpload('doc-brc-f','doc-brc')">
+            <input type="file" id="doc-brc-f" accept=".pdf,image/*" onchange="markUploaded('doc-brc',this)"/>
+            <i class="fa-solid fa-file-certificate"></i><p>Click to upload (PDF or image)</p>
+          </div>
+        </div>
+        <div>
+          <label class="fl">Company Profile / Introduction Letter</label>
+          <div class="doc-upload" id="doc-co" onclick="trigUpload('doc-co-f','doc-co')">
+            <input type="file" id="doc-co-f" accept=".pdf,image/*" onchange="markUploaded('doc-co',this)"/>
+            <i class="fa-solid fa-file-lines"></i><p>Click to upload (PDF or image)</p>
+          </div>
+        </div>
+        <div>
+          <label class="fl">Director / Representative ID</label>
+          <div class="doc-upload" id="doc-id" onclick="trigUpload('doc-id-f','doc-id')">
+            <input type="file" id="doc-id-f" accept=".pdf,image/*" onchange="markUploaded('doc-id',this)"/>
+            <i class="fa-solid fa-id-card"></i><p>Click to upload (PDF or image)</p>
+          </div>
+        </div>
+        <div>
+          <label class="fl">TPIN Certificate</label>
+          <div class="doc-upload" id="doc-tpin" onclick="trigUpload('doc-tpin-f','doc-tpin')">
+            <input type="file" id="doc-tpin-f" accept=".pdf,image/*" onchange="markUploaded('doc-tpin',this)"/>
+            <i class="fa-solid fa-file-shield"></i><p>Click to upload (PDF or image)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:space-between">
+      <button class="btn btn-o" onclick="goObStep(2)"><i class="fa-solid fa-arrow-left"></i>Back</button>
+      <button class="btn btn-r" onclick="goObStep(4)"><i class="fa-solid fa-arrow-right"></i>Next — Review</button>
+    </div>
+  </div>
+
+  <!-- OB STEP 4: REVIEW -->
+  <div id="ob-step4" class="ob-step-content" style="display:none">
+    <div class="ob-section">
+      <h3><i class="fa-solid fa-clipboard-check"></i>Review &amp; Submit</h3>
+      <p>Review your details below. Once submitted, your account will enter Pending Approval status.</p>
+      <div id="ob-review-content" style="font-size:13px;color:var(--text);line-height:1.8"></div>
+    </div>
+    <div class="ob-section" style="background:rgba(37,211,102,.04);border-color:rgba(37,211,102,.2)">
+      <h3 style="color:var(--ok)"><i class="fa-solid fa-shield-check"></i>Declaration</h3>
+      <p>By submitting this form, I confirm that all information provided is accurate and that I have authority to register on behalf of the stated company.</p>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;margin-top:10px">
+        <input type="checkbox" id="ob-agree" style="accent-color:var(--ok);width:16px;height:16px"/>
+        I agree to the <a href="https://wa.me/260964809809" style="color:var(--red)">terms and conditions</a>
+      </label>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:space-between">
+      <button class="btn btn-o" onclick="goObStep(3)"><i class="fa-solid fa-arrow-left"></i>Back</button>
+      <button class="btn btn-r" onclick="submitOnboarding()"><i class="fa-solid fa-paper-plane"></i>Submit for Approval</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── SCREEN 3: PENDING ── -->
+<div class="screen" id="screen-pending">
+  <div class="pending-wrap">
+    <div class="pending-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+    <h2>Account Pending Approval</h2>
+    <p>Your onboarding details have been submitted successfully. Our team will review and approve your account within <strong style="color:#fff">24 hours</strong>. You will be notified via WhatsApp and email.</p>
+    <div class="pending-steps">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:12px">What Happens Next</div>
+      <div class="pending-step"><i class="fa-solid fa-circle-check"></i><span>Onboarding documents received by our team</span></div>
+      <div class="pending-step"><i class="fa-solid fa-clock"></i><span>Senior Customs Officer reviews your details</span></div>
+      <div class="pending-step"><i class="fa-solid fa-clock"></i><span>Account approved and activated</span></div>
+      <div class="pending-step"><i class="fa-solid fa-clock"></i><span>You receive WhatsApp notification with login details</span></div>
+    </div>
+    <a href="https://wa.me/260964809809?text=Hello%20Braidfield%2C%20I%20have%20submitted%20my%20onboarding%20and%20would%20like%20to%20check%20my%20approval%20status." target="_blank" class="btn btn-r"><i class="fa-brands fa-whatsapp"></i>Check Status on WhatsApp</a>
+  </div>
+</div>
+
+<!-- ── SCREEN 4: DASHBOARD ── -->
+<div class="screen" id="screen-dashboard">
+  <div class="dash-header">
+    <h2 id="dash-greeting">Welcome back</h2>
+    <p id="dash-company" style="color:var(--muted)">Client Dashboard</p>
+  </div>
+
+  <!-- SHIPMENT STATUS -->
+  <div id="shipment-status-card"></div>
+
+  <!-- KPI CARDS -->
+  <div class="cards-row">
+    <div class="mini-card"><div class="mk">Total Trips</div><div class="mv" id="kpi-trips">0</div><div class="ms">Completed shipments</div></div>
+    <div class="mini-card"><div class="mk">Total Mileage</div><div class="mv" id="kpi-mileage">0 km</div><div class="ms">All trucks · tracked per trip</div></div>
+    <div class="mini-card"><div class="mk">Active Trucks</div><div class="mv" id="kpi-trucks">0</div><div class="ms">Currently on route</div></div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tab-nav">
+    <button class="tn-btn active" onclick="swDashTab('overview')"><i class="fa-solid fa-gauge-high"></i> Overview</button>
+    <button class="tn-btn" onclick="swDashTab('submit')"><i class="fa-solid fa-upload"></i> Submit Documents</button>
+    <button class="tn-btn" onclick="swDashTab('compliance')"><i class="fa-solid fa-triangle-exclamation"></i> Compliance Dates</button>
+    <button class="tn-btn" onclick="swDashTab('history')"><i class="fa-solid fa-clock-rotate-left"></i> Trip History</button>
+    <button class="tn-btn" onclick="swDashTab('notifications')"><i class="fa-solid fa-bell"></i> Notifications</button>
+  </div>
+
+  <!-- OVERVIEW TAB -->
+  <div class="tab-content active" id="tab-overview">
+    <div class="section-box">
+      <div class="shd"><h3><i class="fa-solid fa-truck"></i>My Trucks</h3></div>
+      <div class="sbody"><div id="truck-list"></div></div>
+    </div>
+    <div class="section-box">
+      <div class="shd"><h3><i class="fa-solid fa-headset"></i>Need Help?</h3></div>
+      <div class="sbody">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Contact our support team directly via WhatsApp or call us.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <a href="https://wa.me/260964809809?text=Hello%20Braidfield%20Support%2C%20I%20need%20help%20with%20my%20shipment." target="_blank" class="btn btn-r btn-sm"><i class="fa-brands fa-whatsapp"></i>WhatsApp Support</a>
+          <a href="tel:+260964809809" class="btn btn-o btn-sm"><i class="fa-solid fa-phone"></i>+260 964 809 809</a>
+          <a href="mailto:admin@braidfieldtransport.com" class="btn btn-o btn-sm"><i class="fa-solid fa-envelope"></i>Email Us</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBMIT DOCUMENTS TAB -->
+  <div class="tab-content" id="tab-submit">
+    <div class="section-box">
+      <div class="shd"><h3><i class="fa-solid fa-upload"></i>Submit Transaction Documents</h3></div>
+      <div class="sbody">
+        <div class="abanner ab-info" style="background:rgba(59,139,235,.08);border:1px solid rgba(59,139,235,.25);padding:13px 18px;border-radius:10px;display:flex;gap:12px;margin-bottom:18px;align-items:flex-start">
+          <i class="fa-solid fa-circle-info" style="color:var(--info);font-size:18px;flex-shrink:0;margin-top:1px"></i>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:3px">12-Hour SLA Starts on Submission</div>
+            <div style="font-size:12px;color:var(--muted)">Once you submit these documents, the 12-hour review clock begins. Our Senior Customs Officer will process your documents within this window.</div>
+          </div>
+        </div>
+        <div class="fg">
+          <div>
+            <label class="fl">Select Truck / Driver</label>
+            <select class="fc" id="sub-truck" style="margin-bottom:14px"><option value="">Select truck…</option></select>
+          </div>
+          <div>
+            <label class="fl">Border Post</label>
+            <select class="fc" id="sub-border" style="margin-bottom:14px"><option>Kasumbalesa (ZM/DRC)</option><option>Nakonde (ZM/TZ)</option><option>Mokambo (ZM/DRC)</option><option>Sakania (ZM/DRC)</option><option>Tunduma (ZM/TZ)</option></select>
+          </div>
+        </div>
+        <div class="fg">
+          <div>
+            <label class="fl"><i class="fa-solid fa-check-circle" style="color:var(--ok);margin-right:4px"></i>Commercial Invoice</label>
+            <div class="doc-upload" id="sub-inv" onclick="trigUpload('sub-inv-f','sub-inv')">
+              <input type="file" id="sub-inv-f" accept=".pdf,image/*" onchange="markUploaded('sub-inv',this)"/>
+              <i class="fa-solid fa-file-invoice"></i><p>Click to upload</p>
+            </div>
+          </div>
+          <div>
+            <label class="fl"><i class="fa-solid fa-check-circle" style="color:var(--ok);margin-right:4px"></i>Delivery Note</label>
+            <div class="doc-upload" id="sub-dn" onclick="trigUpload('sub-dn-f','sub-dn')">
+              <input type="file" id="sub-dn-f" accept=".pdf,image/*" onchange="markUploaded('sub-dn',this)"/>
+              <i class="fa-solid fa-file-lines"></i><p>Click to upload</p>
+            </div>
+          </div>
+          <div>
+            <label class="fl"><i class="fa-solid fa-check-circle" style="color:var(--ok);margin-right:4px"></i>Customs T1 Document</label>
+            <div class="doc-upload" id="sub-t1" onclick="trigUpload('sub-t1-f','sub-t1')">
+              <input type="file" id="sub-t1-f" accept=".pdf,image/*" onchange="markUploaded('sub-t1',this)"/>
+              <i class="fa-solid fa-file-signature"></i><p>Click to upload</p>
+            </div>
+          </div>
+          <div>
+            <label class="fl"><i class="fa-solid fa-check-circle" style="color:var(--ok);margin-right:4px"></i>Movement Sheet</label>
+            <div class="doc-upload" id="sub-ms" onclick="trigUpload('sub-ms-f','sub-ms')">
+              <input type="file" id="sub-ms-f" accept=".pdf,image/*" onchange="markUploaded('sub-ms',this)"/>
+              <i class="fa-solid fa-file-alt"></i><p>Click to upload</p>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:14px"><label class="fl">Additional Notes</label><textarea class="fc" rows="3" placeholder="Any special instructions or notes for our team…"></textarea></div>
+        <button class="btn btn-r" onclick="submitDocs()" style="margin-top:14px"><i class="fa-solid fa-paper-plane"></i>Submit Documents — Start 12h SLA Clock</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPLIANCE TAB -->
+  <div class="tab-content" id="tab-compliance">
+    <div id="compliance-alert-banner"></div>
+    <div class="section-box">
+      <div class="shd"><h3><i class="fa-solid fa-triangle-exclamation"></i>Compliance Dates — All Trucks</h3></div>
+      <div class="sbody"><div class="comp-list" id="compliance-list"></div></div>
+    </div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div class="tab-content" id="tab-history">
+    <div class="section-box">
+      <div class="shd"><h3><i class="fa-solid fa-clock-rotate-left"></i>Trip History &amp; Mileage Ledger</h3></div>
+      <div class="sbody"><div id="trip-history"></div></div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS TAB -->
+  <div class="tab-content" id="tab-notifications">
+    <div class="section-box">
+      <div class="shd"><h3><i class="fa-solid fa-bell"></i>Notifications</h3><button class="btn btn-o btn-sm" onclick="markNotifsRead()"><i class="fa-solid fa-check-double"></i>Mark Read</button></div>
+      <div class="sbody"><div id="notif-list"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script src="shared.js"></script>
+<script>
+var currentSession = null;
+var clientData = null;
+var driverCount = 1;
+var obStep = 2;
+var drvStatus = '';
+var clientNotifs = [
+  {type:'ok',  icon:'fa-circle-check', ttl:'Clearing Complete', msg:'Your shipment (ABZ 1234 ZM) has cleared. Status changed to Transiting.', time:'2h ago', read:false},
+  {type:'warn',icon:'fa-triangle-exclamation', ttl:'Fitness Certificate Expiring', msg:'John Banda (ABZ 1234 ZM) — Fitness certificate expires in 15 days.', time:'1 day ago', read:false},
+  {type:'info',icon:'fa-file-signature', ttl:'Documents Received', msg:'Your transaction documents have been received and are under review.', time:'2 days ago', read:true},
+];
+
+document.addEventListener('DOMContentLoaded', function() {
+  var s = getSession();
+  if (s && s.type === 'client') {
+    currentSession = s;
+    loadClientDashboard();
+  } else {
+    showScreen('auth');
+  }
+});
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(function(sc){ sc.classList.remove('active'); });
+  document.getElementById('screen-' + name).classList.add('active');
+}
+
+function switchAuth(tab) {
+  document.querySelectorAll('.auth-tab').forEach(function(t,i){ t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')); });
+  document.getElementById('auth-login').classList.toggle('active', tab==='login');
+  document.getElementById('auth-register').classList.toggle('active', tab==='register');
+}
+
+function doClientLogin() {
+  var email = ((document.getElementById('c-email')||{}).value||'').trim().toLowerCase();
+  var pass  = ((document.getElementById('c-pass') ||{}).value||'').trim();
+  if (!email||!pass) { toast('Fill all fields','Email and password required.','er'); return; }
+  // Demo: accept any client email with password client123
+  var clients = getClients();
+  // Assign demo passwords
+  var cl = clients.filter(function(c){ return c.email === email; })[0];
+  if (!cl || pass !== 'client123') { toast('Login Failed','Incorrect email or password.','er'); return; }
+  currentSession = { type:'client', clientId:cl.id, name:cl.contact, email:cl.email, company:cl.name, status:cl.status };
+  sessionStorage.setItem('bt_session', JSON.stringify(currentSession));
+  loadClientDashboard();
+}
+
+function doRegister() {
+  var company = ((document.getElementById('reg-company')||{}).value||'').trim();
+  var name    = ((document.getElementById('reg-name')   ||{}).value||'').trim();
+  var email   = ((document.getElementById('reg-email')  ||{}).value||'').trim().toLowerCase();
+  var wa      = ((document.getElementById('reg-wa')     ||{}).value||'').trim();
+  var pass    = ((document.getElementById('reg-pass')   ||{}).value||'').trim();
+  var pass2   = ((document.getElementById('reg-pass2')  ||{}).value||'').trim();
+  if (!company||!name||!email||!wa||!pass) { toast('Fill all fields','All fields are required.','er'); return; }
+  if (pass !== pass2) { toast('Passwords do not match','Please re-enter your password.','er'); return; }
+  var clients = getClients();
+  if (clients.filter(function(c){ return c.email===email; }).length) { toast('Email exists','An account with this email already exists.','er'); return; }
+  var newClient = { id: clients.length+1, name:company, contact:name, email:email, phone:wa, whatsapp:wa,
+    status:'onboarding', clientPass:pass, drivers:[], trips:0, mileage:0, joinDate:new Date().toISOString().split('T')[0] };
+  clients.push(newClient); setClients(clients);
+  currentSession = { type:'client', clientId:newClient.id, name:name, email:email, company:company, status:'onboarding' };
+  sessionStorage.setItem('bt_session', JSON.stringify(currentSession));
+  showScreen('onboard');
+  setNavUser();
+}
+
+function loadClientDashboard() {
+  setNavUser();
+  var clients = getClients();
+  clientData = clients.filter(function(c){ return c.id === currentSession.clientId; })[0];
+  if (!clientData) { showScreen('auth'); return; }
+  if (clientData.status === 'onboarding') { showScreen('onboard'); return; }
+  if (clientData.status === 'pending')    { showScreen('pending'); return; }
+  // approved
+  showScreen('dashboard');
+  document.getElementById('dash-greeting').textContent = 'Welcome back, ' + (clientData.contact.split(' ')[0] || clientData.name);
+  document.getElementById('dash-company').textContent  = clientData.name + ' — Client Dashboard';
+  renderShipmentStatus();
+  renderKPIs();
+  renderTrucks();
+  renderCompliance();
+  renderTripHistory();
+  renderNotifications();
+  populateTruckDropdown();
+}
+
+function setNavUser() {
+  if (!currentSession) return;
+  document.getElementById('nav-user').style.display = 'block';
+  document.getElementById('nav-name').textContent   = currentSession.name || currentSession.company;
+  document.getElementById('logout-btn').style.display = 'inline-flex';
+}
+
+function renderShipmentStatus() {
+  var fleet = getFleet();
+  var myTrucks = fleet.filter(function(f){ return f.client === clientData.name && !f.closed; });
+  var el = document.getElementById('shipment-status-card');
+  if (!myTrucks.length) {
+    el.innerHTML = '<div class="status-card sc-none"><div class="sc-title" style="color:var(--muted)">No Active Shipments</div><div class="sc-sub">Submit your transaction documents to start a new shipment.</div></div>';
+    return;
+  }
+  var t = myTrucks[0];
+  var isClearing   = t.shipmentStatus === 'under_clearing';
+  var isTransiting = t.shipmentStatus === 'transiting';
+  var cls = isClearing ? 'sc-clearing' : isTransiting ? 'sc-transiting' : 'sc-none';
+  var badge = isClearing
+    ? '<span class="sc-badge"><span class="sc-dot"></span>Under Clearing</span>'
+    : isTransiting
+    ? '<span class="sc-badge"><span class="sc-dot"></span>Transiting</span>'
+    : '<span class="sc-badge" style="background:rgba(255,255,255,.08);color:var(--muted)">No Active Status</span>';
+  el.innerHTML = '<div class="status-card ' + cls + '">' + badge
+    + '<div class="sc-title">' + t.plate + ' — ' + t.origin + ' → ' + t.dest + '</div>'
+    + '<div class="sc-sub">' + t.status + ' · ' + t.border + '</div>'
+    + '<div class="sc-meta">'
+    + '<div class="sc-m"><span>Driver</span><span>' + t.driver + '</span></div>'
+    + '<div class="sc-m"><span>Process Step</span><span>' + t.processStep + ' / 9</span></div>'
+    + '<div class="sc-m"><span>Location</span><span>' + t.location + '</span></div>'
+    + '<div class="sc-m"><span>T1 Number</span><span>' + (t.t1Number||'Pending') + '</span></div>'
+    + '</div></div>';
+}
+
+function renderKPIs() {
+  document.getElementById('kpi-trips').textContent   = clientData.trips || 0;
+  document.getElementById('kpi-mileage').textContent = (clientData.mileage||0).toLocaleString() + ' km';
+  var fleet = getFleet();
+  document.getElementById('kpi-trucks').textContent  = fleet.filter(function(f){ return f.client===clientData.name&&!f.closed; }).length;
+}
+
+function renderTrucks() {
+  var el = document.getElementById('truck-list'); if(!el) return;
+  var drivers = clientData.drivers || [];
+  if (!drivers.length) { el.innerHTML = '<p style="color:var(--muted);font-size:13px">No trucks registered yet.</p>'; return; }
+  el.innerHTML = drivers.map(function(d){
+    var fd = complianceDays(d.fitness); var fc = complianceStatus(fd);
+    var rd = complianceDays(d.roadTax); var rc = complianceStatus(rd);
+    var id_d = complianceDays(d.identity); var ic = complianceStatus(id_d);
+    var driverTrips = allTrips.filter(function(f){ return f.plate===d.plate_horse; }).length;
+    var activeTruck = fleet.filter(function(f){ return f.plate===d.plate_horse && !f.closed; })[0];
+    var tripBadge = '<span style="background:rgba(59,139,235,.12);color:var(--info);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:8px">'+driverTrips+' trip'+(driverTrips!==1?'s':'')+'</span>';
+    var activeBadge = activeTruck ? '<span style="background:rgba(14,203,122,.12);color:var(--ok);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:4px">ACTIVE — Step '+activeTruck.processStep+'/9</span>' : '';
+    var mileageBadge = d.mileage ? '<span style="background:rgba(240,165,0,.1);color:var(--warn);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:4px">'+d.mileage.toLocaleString()+' km</span>' : '';
+    return '<div style="padding:14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;margin-bottom:10px">'
+      + '<div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:10px;display:flex;align-items:center;flex-wrap:wrap;gap:4px"><i class="fa-solid fa-truck" style="color:var(--red);margin-right:7px"></i>' + d.name + tripBadge + activeBadge + mileageBadge + '</div>'
+      + '<div style="display:flex;gap:20px;flex-wrap:wrap;font-size:12px;margin-bottom:8px">'
+      + '<div><span style="color:var(--muted)">Horse Plate: </span><span style="color:#fff;font-weight:600">' + d.plate_horse + '</span></div>'
+      + '<div><span style="color:var(--muted)">Trailer Plate: </span><span style="color:#fff;font-weight:600">' + d.plate_trailer + '</span></div>'
+      + '</div>'
+      + '<div style="display:flex;gap:10px;flex-wrap:wrap">'
+      + '<span class="chip ' + (fc?( fc.level==='ok'?'c-ok':fc.level==='warning'?'c-warn':'c-err'):'') + '"><i class="fa-solid fa-car-burst"></i> Fitness: ' + (fc?fc.label:'—') + '</span>'
+      + '<span class="chip ' + (rc?( rc.level==='ok'?'c-ok':rc.level==='warning'?'c-warn':'c-err'):'') + '"><i class="fa-solid fa-receipt"></i> Road Tax: ' + (rc?rc.label:'—') + '</span>'
+      + '<span class="chip ' + (ic?( ic.level==='ok'?'c-ok':ic.level==='warning'?'c-warn':'c-err'):'') + '"><i class="fa-solid fa-id-card"></i> Identity: ' + (ic?ic.label:'—') + '</span>'
+      + '</div></div>';
+  }).join('');
+}
+
+function renderCompliance() {
+  var el = document.getElementById('compliance-list'); if(!el) return;
+  var drivers = clientData.drivers || [];
+  if (!drivers.length) { el.innerHTML = '<p style="color:var(--muted);font-size:13px">No compliance data yet.</p>'; return; }
+  var items = [];
+  drivers.forEach(function(d) {
+    [['Fitness Certificate', d.fitness, 'fa-car-burst'], ['Road Tax', d.roadTax, 'fa-receipt'], ['Identity Document', d.identity, 'fa-id-card']].forEach(function(row) {
+      var days = complianceDays(row[1]); var cs = complianceStatus(days);
+      items.push({ driver:d.name, plate:d.plate_horse, type:row[0], icon:row[2], date:row[1], cs:cs });
+    });
+  });
+  // Sort by urgency
+  items.sort(function(a,b){ return (a.cs?a.cs.level==='expired'?-3:a.cs.level==='critical'?-2:a.cs.level==='warning'?-1:0:0) - (b.cs?b.cs.level==='expired'?-3:b.cs.level==='critical'?-2:b.cs.level==='warning'?-1:0:0); });
+  el.innerHTML = items.map(function(it) {
+    var bg = it.cs ? (it.cs.level==='ok'?'rgba(14,203,122,.08)':it.cs.level==='warning'?'rgba(240,165,0,.08)':'rgba(220,48,48,.08)') : 'rgba(255,255,255,.03)';
+    var bc = it.cs ? (it.cs.level==='ok'?'rgba(14,203,122,.2)':it.cs.level==='warning'?'rgba(240,165,0,.2)':'rgba(220,48,48,.2)') : 'var(--border)';
+    var icColor = it.cs ? (it.cs.level==='ok'?'var(--ok)':it.cs.level==='warning'?'var(--warn)':'var(--err)') : 'var(--muted)';
+    return '<div class="comp-item" style="background:' + bg + ';border-color:' + bc + '">'
+      + '<div class="comp-item-l"><div class="comp-ic" style="background:' + bg + ';color:' + icColor + '"><i class="fa-solid ' + it.icon + '"></i></div>'
+      + '<div><div class="comp-item-name">' + it.type + ' — ' + it.driver + '</div><div class="comp-item-sub">' + it.plate + ' · Expires: ' + (it.date||'—') + '</div></div></div>'
+      + '<span class="chip ' + (it.cs?(it.cs.level==='ok'?'c-ok':it.cs.level==='warning'?'c-warn':'c-err'):'') + '">' + (it.cs?it.cs.label:'—') + '</span></div>';
+  }).join('');
+}
+
+function renderTripHistory() {
+  var el = document.getElementById('trip-history'); if(!el) return;
+  var done = getCompleted().filter(function(c){ return c.client===clientData.name; });
+  if (!done.length) { el.innerHTML = '<p style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">No completed trips yet.</p>'; return; }
+  el.innerHTML = '<div style="margin-bottom:14px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><div style="font-size:13px;font-weight:700;color:#fff">'+done.length+' completed trip'+(done.length!==1?'s':'')+'</div><div style="font-size:13px;color:var(--ok);font-weight:600">Total: ZMW '+done.reduce(function(s,c){return s+(c.paymentAmount||0);},0).toLocaleString()+'</div></div>'
+    + done.map(function(t) {
+      return '<div class="trip-row"><div><div class="trip-id">' + (t.tripId||'—') + '</div><div class="trip-info">' + t.plate + ' — ' + (t.origin||'—') + ' → ' + (t.dest||'—') + '</div><div class="trip-meta">' + (t.border||'—') + ' · ' + (t.duration||'—') + '</div></div><div style="text-align:right"><div style="font-size:12px;font-weight:700;color:var(--ok)">ZMW ' + ((t.paymentAmount||0).toLocaleString()) + '</div><div style="font-size:11px;color:var(--muted)">' + (t.completedDate||'—') + '</div></div></div>';
+    }).join('');
+}
+
+function renderNotifications() {
+  var el = document.getElementById('notif-list'); if(!el) return;
+  var colors = { ok:'ni-s', warn:'ni-w', info:'ni-i', er:'ni-d' };
+  el.innerHTML = clientNotifs.map(function(n) {
+    return '<div class="notify-item" style="' + (n.read?'':'background:rgba(180,10,10,.04);border-left:2px solid var(--red);padding-left:8px;margin-left:-10px') + '">'
+      + '<div class="ni-ic ' + (colors[n.type]||'ni-i') + '"><i class="fa-solid ' + n.icon + '"></i></div>'
+      + '<div style="flex:1"><div class="ni-t">' + n.ttl + '</div><div class="ni-s">' + n.msg + '</div><div class="ni-tm">' + n.time + '</div></div>'
+      + (n.read?'':'<div style="width:7px;height:7px;background:var(--red);border-radius:50%;margin-top:4px;flex-shrink:0"></div>')
+      + '</div>';
+  }).join('');
+}
+
+function markNotifsRead() { clientNotifs.forEach(function(n){ n.read=true; }); renderNotifications(); toast('All read','Notifications marked as read.','ok'); }
+
+function populateTruckDropdown() {
+  var sel = document.getElementById('sub-truck'); if(!sel) return;
+  var drivers = (clientData&&clientData.drivers)||[];
+  sel.innerHTML = '<option value="">Select truck…</option>' + drivers.map(function(d){ return '<option value="'+d.plate_horse+'">'+d.name+' — '+d.plate_horse+'</option>'; }).join('');
+}
+
+function swDashTab(tab) {
+  document.querySelectorAll('.tn-btn').forEach(function(b,i){ b.classList.remove('active'); });
+  event.target.classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); });
+  document.getElementById('tab-'+tab).classList.add('active');
+}
+
+function submitDocs() {
+  var truck = document.getElementById('sub-truck')?.value;
+  if (!truck) { toast('Select a truck','Please select a truck first.','er'); return; }
+  toast('Documents Submitted!','12-hour SLA clock started. Our team will review shortly.','ok');
+  clientNotifs.unshift({type:'info',icon:'fa-file-invoice',ttl:'Documents Submitted',msg:'Transaction documents for '+truck+' received. 12h SLA clock started.',time:'Just now',read:false});
+  renderNotifications();
+}
+
+/* ONBOARDING */
+function addDriverForm() {
+  driverCount++;
+  var n = driverCount - 1;
+  var div = document.createElement('div'); div.className='driver-card'; div.id='driver-'+n;
+  div.innerHTML = '<div class="driver-card-n"><i class="fa-solid fa-person"></i>Driver '+driverCount+'</div>'
+    +'<div class="fg" style="margin-bottom:12px">'
+    +'<div class="fgrp"><label class="fl">Driver Full Name</label><input class="fc" type="text" id="drv-name-'+n+'" placeholder="Full name"/></div>'
+    +'<div class="fgrp"><label class="fl">Driver WhatsApp</label><input class="fc" type="tel" id="drv-wa-'+n+'" placeholder="+260 XXX XXX XXX"/></div>'
+    +'<div class="fgrp"><label class="fl">Driver Email</label><input class="fc" type="email" id="drv-email-'+n+'" placeholder="driver@email.com"/></div>'
+    +'<div class="fgrp"><label class="fl">Number Plate — Horse</label><input class="fc" type="text" id="drv-horse-'+n+'" placeholder="e.g. ABZ 1234 ZM"/></div>'
+    +'<div class="fgrp"><label class="fl">Number Plate — Trailer</label><input class="fc" type="text" id="drv-trailer-'+n+'" placeholder="e.g. TRL-001 ZM"/></div>'
+    +'</div>'
+    +'<div class="fg3">'
+    +'<div class="fgrp"><label class="fl">Fitness Due Date</label><input class="fc" type="date" id="drv-fitness-'+n+'"/></div>'
+    +'<div class="fgrp"><label class="fl">Road Tax Due Date</label><input class="fc" type="date" id="drv-roadtax-'+n+'"/></div>'
+    +'<div class="fgrp"><label class="fl">Identity Due Date</label><input class="fc" type="date" id="drv-identity-'+n+'"/></div>'
+    +'</div>';
+  document.getElementById('drivers-list').appendChild(div);
+}
+
+function goObStep(step) {
+  document.querySelectorAll('.ob-step-content').forEach(function(el){ el.style.display='none'; });
+  document.getElementById('ob-step'+step).style.display='block';
+  // Update step bar
+  for(var i=2;i<=4;i++){
+    var s=document.getElementById('ob-s'+i);
+    if(s){
+      s.classList.toggle('done',i<step);
+      s.classList.toggle('active',i===step);
+    }
+  }
+  obStep=step;
+  if(step===4) buildReview();
+}
+
+function buildReview() {
+  var clients=getClients();
+  var cl=clients.filter(function(c){return c.id===currentSession.clientId;})[0];
+  var html='<div style="margin-bottom:10px"><strong style="color:#fff">Company:</strong> '+(cl?cl.name:'—')+'</div>';
+  for(var i=0;i<driverCount;i++){
+    var name=document.getElementById('drv-name-'+i)?.value||'';
+    var horse=document.getElementById('drv-horse-'+i)?.value||'';
+    var fitness=document.getElementById('drv-fitness-'+i)?.value||'';
+    if(name) html+='<div style="margin-bottom:6px"><strong style="color:#fff">Driver '+(i+1)+':</strong> '+name+' · '+horse+' · Fitness: '+fitness+'</div>';
+  }
+  document.getElementById('ob-review-content').innerHTML=html||'<span style="color:var(--muted)">No driver information entered.</span>';
+}
+
+function submitOnboarding() {
+  if(!document.getElementById('ob-agree')?.checked){toast('Agree to terms','Please check the declaration box.','er');return;}
+  var clients=getClients();
+  var idx=clients.findIndex(function(c){return c.id===currentSession.clientId;});
+  if(idx!==-1){
+    clients[idx].status='pending';
+    var drivers=[];
+    for(var i=0;i<driverCount;i++){
+      var name=document.getElementById('drv-name-'+i)?.value||'';
+      if(name) drivers.push({name:name,whatsapp:document.getElementById('drv-wa-'+i)?.value||'',email:document.getElementById('drv-email-'+i)?.value||'',plate_horse:document.getElementById('drv-horse-'+i)?.value||'',plate_trailer:document.getElementById('drv-trailer-'+i)?.value||'',fitness:document.getElementById('drv-fitness-'+i)?.value||'',roadTax:document.getElementById('drv-roadtax-'+i)?.value||'',identity:document.getElementById('drv-identity-'+i)?.value||''});
+    }
+    clients[idx].drivers=drivers;
+    setClients(clients);
+  }
+  currentSession.status='pending';
+  sessionStorage.setItem('bt_session',JSON.stringify(currentSession));
+  toast('Submitted!','Your onboarding is under review. We will contact you shortly.','ok');
+  showScreen('pending');
+}
+
+function trigUpload(inputId,wrapId){document.getElementById(inputId)?.click();}
+function markUploaded(wrapId,input){
+  if(!input.files||!input.files[0])return;
+  var el=document.getElementById(wrapId);
+  if(el){el.classList.add('uploaded');el.querySelector('i').className='fa-solid fa-check-circle';el.querySelector('p').textContent='✅ '+input.files[0].name;}
+}
+function doLogout(){sessionStorage.removeItem('bt_session');window.location.href='index.html';}
+</script>
+</body>
+</html>

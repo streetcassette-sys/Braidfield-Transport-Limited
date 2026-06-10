@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<!-- Braidfield Transport — Public Website + Login | Replace GOOGLE_CLIENT_ID in shared.js -->
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="description" content="Braidfield Transport Limited — Zambia's trusted cross-border freight. 9-step ZRA Ascuyda process, T1 tracking, real-time GPS."/>
+<title>Braidfield Transport Limited | Cross-Border Logistics Zambia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="anonymous"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin="anonymous"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{--red:#CC1010;--grad:linear-gradient(135deg,#E01212,#C01010 55%,#8C0808);--dark:#080C14;--d2:#0F1520;--d3:#161D2E;--d4:#1E2840;--text:#B8C4D8;--muted:#5A6A80;--border:rgba(255,255,255,.07);--bdr:rgba(180,10,10,.22);--ok:#0ECB7A;--info:#3B8BEB;--warn:#F0A500;--err:#E03030;--r:14px;--rs:8px}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--dark);color:var(--text);overflow-x:hidden;line-height:1.65}
+h1,h2,h3,h4{font-family:'Poppins',sans-serif;color:#fff;line-height:1.2}
+a{text-decoration:none;color:inherit}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--dark)}::-webkit-scrollbar-thumb{background:var(--red);border-radius:3px}
+.container{max-width:1200px;margin:0 auto;padding:0 28px}
+.tag{display:inline-flex;align-items:center;gap:7px;padding:5px 15px;border-radius:50px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;border:1px solid var(--bdr);background:rgba(180,10,10,.09);color:var(--red);margin-bottom:14px}
+.tag::before{content:'';width:5px;height:5px;background:var(--red);border-radius:50%}
+.grad-text{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:var(--rs);font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .22s;text-decoration:none;line-height:1}
+.btn-r{background:var(--grad);color:#fff;box-shadow:0 6px 22px rgba(180,10,10,.28)}.btn-r:hover{opacity:.9;transform:translateY(-2px)}
+.btn-o{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.18)}.btn-o:hover{border-color:var(--red);color:var(--red)}
+.btn-g{background:rgba(255,255,255,.05);color:#fff}.btn-g:hover{background:rgba(180,10,10,.12);color:var(--red)}
+.btn-sm{padding:6px 13px;font-size:12px}
+.btn-wh{background:#fff;color:#A00C0C;font-weight:700}.btn-wh:hover{background:#f0f0f0;transform:translateY(-2px)}
+.btn-tr{background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.35)}.btn-tr:hover{background:rgba(255,255,255,.25)}
+.fc{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Outfit',sans-serif;font-size:13px;color:#fff;outline:none;transition:border-color .2s}
+.fc:focus{border-color:var(--red)}.fc::placeholder{color:var(--muted)}select.fc option{background:var(--d2)}textarea.fc{resize:vertical}
+.fl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px)}
+.overlay.open{display:flex}
+@keyframes su{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes tps{0%,100%{box-shadow:0 4px 16px rgba(180,10,10,.5)}50%{box-shadow:0 4px 24px rgba(180,10,10,.8),0 0 0 8px rgba(180,10,10,.1)}}
+.toast-wrap{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--d3);border:1px solid var(--border);border-radius:10px;padding:11px 15px;display:flex;align-items:center;gap:10px;box-shadow:0 12px 30px rgba(0,0,0,.4);animation:su .3s ease;min-width:240px;max-width:320px}
+.t-ok .t-ic{background:rgba(14,203,122,.12);color:var(--ok)}.t-wa .t-ic{background:rgba(240,165,0,.12);color:var(--warn)}.t-er .t-ic{background:rgba(220,48,48,.12);color:var(--err)}
+.t-ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.t-ttl{font-size:13px;font-weight:700;color:#fff}.t-sub{font-size:11px;color:var(--muted)}
+.site-nav{position:fixed;top:0;left:0;right:0;z-index:900;padding:0 28px;transition:all .3s}
+.site-nav.scrolled{background:rgba(8,12,20,.96);backdrop-filter:blur(22px);border-bottom:1px solid var(--border)}
+.nav-in{max-width:1200px;margin:0 auto;height:70px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:11px}
+.lm{width:42px;height:42px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;font-size:17px;color:#fff;flex-shrink:0}
+.lt{font-family:'Poppins',sans-serif;font-weight:800;font-size:16px;color:#fff;line-height:1.1}
+.lt small{display:block;font-size:9px;font-weight:500;color:var(--red);letter-spacing:2px;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-links a{padding:7px 13px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--text);transition:all .2s}
+.nav-links a:hover{color:#fff;background:rgba(255,255,255,.05)}
+.nav-act{display:flex;align-items:center;gap:9px}
+.ham{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px}
+.ham span{display:block;width:22px;height:2px;background:#fff;border-radius:2px}
+.mob-nav{display:none;position:fixed;top:70px;left:0;right:0;bottom:0;background:var(--d2);z-index:890;padding:20px;flex-direction:column;gap:6px;border-top:1px solid var(--border);overflow-y:auto}
+.mob-nav.open{display:flex}
+.mob-nav a{padding:13px 16px;border-radius:10px;font-size:15px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:12px;border:1px solid transparent;transition:all .2s}
+.mob-nav a:hover{background:rgba(180,10,10,.08);border-color:var(--bdr);color:var(--red)}
+.mob-nav a i{width:18px;color:var(--red)}
+#hero{min-height:100vh;display:flex;align-items:center;padding:90px 0 60px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 70% 55% at 65% 45%,rgba(180,10,10,.10),transparent 65%),linear-gradient(175deg,#080C14,#0F1520)}
+.hero-gl{position:absolute;inset:0;z-index:0;opacity:.025;background-image:linear-gradient(rgba(255,255,255,1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1) 1px,transparent 1px);background-size:55px 55px}
+.hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 60%;opacity:.10;z-index:0;mix-blend-mode:luminosity;filter:grayscale(100%)}
+.hero-c{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.hero-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(180,10,10,.1);border:1px solid rgba(180,10,10,.25);color:var(--red);font-size:12px;font-weight:600;padding:7px 15px;border-radius:50px;margin-bottom:22px}
+.hd{width:7px;height:7px;background:var(--red);border-radius:50%;animation:blink 2s infinite}
+.hero-title{font-size:clamp(34px,5.5vw,62px);font-weight:800;margin-bottom:18px}
+.hero-desc{font-size:16px;color:var(--muted);margin-bottom:34px;line-height:1.75;max-width:470px}
+.hero-acts{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.hero-stats{display:flex;gap:28px;margin-top:44px;padding-top:32px;border-top:1px solid var(--border);flex-wrap:wrap}
+.sn{font-size:28px;font-weight:800;font-family:'Poppins',sans-serif;color:#fff}
+.sn span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.hero-card{background:rgba(22,29,46,.85);border:1px solid var(--border);border-radius:var(--r);padding:26px;backdrop-filter:blur(20px);position:relative;overflow:hidden}
+.hero-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad)}
+.live-chip{display:flex;align-items:center;gap:5px;background:rgba(14,203,122,.12);color:var(--ok);font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px}
+.ld{width:5px;height:5px;background:var(--ok);border-radius:50%;animation:blink 1.4s infinite}
+.rri{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;padding:10px 14px;margin-bottom:8px;transition:border-color .2s}
+.rri:last-child{margin-bottom:0}.rri:hover{border-color:var(--bdr)}
+.rri-l{display:flex;align-items:center;gap:10px}
+.rri-ic{width:32px;height:32px;border-radius:8px;background:rgba(180,10,10,.12);display:flex;align-items:center;justify-content:center;color:var(--red);font-size:12px}
+.rri-n{font-size:12px;font-weight:700;color:#fff}.rri-s{font-size:10px;color:var(--muted)}
+.rri-st{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(14,203,122,.12);color:var(--ok)}
+.trust-bar{background:var(--d3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:18px 0}
+.trust-in{display:flex;align-items:center;justify-content:space-around;flex-wrap:wrap;gap:18px}
+.ti{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:500;color:var(--muted)}
+.ti i{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:15px}
+section{padding:90px 0}
+/* ── 9-STEP PROCESS ── */
+#process{background:var(--d2)}
+.proc-header{text-align:center;margin-bottom:48px}
+.proc-title{font-size:clamp(26px,4vw,44px);font-weight:800;margin-bottom:14px}
+.proc-sub{font-size:15px;color:var(--muted);max-width:600px;margin:0 auto;line-height:1.75}
+.proc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;position:relative}
+.proc-step{background:var(--d3);border:1px solid var(--border);border-radius:var(--r);padding:22px;position:relative;overflow:hidden;transition:all .3s}
+.proc-step:hover{transform:translateY(-3px);border-color:var(--bdr)}
+.proc-step.alert-step{border-color:rgba(220,48,48,.3);background:linear-gradient(135deg,var(--d3),rgba(220,48,48,.04))}
+.proc-step.warn-step{border-color:rgba(240,165,0,.3);background:linear-gradient(135deg,var(--d3),rgba(240,165,0,.04))}
+.proc-step::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.proc-num{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;font-size:16px;color:#fff;margin-bottom:14px;flex-shrink:0}
+.proc-phase{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
+.proc-step-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.proc-step-title i{font-size:13px}
+.proc-step-desc{font-size:12.5px;color:var(--muted);line-height:1.65;margin-bottom:10px}
+.proc-alert{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;padding:7px 10px;border-radius:7px;margin-top:8px}
+.proc-arrow{display:flex;justify-content:center;align-items:center;padding:10px 0}
+.proc-arrow-v{width:2px;height:24px;background:var(--grad);margin:0 auto;position:relative}
+.proc-arrow-v::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--red)}
+/* ── BORDERS ── */
+#borders{background:var(--dark)}
+.bg{display:grid;grid-template-columns:1fr 1.35fr;gap:56px;align-items:start}
+.b-list{display:flex;flex-direction:column;gap:13px;margin-top:28px}
+.b-item{display:flex;align-items:center;gap:14px;background:var(--d3);border:1px solid var(--border);border-radius:var(--rs);padding:16px 20px;transition:all .25s;cursor:pointer}
+.b-item:hover,.b-item.active{border-color:var(--bdr);transform:translateX(5px);background:rgba(180,10,10,.06)}
+.b-num{width:38px;height:38px;border-radius:9px;background:rgba(180,10,10,.1);border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0}
+.b-num span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.b-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:2px}.b-detail{font-size:11px;color:var(--muted)}
+.b-dot{width:8px;height:8px;background:var(--ok);border-radius:50%;margin-left:auto;flex-shrink:0;box-shadow:0 0 6px var(--ok)}
+.map-box{background:var(--d3);border:1px solid var(--border);border-radius:var(--r);padding:28px;position:relative;overflow:hidden}
+.map-box::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad)}
+/* Clickable SVG border shapes */
+.bp-circle{cursor:pointer;transition:filter .2s}
+.bp-circle:hover{filter:brightness(1.5) drop-shadow(0 0 10px rgba(224,18,18,.9))}
+.bp-circle.active{filter:brightness(1.8) drop-shadow(0 0 14px rgba(224,18,18,1))}
+.bp-circle:focus{outline:none;filter:brightness(1.6) drop-shadow(0 0 12px rgba(224,18,18,.95))}
+.border-info-panel{margin-top:16px;padding:16px;background:rgba(180,10,10,.08);border:1px solid var(--bdr);border-radius:10px;display:none;animation:su .25s ease}
+.border-info-panel.show{display:block}
+.bip-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.bip-title i{color:var(--red)}
+.bip-rows{display:flex;flex-direction:column;gap:6px}
+.bip-row{display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid rgba(255,255,255,.05);padding-bottom:5px}
+.bip-row:last-child{border-bottom:none;padding-bottom:0}
+.bip-row span:first-child{color:var(--muted)}.bip-row span:last-child{color:#fff;font-weight:600}
+/* TRACKING */
+#livetrack{background:var(--dark)}
+.track-layout{display:grid;grid-template-columns:1fr 340px;gap:24px;margin-top:48px}
+#truck-map{width:100%;height:500px;border-radius:var(--r);border:1px solid var(--border);z-index:1;min-height:300px}
+.track-panel{display:flex;flex-direction:column;gap:13px}
+.ts-box{background:var(--d3);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.t-inp-row{display:flex;gap:8px;margin-top:10px}
+.truck-card{background:var(--d3);border:1px solid var(--border);border-radius:var(--rs);padding:14px;cursor:pointer;transition:all .2s;margin-bottom:8px}
+.truck-card:hover,.truck-card.sel{border-color:var(--bdr);background:rgba(180,10,10,.05)}.truck-card.sel{border-color:var(--red)}
+.tc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.tc-id{font-size:11.5px;font-weight:800;color:#fff}
+.tc-badge{font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:20px}
+.moving{background:rgba(14,203,122,.12);color:var(--ok)}.clearing{background:rgba(240,165,0,.12);color:var(--warn)}
+.tc-route{font-size:10.5px;color:var(--muted);margin-bottom:7px}
+.tc-bw{height:3px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-bottom:7px}
+.tc-bar{height:100%;background:var(--grad);border-radius:3px;transition:width .5s}
+.tc-meta{display:flex;justify-content:space-between;font-size:10px;color:var(--muted)}
+.tc-eta{font-weight:700;color:var(--red)}
+.info-box{background:var(--d3);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.id-row{display:flex;justify-content:space-between;font-size:11.5px;padding-bottom:7px;border-bottom:1px solid rgba(255,255,255,.04)}
+.id-row:last-child{border-bottom:none;padding-bottom:0}
+.id-key{color:var(--muted)}.id-val{color:#fff;font-weight:600;text-align:right}
+.truck-icon{background:none!important;border:none!important}
+.tmw{width:34px;height:34px;background:var(--grad);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;animation:tps 2s infinite}
+.leaflet-popup-content-wrapper{background:#161D2E!important;border:1px solid rgba(180,10,10,.22)!important;color:#fff!important;border-radius:10px!important;box-shadow:0 10px 30px rgba(0,0,0,.5)!important}
+.leaflet-popup-tip{background:#161D2E!important}
+.leaflet-popup-content{font-family:'Outfit',sans-serif!important;font-size:13px!important;color:#B8C4D8!important;margin:14px 16px!important}
+.pu-ttl{font-weight:700;color:#fff;margin-bottom:6px;font-size:14px}
+.pu-row{display:flex;justify-content:space-between;gap:16px;margin-top:4px;font-size:12px}
+.pu-k{color:#5A6A80}.pu-v{color:#fff;font-weight:600}
+/* BOOKING */
+#booking{background:var(--d2)}
+.book-tabs{display:flex;gap:3px;background:var(--d4);border-radius:11px;padding:4px;width:fit-content;margin-bottom:32px}
+.b-tab{padding:9px 22px;border-radius:8px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:var(--muted);background:transparent;transition:all .2s}
+.b-tab.active{background:var(--grad);color:#fff}
+.book-layout{display:grid;grid-template-columns:1.15fr 1fr;gap:36px;align-items:start}
+.form-card{background:var(--d3);border:1px solid var(--border);border-radius:var(--r);padding:32px;position:relative;overflow:hidden}
+.form-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad)}
+.tab-pane{display:none}.tab-pane.active{display:block}
+.wa-box{background:rgba(37,211,102,.06);border:1px solid rgba(37,211,102,.18);border-radius:var(--rs);padding:18px;margin-top:16px}
+.wa-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:#25D366;color:#fff;border:none;border-radius:8px;padding:11px;width:100%;font-family:'Outfit',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;text-decoration:none}
+.wa-btn:hover{background:#20c45e;transform:translateY(-1px)}
+/* WHY */
+#why{background:var(--dark)}
+.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center}
+.why-feats{display:grid;gap:18px}
+.wi{display:flex;gap:14px;align-items:flex-start}
+.wi-ic{width:44px;height:44px;background:rgba(180,10,10,.09);border:1px solid var(--bdr);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wi-ic i{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:17px}
+.wi h4{font-size:14px;font-weight:700;margin-bottom:4px}.wi p{font-size:13px;color:var(--muted);line-height:1.6}
+.testi-box{background:var(--d3);border:1px solid var(--border);border-radius:var(--r);padding:30px;position:relative;overflow:hidden}
+.testi-box::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad)}
+.testi{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:11px;padding:22px;margin-bottom:14px}
+.stars{color:#F0A500;font-size:12px;margin-bottom:9px}
+.testi-txt{font-size:13.5px;color:var(--text);line-height:1.7;font-style:italic;margin-bottom:14px}
+.testi-auth{display:flex;align-items:center;gap:11px}
+.av{width:38px;height:38px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:13px;flex-shrink:0}
+.av-name{font-size:13px;font-weight:600;color:#fff}.av-role{font-size:11px;color:var(--muted)}
+/* CTA */
+#cta{background:var(--d2)}
+.cta-wrap{background:var(--grad);border-radius:22px;padding:68px 56px;text-align:center;position:relative;overflow:hidden}
+.cta-wrap::before{content:'';position:absolute;top:-30%;right:-10%;width:500px;height:500px;background:rgba(255,255,255,.06);border-radius:50%}
+.cta-wrap h2,.cta-wrap p{position:relative;z-index:1}
+.cta-wrap h2{font-size:clamp(24px,4vw,42px);color:#fff;margin-bottom:14px}
+.cta-wrap p{font-size:16px;color:rgba(255,255,255,.78);margin-bottom:34px}
+.cta-acts{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;position:relative;z-index:1}
+/* CONTACT */
+#contact{background:var(--dark)}
+.ct-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:56px}
+.ci-items{display:flex;flex-direction:column;gap:14px}
+.ci{display:flex;align-items:flex-start;gap:13px}
+.ci-ic{width:42px;height:42px;background:rgba(180,10,10,.09);border:1px solid var(--bdr);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ci-ic i{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:15px}
+.ci strong{display:block;font-size:12px;font-weight:700;color:#fff;margin-bottom:2px}.ci span,.ci a{font-size:13px;color:var(--muted)}.ci a:hover{color:var(--red)}
+.agents-box{background:var(--d4);border:1px solid var(--border);border-radius:11px;padding:18px;margin-top:24px}
+.ab-ttl{font-size:11px;font-weight:700;color:#fff;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px}
+.ab-row{display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.ab-row:last-child{border-bottom:none}
+.soc-row{display:flex;gap:9px;margin-top:24px}
+.soc-btn{width:40px;height:40px;background:var(--d4);border:1px solid var(--border);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;cursor:pointer;transition:all .2s}
+.soc-btn:hover{background:rgba(180,10,10,.1);border-color:var(--bdr);color:var(--red)}
+.cf-card{background:var(--d3);border:1px solid var(--border);border-radius:var(--r);padding:30px;position:relative;overflow:hidden}
+.cf-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad)}
+footer{background:var(--dark);border-top:1px solid var(--border);padding:56px 0 0}
+.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;padding-bottom:44px}
+.fb-desc{font-size:13px;color:var(--muted);margin:15px 0 22px;line-height:1.7;max-width:270px}
+.foot-badges{display:flex;gap:7px;flex-wrap:wrap}
+.fbadge{background:var(--d3);border:1px solid var(--border);padding:3px 11px;border-radius:6px;font-size:10px;color:var(--muted)}
+.fc-ttl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#fff;margin-bottom:18px}
+.fc-links{list-style:none;display:flex;flex-direction:column;gap:9px}
+.fc-links a{font-size:13px;color:var(--muted);transition:color .2s}.fc-links a:hover{color:var(--red)}
+.foot-bot{border-top:1px solid var(--border);padding:18px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.foot-bot p{font-size:12px;color:var(--muted)}.foot-bot a{color:var(--red)}
+/* LOGIN */
+.lm-box{background:var(--d2);border:1px solid var(--border);border-radius:var(--r);width:100%;max-width:500px;overflow:hidden;animation:su .3s ease;position:relative}
+.lm-top{background:var(--grad);padding:22px 28px}
+.lm-top p{font-size:13px;color:rgba(255,255,255,.78);margin-top:4px}
+.ltabs{display:flex;gap:3px;background:rgba(0,0,0,.2);padding:4px;border-radius:10px;margin-top:16px}
+.ltab{flex:1;padding:9px 16px;border-radius:7px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:rgba(255,255,255,.6);background:transparent;text-align:center;transition:all .2s}
+.ltab.active{background:rgba(255,255,255,.15);color:#fff}
+.lm-body{padding:22px 28px}
+.lpane{display:none}.lpane.active{display:block}
+.lm-x{position:absolute;top:14px;right:14px;width:28px;height:28px;background:rgba(255,255,255,.15);border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;z-index:1}
+.note-box{font-size:11.5px;color:var(--muted);padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:7px;margin-bottom:14px;display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+.note-box i{color:var(--red);margin-top:1px;flex-shrink:0}
+.g-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:11px 20px;background:#fff;border:none;border-radius:8px;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;font-size:14px;color:#1f2937;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.15);margin-bottom:6px}
+.g-btn:hover{background:#f8fafc;box-shadow:0 4px 14px rgba(0,0,0,.2);transform:translateY(-1px)}
+.g-btn svg{width:20px;height:20px;flex-shrink:0}
+.divider{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--muted);font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.did-row{display:flex;gap:4px;margin-bottom:10px;background:var(--d4);padding:3px;border-radius:8px}
+.did-btn{flex:1;padding:6px 8px;border-radius:6px;border:none;cursor:pointer;font-size:11px;font-weight:600;color:var(--muted);background:transparent;font-family:'Outfit',sans-serif;transition:all .2s}
+.did-btn.active{background:var(--d3);color:#fff}
+.demo-block{margin-top:14px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:8px;padding:11px}
+.demo-hd{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:7px}
+.demo-row{display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03);gap:8px}
+.demo-row:last-child{border-bottom:none}
+.d-id{color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.d-pw{color:var(--muted);font-family:monospace;flex-shrink:0}
+@media(max-width:1024px){.proc-grid{grid-template-columns:1fr 1fr}.track-layout{grid-template-columns:1fr}#truck-map{height:380px}.bg{grid-template-columns:1fr}.foot-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){.nav-links,.nav-act .btn{display:none}.ham{display:flex}.hero-c{grid-template-columns:1fr}.hero-card-wrap{display:none}.proc-grid{grid-template-columns:1fr}.why-grid,.ct-grid,.book-layout,.fg{grid-template-columns:1fr}.foot-grid{grid-template-columns:1fr}.cta-wrap{padding:40px 22px}}
+</style>
+</head>
+<body>
+<nav class="site-nav" id="nav">
+  <div class="nav-in">
+    <a href="#hero" class="logo"><div class="lm">BT</div><div class="lt">Braidfield Transport<small>Cross-Border Logistics</small></div></a>
+    <div class="nav-links"><a href="#process">Process</a><a href="#borders">Border Posts</a><a href="#livetrack">Track</a><a href="#booking">Book</a><a href="#contact">Contact</a></div>
+    <div class="nav-act">
+      <a href="client.html" class="btn btn-o" style="padding:9px 18px;font-size:12.5px"><i class="fa-solid fa-building-user"></i> Client Portal</a><button class="btn btn-o" style="padding:9px 18px;font-size:12.5px" onclick="openLogin();switchLTab('staff')"><i class="fa-regular fa-user"></i> Staff Login</button><button class="btn btn-o" style="padding:9px 18px;font-size:12.5px" onclick="openLogin();switchLTab('driver')"><i class="fa-solid fa-truck"></i> Driver</button>
+      <a href="#booking" class="btn btn-r" style="padding:9px 18px;font-size:12.5px"><i class="fa-solid fa-box"></i> Book Now</a>
+    </div>
+    <div class="ham" onclick="toggleMob()"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+<div class="mob-nav" id="mob-nav">
+  <a href="#process"  onclick="closeMob()"><i class="fa-solid fa-diagram-project"></i>Process</a>
+  <a href="#borders"  onclick="closeMob()"><i class="fa-solid fa-map-pin"></i>Border Posts</a>
+  <a href="#livetrack" onclick="closeMob()"><i class="fa-solid fa-truck-fast"></i>Track</a>
+  <a href="#booking"  onclick="closeMob()"><i class="fa-solid fa-box"></i>Book</a>
+  <a href="#contact"  onclick="closeMob()"><i class="fa-solid fa-envelope"></i>Contact</a>
+  <div style="margin-top:8px;border-top:1px solid var(--border);padding-top:14px;display:flex;gap:9px">
+    <button class="btn btn-o" onclick="openLogin();switchLTab('staff')" style="flex:1;justify-content:center">Staff Login</button>
+    <button class="btn btn-o" onclick="openLogin();switchLTab('driver')" style="flex:1;justify-content:center"><i class="fa-solid fa-truck"></i> Driver</button>
+    <a href="#booking" onclick="closeMob()" class="btn btn-r" style="flex:1;justify-content:center">Book Now</a>
+  </div>
+</div>
+<section id="hero">
+  <div class="hero-bg"></div><div class="hero-gl"></div>
+  <img src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=1920&q=80&auto=format&fit=crop" alt="" class="hero-img" onerror="this.style.display='none'"/>
+  <div class="container"><div class="hero-c">
+    <div>
+      <div class="hero-pill"><span class="hd"></span>Zambia's Cross-Border Logistics Specialist</div>
+      <h1 class="hero-title">Moving Cargo <span class="grad-text">Across Borders</span> With Confidence</h1>
+      <p class="hero-desc">From ZRA Ascuyda entry to TR8 at the Congo final destination — Braidfield Transport manages every step of the cross-border logistics process with precision and real-time transparency.</p>
+      <div class="hero-acts">
+        <a href="#booking" class="btn btn-r"><i class="fa-solid fa-box"></i>Book a Delivery</a>
+        <a href="#process" class="btn btn-g"><i class="fa-solid fa-diagram-project"></i>Our Process</a>
+      </div>
+      <div class="hero-stats">
+        <div><div class="sn">9<span></span></div><div class="sl">Step Process</div></div>
+        <div><div class="sn">5<span>+</span></div><div class="sl">Border Posts</div></div>
+        <div><div class="sn">48h</div><div class="sl">Congo Alert</div></div>
+        <div><div class="sn">98<span>%</span></div><div class="sl">On-Time Rate</div></div>
+      </div>
+    </div>
+    <div class="hero-card-wrap"><div class="hero-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+        <span style="font-size:13px;font-weight:700;color:#fff"><i class="fa-solid fa-route" style="color:var(--red)"></i> Active Routes</span>
+        <div class="live-chip"><span class="ld"></span>LIVE</div>
+      </div>
+      <div class="rri"><div class="rri-l"><div class="rri-ic"><i class="fa-solid fa-border-all"></i></div><div><div class="rri-n">Kasumbalesa — ZM/DRC</div><div class="rri-s">3 trucks active</div></div></div><span class="rri-st">24/7</span></div>
+      <div class="rri"><div class="rri-l"><div class="rri-ic"><i class="fa-solid fa-border-all"></i></div><div><div class="rri-n">Nakonde — ZM/TZ</div><div class="rri-s">2 trucks active</div></div></div><span class="rri-st">Operational</span></div>
+      <div class="rri"><div class="rri-l"><div class="rri-ic"><i class="fa-solid fa-border-all"></i></div><div><div class="rri-n">Mokambo — ZM/DRC</div><div class="rri-s">2 trucks active</div></div></div><span class="rri-st">Operational</span></div>
+      <div class="rri"><div class="rri-l"><div class="rri-ic"><i class="fa-solid fa-border-all"></i></div><div><div class="rri-n">Sakania — ZM/DRC</div><div class="rri-s">1 truck active</div></div></div><span class="rri-st">Operational</span></div>
+      <div class="rri"><div class="rri-l"><div class="rri-ic"><i class="fa-solid fa-border-all"></i></div><div><div class="rri-n">Tunduma — ZM/TZ</div><div class="rri-s">1 truck active</div></div></div><span class="rri-st">Operational</span></div>
+    </div></div>
+  </div></div>
+</section>
+<div class="trust-bar"><div class="container"><div class="trust-in">
+  <div class="ti"><i class="fa-solid fa-database"></i>ZRA Ascuyda Registered</div>
+  <div class="ti"><i class="fa-solid fa-file-signature"></i>T1 Document Tracking</div>
+  <div class="ti"><i class="fa-solid fa-clock"></i>48h Congo Parking Alert</div>
+  <div class="ti"><i class="fa-solid fa-satellite-dish"></i>Real-Time GPS</div>
+  <div class="ti"><i class="fa-solid fa-chart-bar"></i>Reports by Client & Truck</div>
+</div></div></div>
+
+<!-- ══ 9-STEP PROCESS SECTION ══ -->
+<section id="process"><div class="container">
+  <div class="proc-header">
+    <div class="tag">Our Documented Process</div>
+    <h2 class="proc-title">9-Step Cross-Border Logistics Flow</h2>
+    <p class="proc-sub">Every Braidfield shipment follows this exact process — from document collection to final offloading at the Congo or Tanzania destination. All steps are tracked in real time.</p>
+  </div>
+
+  <!-- Steps 1–3: Prep Phase -->
+  <div style="margin-bottom:8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--info);display:flex;align-items:center;gap:10px">
+    <span>Phase 1 — Documentation &amp; Dispatch</span>
+    <div style="flex:1;height:1px;background:rgba(59,139,235,.25)"></div>
+  </div>
+  <div class="proc-grid" style="margin-bottom:24px">
+    <div class="proc-step" style="--c:#3B8BEB;border-top-color:var(--c)">
+      <div class="proc-step::before" style="background:#3B8BEB"></div>
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#3B8BEB"></div>
+      <div class="proc-num" style="background:#3B8BEB"><span>1</span></div>
+      <div class="proc-phase" style="color:#3B8BEB">PREP</div>
+      <div class="proc-step-title"><i class="fa-solid fa-file-invoice" style="color:#3B8BEB"></i>Documents Received</div>
+      <div class="proc-step-desc">Client provides all required documentation:</div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;align-items:center;gap:7px;font-size:12px"><i class="fa-solid fa-check-circle" style="color:var(--ok);font-size:10px"></i><span>Commercial Invoice</span></div>
+        <div style="display:flex;align-items:center;gap:7px;font-size:12px"><i class="fa-solid fa-check-circle" style="color:var(--ok);font-size:10px"></i><span>Delivery Note</span></div>
+        <div style="display:flex;align-items:center;gap:7px;font-size:12px"><i class="fa-solid fa-check-circle" style="color:var(--ok);font-size:10px"></i><span>Customs T1 Document</span></div>
+        <div style="display:flex;align-items:center;gap:7px;font-size:12px"><i class="fa-solid fa-check-circle" style="color:var(--ok);font-size:10px"></i><span>Movement Sheet</span></div>
+      </div>
+    </div>
+    <div class="proc-step" style="border-top:3px solid #F0A500">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#F0A500"></div>
+      <div class="proc-num" style="background:#F0A500"><span>2</span></div>
+      <div class="proc-phase" style="color:#F0A500">PREP</div>
+      <div class="proc-step-title"><i class="fa-solid fa-truck-loading" style="color:#F0A500"></i>Cargo Loaded &amp; Dispatched</div>
+      <div class="proc-step-desc">Cargo loaded and released from depot to Exit border. All items verified against delivery note and invoice before sealing.</div>
+    </div>
+    <div class="proc-step" style="border-top:3px solid #F0A500">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#F0A500"></div>
+      <div class="proc-num" style="background:#F0A500"><span>3</span></div>
+      <div class="proc-phase" style="color:#F0A500">BORDER</div>
+      <div class="proc-step-title"><i class="fa-solid fa-passport" style="color:#F0A500"></i>Exit Border Clearance</div>
+      <div class="proc-step-desc">Exit border agent acquits all documents and officially releases cargo to Zambia. This triggers the ZRA registration process.</div>
+    </div>
+  </div>
+
+  <!-- Steps 4–6: ZRA Phase -->
+  <div style="margin-bottom:8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--red);display:flex;align-items:center;gap:10px">
+    <span>Phase 2 — ZRA Registration &amp; T1 Issuance</span>
+    <div style="flex:1;height:1px;background:rgba(180,10,10,.25)"></div>
+  </div>
+  <div class="proc-grid" style="margin-bottom:24px">
+    <div class="proc-step" style="border-top:3px solid var(--red)">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--red)"></div>
+      <div class="proc-num" style="background:var(--red)"><span>4</span></div>
+      <div class="proc-phase" style="color:var(--red)">ZRA</div>
+      <div class="proc-step-title"><i class="fa-solid fa-database" style="color:var(--red)"></i>ZRA Ascuyda Entry</div>
+      <div class="proc-step-desc">Braidfield Transport creates the entry in the <strong style="color:#fff">ZRA Ascuyda system</strong>. This registers the shipment formally with Zambia Revenue Authority and generates a system reference number.</div>
+    </div>
+    <div class="proc-step" style="border-top:3px solid var(--ok)">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--ok)"></div>
+      <div class="proc-num" style="background:var(--ok)"><span>5</span></div>
+      <div class="proc-phase" style="color:var(--ok)">ZRA</div>
+      <div class="proc-step-title"><i class="fa-solid fa-money-bill-wave" style="color:var(--ok)"></i>Payment Made</div>
+      <div class="proc-step-desc">Payment made for entry into the ZRA Ascuyda system. Payment reference number recorded and payment receipt attached to the trip file.</div>
+    </div>
+    <div class="proc-step warn-step" style="border-top:3px solid var(--warn)">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--warn)"></div>
+      <div class="proc-num" style="background:var(--warn)"><span>6</span></div>
+      <div class="proc-phase" style="color:var(--warn)">ZRA</div>
+      <div class="proc-step-title"><i class="fa-solid fa-file-signature" style="color:var(--warn)"></i>T1 &amp; Release Order Generated</div>
+      <div class="proc-step-desc">Release order generated → <strong style="color:#fff">T1 document issued</strong> for 5-day transit through Zambia.</div>
+      <div class="proc-alert" style="background:rgba(240,165,0,.12);border:1px solid rgba(240,165,0,.3);color:var(--warn)">
+        <i class="fa-solid fa-hourglass-half"></i><strong>⏱ 5-day T1 transit timer starts NOW</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Steps 7–9: Transit + Congo Phase -->
+  <div style="margin-bottom:8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--ok);display:flex;align-items:center;gap:10px">
+    <span>Phase 3 — Cross-Border Transit &amp; Final Delivery</span>
+    <div style="flex:1;height:1px;background:rgba(14,203,122,.25)"></div>
+  </div>
+  <div class="proc-grid">
+    <div class="proc-step" style="border-top:3px solid var(--ok)">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--ok)"></div>
+      <div class="proc-num" style="background:var(--ok)"><span>7</span></div>
+      <div class="proc-phase" style="color:var(--ok)">TRANSIT</div>
+      <div class="proc-step-title"><i class="fa-solid fa-border-all" style="color:var(--ok)"></i>Crossed to Congo</div>
+      <div class="proc-step-desc">At <strong style="color:#fff">Sakania (Zambia side)</strong>: cargo is officially acquitted. Trucks then cross to <strong style="color:#fff">Sakania Congo side</strong> — entering the final leg of the journey.</div>
+    </div>
+    <div class="proc-step alert-step" style="border-top:3px solid var(--err)">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--err)"></div>
+      <div class="proc-num" style="background:var(--err)"><span>8</span></div>
+      <div class="proc-phase" style="color:var(--err)">CONGO</div>
+      <div class="proc-step-title"><i class="fa-solid fa-flag" style="color:var(--err)"></i>Congo Final Destination</div>
+      <div class="proc-step-desc">Buyer declares to <strong style="color:#fff">Congolese customs</strong> → <strong style="color:#fff">TR8 document generated</strong>. Buyer must pay taxes for T1 clearance.</div>
+      <div class="proc-alert" style="background:rgba(220,48,48,.12);border:1px solid rgba(220,48,48,.3);color:var(--err)">
+        <i class="fa-solid fa-triangle-exclamation"></i><strong>48h parking limit — $25/day fine after</strong>
+      </div>
+    </div>
+    <div class="proc-step" style="border-top:3px solid var(--ok)">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--ok)"></div>
+      <div class="proc-num" style="background:var(--ok)"><span>9</span></div>
+      <div class="proc-phase" style="color:var(--ok)">COMPLETE</div>
+      <div class="proc-step-title"><i class="fa-solid fa-box-open" style="color:var(--ok)"></i>Offloaded at Destination</div>
+      <div class="proc-step-desc">T1 finalised → truck proceeds to offloading point. Cargo is received, signed off, and the trip is officially <strong style="color:var(--ok)">closed in the system</strong>.</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- BORDERS with Clickable SVG -->
+<section id="borders"><div class="container">
+  <div class="bg">
+    <div>
+      <div class="tag">Coverage</div>
+      <h2 style="font-size:clamp(26px,4vw,44px);font-weight:800;margin-bottom:14px">Five Strategic<br/>Border Crossings</h2>
+      <p style="font-size:15px;color:var(--muted);line-height:1.75;max-width:440px;margin-bottom:24px">Click any border post below or on the map to see agent details and active truck count.</p>
+      <div class="b-list">
+        <div class="b-item" id="bl-sakania"     onclick="onBorderClick('Sakania')"    ><div class="b-num"><span>01</span></div><div><div class="b-name">Sakania Border Post</div><div class="b-detail">ZM / DR Congo — Copperbelt Corridor</div></div><div class="b-dot"></div></div>
+        <div class="b-item" id="bl-nakonde"     onclick="onBorderClick('Nakonde')"    ><div class="b-num"><span>02</span></div><div><div class="b-name">Nakonde Border Post</div><div class="b-detail">ZM / Tanzania — Northern Corridor</div></div><div class="b-dot"></div></div>
+        <div class="b-item" id="bl-mokambo"     onclick="onBorderClick('Mokambo')"    ><div class="b-num"><span>03</span></div><div><div class="b-name">Mokambo Border Post</div><div class="b-detail">ZM / DR Congo — Copperbelt Corridor</div></div><div class="b-dot"></div></div>
+        <div class="b-item" id="bl-kasumbalesa" onclick="onBorderClick('Kasumbalesa')"><div class="b-num"><span>04</span></div><div><div class="b-name">Kasumbalesa Border Post</div><div class="b-detail">ZM / DR Congo — High-Volume 24/7</div></div><div class="b-dot"></div></div>
+        <div class="b-item" id="bl-tunduma"     onclick="onBorderClick('Tunduma')"    ><div class="b-num"><span>05</span></div><div><div class="b-name">Tunduma Border Post</div><div class="b-detail">ZM / Tanzania — TAZARA Corridor</div></div><div class="b-dot"></div></div>
+      </div>
+    </div>
+    <div class="map-box">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:4px"><i class="fa-solid fa-map" style="color:var(--red);margin-right:6px"></i>Operations Map</div>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:12px">Click any border post circle ↓ for details</p>
+      <svg viewBox="0 0 420 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+        <defs>
+          <linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#E01212"/><stop offset="100%" style="stop-color:#8C0808"/>
+          </linearGradient>
+          <linearGradient id="sg2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#E05020"/><stop offset="100%" style="stop-color:#A03010"/>
+          </linearGradient>
+        </defs>
+        <!-- Zambia outline -->
+        <path d="M120,60 L200,38 L295,68 L345,118 L365,200 L335,272 L282,312 L210,332 L150,292 L88,260 L58,178 L78,108 Z"
+          fill="rgba(180,10,10,0.05)" stroke="rgba(180,10,10,0.25)" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <text x="200" y="195" text-anchor="middle" fill="rgba(180,10,10,0.28)" font-size="13" font-weight="700" font-family="Poppins,sans-serif" letter-spacing="5">ZAMBIA</text>
+        <!-- DRC label -->
+        <text x="60" y="235" fill="rgba(255,255,255,0.12)" font-size="11" font-family="Outfit,sans-serif">DRC</text>
+        <!-- TZ label -->
+        <text x="310" y="55" fill="rgba(255,255,255,0.12)" font-size="11" font-family="Outfit,sans-serif">TZ</text>
+        <!-- Route lines -->
+        <line x1="120" y1="130" x2="93" y2="170" stroke="rgba(180,10,10,.2)" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <line x1="93" y1="170" x2="138" y2="218" stroke="rgba(180,10,10,.2)" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <line x1="272" y1="65" x2="315" y2="95" stroke="rgba(180,10,10,.2)" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <!-- SAKANIA -->
+        <g id="bp-sakania" class="bp-circle" onclick="onBorderClick('Sakania')" role="button" tabindex="0" aria-label="Sakania Border Post" onkeydown="if(event.key==='Enter'||event.key===' ')onBorderClick('Sakania')">
+          <circle cx="120" cy="130" r="22" fill="transparent"/>
+          <circle cx="120" cy="130" r="15" fill="none" stroke="rgba(180,10,10,.4)" stroke-width="1.5"/>
+          <circle cx="120" cy="130" r="8"  fill="url(#sg)"/>
+          <text x="136" y="126" fill="white"                font-size="9.5" font-family="Outfit,sans-serif" font-weight="700">Sakania</text>
+          <text x="136" y="138" fill="rgba(255,255,255,.45)" font-size="8">ZM/DRC</text>
+        </g>
+        <!-- NAKONDE -->
+        <g id="bp-nakonde" class="bp-circle" onclick="onBorderClick('Nakonde')" role="button" tabindex="0" aria-label="Nakonde Border Post" onkeydown="if(event.key==='Enter'||event.key===' ')onBorderClick('Nakonde')">
+          <circle cx="272" cy="65" r="22" fill="transparent"/>
+          <circle cx="272" cy="65" r="15" fill="none" stroke="rgba(180,10,10,.4)" stroke-width="1.5"/>
+          <circle cx="272" cy="65" r="8"  fill="url(#sg)"/>
+          <text x="288" y="61" fill="white"                font-size="9.5" font-family="Outfit,sans-serif" font-weight="700">Nakonde</text>
+          <text x="288" y="73" fill="rgba(255,255,255,.45)" font-size="8">ZM/TZ</text>
+        </g>
+        <!-- MOKAMBO -->
+        <g id="bp-mokambo" class="bp-circle" onclick="onBorderClick('Mokambo')" role="button" tabindex="0" aria-label="Mokambo Border Post" onkeydown="if(event.key==='Enter'||event.key===' ')onBorderClick('Mokambo')">
+          <circle cx="93" cy="170" r="22" fill="transparent"/>
+          <circle cx="93" cy="170" r="15" fill="none" stroke="rgba(180,10,10,.4)" stroke-width="1.5"/>
+          <circle cx="93" cy="170" r="8"  fill="url(#sg)"/>
+          <text x="112" y="166" fill="white"                font-size="9.5" font-family="Outfit,sans-serif" font-weight="700">Mokambo</text>
+          <text x="112" y="178" fill="rgba(255,255,255,.45)" font-size="8">ZM/DRC</text>
+        </g>
+        <!-- KASUMBALESA -->
+        <g id="bp-kasumbalesa" class="bp-circle" onclick="onBorderClick('Kasumbalesa')" role="button" tabindex="0" aria-label="Kasumbalesa Border Post" onkeydown="if(event.key==='Enter'||event.key===' ')onBorderClick('Kasumbalesa')">
+          <circle cx="138" cy="218" r="22" fill="transparent"/>
+          <circle cx="138" cy="218" r="15" fill="none" stroke="rgba(180,10,10,.4)" stroke-width="1.5"/>
+          <circle cx="138" cy="218" r="8"  fill="url(#sg)"/>
+          <text x="157" y="214" fill="white"                font-size="9.5" font-family="Outfit,sans-serif" font-weight="700">Kasumbalesa</text>
+          <text x="157" y="226" fill="rgba(255,255,255,.45)" font-size="8">ZM/DRC · 24/7</text>
+        </g>
+        <!-- TUNDUMA -->
+        <g id="bp-tunduma" class="bp-circle" onclick="onBorderClick('Tunduma')" role="button" tabindex="0" aria-label="Tunduma Border Post" onkeydown="if(event.key==='Enter'||event.key===' ')onBorderClick('Tunduma')">
+          <circle cx="315" cy="95" r="22" fill="transparent"/>
+          <circle cx="315" cy="95" r="15" fill="none" stroke="rgba(180,10,10,.4)" stroke-width="1.5"/>
+          <circle cx="315" cy="95" r="8"  fill="url(#sg)"/>
+          <text x="332" y="91"  fill="white"                font-size="9.5" font-family="Outfit,sans-serif" font-weight="700">Tunduma</text>
+          <text x="332" y="103" fill="rgba(255,255,255,.45)" font-size="8">ZM/TZ</text>
+        </g>
+      </svg>
+      <div class="border-info-panel" id="border-info-panel"></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- LIVE TRACKING -->
+<section id="livetrack"><div class="container">
+  <div class="tag">Live GPS Prototype</div>
+  <h2 style="font-size:clamp(26px,4vw,44px);font-weight:800;margin-bottom:14px">Real-Time Truck Tracking</h2>
+  <p style="font-size:15px;color:var(--muted);max-width:500px;line-height:1.75">Track IDs: <strong style="color:var(--red)">BT-0142</strong> · <strong style="color:var(--red)">BT-0098</strong> · <strong style="color:var(--red)">BT-0201</strong></p>
+  <div class="track-layout">
+    <div>
+      <div id="truck-map"></div>
+      <div style="margin-top:10px;background:var(--d3);border:1px solid var(--border);border-radius:var(--rs);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <span style="font-size:11.5px;color:var(--muted)"><i class="fa-solid fa-circle-info" style="color:var(--red);margin-right:5px"></i>Prototype — trucks animate along real Zambian routes.</span>
+        <div style="display:flex;gap:12px;font-size:10.5px;font-weight:700"><span style="color:var(--ok)">● Moving</span><span style="color:var(--warn)">● At Border</span></div>
+      </div>
+    </div>
+    <div class="track-panel">
+      <div class="ts-box">
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px">Search by Tracking ID</div>
+        <div class="t-inp-row"><input class="fc" type="text" placeholder="e.g. BT-0142" id="tid" onkeydown="if(event.key==='Enter')searchT()"/><button class="btn btn-r" style="padding:10px 13px;font-size:12px" onclick="searchT()"><i class="fa-solid fa-search"></i></button></div>
+      </div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Active Fleet</div><div id="tcards"></div></div>
+      <div class="info-box">
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:12px"><i class="fa-solid fa-circle-info" style="color:var(--red);margin-right:6px"></i>Shipment Details</div>
+        <div id="drows"><div style="text-align:center;padding:18px 0;color:var(--muted);font-size:12px"><i class="fa-solid fa-truck" style="font-size:22px;display:block;margin-bottom:10px;opacity:.2"></i>Select a truck above</div></div>
+        <div id="wa-upd" style="display:none;margin-top:12px"><a href="https://wa.me/260964809809?text=Hello%20Braidfield%2C%20I%20need%20a%20shipment%20update." target="_blank" rel="noopener" class="wa-btn"><i class="fa-brands fa-whatsapp"></i>Get Updates on WhatsApp</a></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- BOOKING -->
+<section id="booking"><div class="container">
+  <div class="tag">Online Portal</div>
+  <h2 style="font-size:clamp(26px,4vw,44px);font-weight:800;margin-bottom:14px">Book a Delivery or Request a Quote</h2>
+  <p style="font-size:15px;color:var(--muted);max-width:480px;line-height:1.75;margin-bottom:28px">Our team follows up via WhatsApp or email to confirm your booking.</p>
+  <div class="book-tabs"><button class="b-tab active" onclick="swT('book')">📦 Book a Delivery</button><button class="b-tab" onclick="swT('quote')">💬 Request a Quote</button></div>
+  <div class="book-layout">
+    <div class="form-card">
+      <div class="tab-pane active" id="tp-book">
+        <h3 style="font-size:17px;margin-bottom:18px">Delivery Booking Form</h3>
+        <div class="fg">
+          <div><label class="fl">Full Name</label><input class="fc" type="text" id="bn" placeholder="Your full name"/></div>
+          <div><label class="fl">Phone / WhatsApp</label><input class="fc" type="tel" id="bp" placeholder="+260 964 809 809"/></div>
+          <div><label class="fl">Company / Client</label><input class="fc" type="text" id="bco" placeholder="Business name"/></div>
+          <div><label class="fl">Email</label><input class="fc" type="email" placeholder="your@email.com"/></div>
+          <div><label class="fl">Origin / Pickup</label><input class="fc" type="text" id="bpu" placeholder="Where to collect cargo"/></div>
+          <div><label class="fl">Final Destination</label><input class="fc" type="text" id="bde" placeholder="Congo / Tanzania destination"/></div>
+          <div><label class="fl">Border Post</label><select class="fc" id="bbo"><option value="">Select border post</option><option>Sakania (ZM/DRC)</option><option>Nakonde (ZM/TZ)</option><option>Mokambo (ZM/DRC)</option><option>Kasumbalesa (ZM/DRC)</option><option>Tunduma (ZM/TZ)</option></select></div>
+          <div><label class="fl">Cargo Type</label><select class="fc"><option value="">Select type</option><option>General Merchandise</option><option>Mining Equipment</option><option>Agricultural Produce</option><option>Consumer Goods</option><option>Construction Materials</option><option>Perishable Goods</option></select></div>
+          <div><label class="fl">Weight (KG)</label><input class="fc" type="number" placeholder="Estimated weight" min="1"/></div>
+          <div><label class="fl">Preferred Pickup Date</label><input class="fc" type="date"/></div>
+        </div>
+        <div style="margin-top:12px"><label class="fl">Documents Ready?</label>
+          <div style="display:flex;flex-direction:column;gap:7px;margin-top:7px;font-size:13px">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" style="accent-color:var(--red)"> Invoice available</label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" style="accent-color:var(--red)"> Delivery note available</label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" style="accent-color:var(--red)"> Customs T1 available</label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" style="accent-color:var(--red)"> Movement sheet available</label>
+          </div>
+        </div>
+        <div style="margin-top:14px"><label class="fl">Special Instructions</label><textarea class="fc" rows="2" placeholder="Any special handling or routing requirements…"></textarea></div>
+        <button class="btn btn-r" onclick="submitBk()" style="width:100%;justify-content:center;margin-top:14px"><i class="fa-solid fa-paper-plane"></i>Submit Booking</button>
+        <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:9px"><i class="fa-solid fa-lock" style="color:var(--red)"></i> Payment confirmed offline. ZRA Ascuyda entry handled by our team.</p>
+      </div>
+      <div class="tab-pane" id="tp-quote">
+        <h3 style="font-size:17px;margin-bottom:18px">Request a Freight Quote</h3>
+        <div class="fg">
+          <div><label class="fl">Full Name</label><input class="fc" type="text" placeholder="Your full name"/></div>
+          <div><label class="fl">Phone / WhatsApp</label><input class="fc" type="tel" placeholder="+260 XXX XXX XXX"/></div>
+          <div><label class="fl">Company</label><input class="fc" type="text" placeholder="Business name"/></div>
+          <div><label class="fl">Email</label><input class="fc" type="email" placeholder="your@email.com"/></div>
+          <div><label class="fl">Origin</label><input class="fc" type="text" placeholder="Where cargo comes from"/></div>
+          <div><label class="fl">Destination</label><input class="fc" type="text" placeholder="Congo / Tanzania destination"/></div>
+          <div><label class="fl">Border Post</label><select class="fc"><option value="">Select</option><option>Sakania</option><option>Nakonde</option><option>Mokambo</option><option>Kasumbalesa</option><option>Tunduma</option></select></div>
+          <div><label class="fl">Weight (KG)</label><input class="fc" type="number" placeholder="Estimated weight"/></div>
+        </div>
+        <button class="btn btn-r" onclick="submitQt()" style="width:100%;justify-content:center;margin-top:18px"><i class="fa-solid fa-paper-plane"></i>Request Quote</button>
+      </div>
+    </div>
+    <div>
+      <div style="background:var(--d3);border:1px solid var(--border);border-radius:var(--r);padding:24px;position:relative;overflow:hidden;margin-bottom:16px">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad)"></div>
+        <h3 style="font-size:15px;margin-bottom:16px">Your Booking Journey</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <div style="width:24px;height:24px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">1</div>
+            <div><div style="font-size:12.5px;font-weight:700;color:#fff">Submit booking with all 4 documents</div><div style="font-size:11.5px;color:var(--muted)">Invoice, delivery note, T1, movement sheet</div></div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <div style="width:24px;height:24px;border-radius:50%;background:rgba(180,10,10,.15);border:1.5px solid var(--red);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--red);flex-shrink:0">2</div>
+            <div><div style="font-size:12.5px;font-weight:700;color:#fff">Team confirms &amp; ZRA entry created</div><div style="font-size:11.5px;color:var(--muted)">Ascuyda system registration</div></div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <div style="width:24px;height:24px;border-radius:50%;background:rgba(240,165,0,.1);border:1.5px solid var(--warn);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--warn);flex-shrink:0">3</div>
+            <div><div style="font-size:12.5px;font-weight:700;color:#fff">T1 issued — 5-day transit begins</div><div style="font-size:11.5px;color:var(--muted)">Payment made, release order generated</div></div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <div style="width:24px;height:24px;border-radius:50%;background:rgba(14,203,122,.1);border:1.5px solid var(--ok);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--ok);flex-shrink:0">4</div>
+            <div><div style="font-size:12.5px;font-weight:700;color:#fff">Delivered &amp; trip closed</div><div style="font-size:11.5px;color:var(--muted)">TR8 generated, buyer clears Congo customs</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="wa-box"><div style="display:flex;align-items:center;gap:9px;font-size:13px;font-weight:700;color:#fff;margin-bottom:7px"><i class="fa-brands fa-whatsapp" style="color:#25D366;font-size:18px"></i>Quick Booking via WhatsApp</div><p style="font-size:12.5px;color:var(--muted);margin-bottom:12px">Chat with our team directly — we'll guide you through each step.</p><a href="https://wa.me/260964809809?text=Hello%20Braidfield%2C%20I%20would%20like%20to%20book%20a%20delivery." target="_blank" rel="noopener" class="wa-btn"><i class="fa-brands fa-whatsapp"></i>Chat on WhatsApp</a></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- WHY -->
+<section id="why"><div class="container"><div class="why-grid">
+  <div>
+    <div class="tag">Why Braidfield</div>
+    <h2 style="font-size:clamp(26px,4vw,44px);font-weight:800;margin-bottom:14px">Full-Process Logistics Partner</h2>
+    <p style="font-size:15px;color:var(--muted);line-height:1.75;max-width:460px;margin-bottom:32px">We don't just transport — we manage the entire 9-step process from document collection to final delivery, with real-time tracking at every stage.</p>
+    <div class="why-feats">
+      <div class="wi"><div class="wi-ic"><i class="fa-solid fa-database"></i></div><div><h4>ZRA Ascuyda Expertise</h4><p>We create and manage all ZRA system entries on your behalf — no guesswork, no delays.</p></div></div>
+      <div class="wi"><div class="wi-ic"><i class="fa-solid fa-hourglass-half"></i></div><div><h4>T1 5-Day Transit Tracking</h4><p>We monitor every T1 document expiry date and alert you before the 5-day window closes.</p></div></div>
+      <div class="wi"><div class="wi-ic"><i class="fa-solid fa-triangle-exclamation"></i></div><div><h4>Congo 48h Parking Alert</h4><p>Automated $25/day fine tracker once cargo reaches the Congo final destination — we act fast.</p></div></div>
+      <div class="wi"><div class="wi-ic"><i class="fa-solid fa-chart-bar"></i></div><div><h4>Reports by Client &amp; Truck</h4><p>Generate detailed trip reports filtered by client, truck plate, or both — with full document trail.</p></div></div>
+    </div>
+  </div>
+  <div class="testi-box">
+    <div class="testi"><div class="stars">★★★★★</div><div style="font-size:13.5px;color:var(--text);line-height:1.7;font-style:italic;margin-bottom:14px">"Braidfield's ZRA Ascuyda handling is flawless. T1 tracking means we've never missed the 5-day window."</div><div class="testi-auth"><div class="av">MC</div><div><div class="av-name">Mulenga Chanda</div><div class="av-role">Ops Manager, Copperbelt Mining Ltd</div></div></div></div>
+    <div class="testi"><div class="stars">★★★★★</div><div style="font-size:13.5px;color:var(--text);line-height:1.7;font-style:italic;margin-bottom:14px">"The 48h Congo parking alert saved us $150 in fines last month. The real-time reports by truck are excellent."</div><div class="testi-auth"><div class="av">JK</div><div><div class="av-name">Jean-Pierre K.</div><div class="av-role">Director, DRC Minerals Corp</div></div></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:4px">
+      <div style="background:rgba(180,10,10,.09);border:1px solid rgba(180,10,10,.18);border-radius:10px;padding:16px;text-align:center"><div style="font-size:26px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">98%</div><div style="font-size:11px;color:var(--muted);margin-top:3px">On-Time Delivery</div></div>
+      <div style="background:rgba(14,203,122,.08);border:1px solid rgba(14,203,122,.18);border-radius:10px;padding:16px;text-align:center"><div style="font-size:26px;font-weight:800;color:var(--ok)">0</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Missed T1 Deadlines</div></div>
+    </div>
+  </div>
+</div></div></section>
+
+<!-- CTA -->
+<section id="cta"><div class="container"><div class="cta-wrap">
+  <h2>Ready to Move Cargo the Right Way?</h2>
+  <p>ZRA Ascuyda entry, T1 tracking, 48h Congo alerts, GPS — all managed for you.</p>
+  <div class="cta-acts"><a href="#booking" class="btn btn-wh"><i class="fa-solid fa-box"></i>Book a Delivery</a><a href="https://wa.me/260964809809" target="_blank" rel="noopener" class="btn btn-tr"><i class="fa-brands fa-whatsapp"></i>Chat on WhatsApp</a></div>
+</div></div></section>
+
+<!-- CONTACT -->
+<section id="contact"><div class="container"><div class="ct-grid">
+  <div>
+    <div class="tag">Get in Touch</div>
+    <h3 style="font-size:22px;margin-bottom:8px">We're Ready When You Are</h3>
+    <p style="font-size:13.5px;color:var(--muted);margin-bottom:28px;line-height:1.7">Questions about the process, a quote, or ready to book — reach out any time.</p>
+    <div class="ci-items">
+      <div class="ci"><div class="ci-ic"><i class="fa-solid fa-phone"></i></div><div><strong>Phone</strong><span><a href="tel:+260964809809">+260 964 809 809</a></span></div></div>
+      <div class="ci"><div class="ci-ic"><i class="fa-brands fa-whatsapp"></i></div><div><strong>WhatsApp</strong><span><a href="https://wa.me/260964809809" target="_blank" rel="noopener">+260 964 809 809</a></span></div></div>
+      <div class="ci"><div class="ci-ic"><i class="fa-solid fa-envelope"></i></div><div><strong>Email</strong><span><a href="mailto:admin@braidfieldtransport.com">admin@braidfieldtransport.com</a></span></div></div>
+      <div class="ci"><div class="ci-ic"><i class="fa-solid fa-location-dot"></i></div><div><strong>Head Office</strong><span>Suite 220, Goldman House, Arcades, Lusaka, Zambia</span></div></div>
+    </div>
+    <div class="agents-box"><div class="ab-ttl">Border Agents</div>
+      <div class="ab-row"><span style="color:var(--muted)">Kasumbalesa (24/7)</span><span style="color:var(--ok);font-weight:600">● On-Site</span></div>
+      <div class="ab-row"><span style="color:var(--muted)">Nakonde</span><span style="color:var(--ok);font-weight:600">● On-Site</span></div>
+      <div class="ab-row"><span style="color:var(--muted)">Sakania</span><span style="color:var(--ok);font-weight:600">● On-Site</span></div>
+      <div class="ab-row"><span style="color:var(--muted)">Mokambo</span><span style="color:var(--ok);font-weight:600">● On-Site</span></div>
+      <div class="ab-row"><span style="color:var(--muted)">Tunduma</span><span style="color:var(--ok);font-weight:600">● On-Site</span></div>
+    </div>
+    <div class="soc-row">
+      <a href="https://facebook.com" target="_blank" rel="noopener" class="soc-btn"><i class="fa-brands fa-facebook-f"></i></a>
+      <a href="#" class="soc-btn"><i class="fa-brands fa-x-twitter"></i></a>
+      <a href="#" class="soc-btn"><i class="fa-brands fa-linkedin-in"></i></a>
+      <a href="https://wa.me/260964809809" target="_blank" rel="noopener" class="soc-btn"><i class="fa-brands fa-whatsapp"></i></a>
+    </div>
+  </div>
+  <div class="cf-card">
+    <h3 style="font-size:18px;margin-bottom:20px">Send Us a Message</h3>
+    <div class="fg"><div><label class="fl">Full Name</label><input class="fc" type="text" id="cfn" placeholder="Your name"/></div><div><label class="fl">Email</label><input class="fc" type="email" id="cfe" placeholder="your@email.com"/></div></div>
+    <div style="margin-top:12px"><label class="fl">Subject</label><select class="fc"><option>General Enquiry</option><option>Booking a Delivery</option><option>Request a Quote</option><option>ZRA / T1 Query</option><option>Tracking Support</option><option>Congo Delivery Query</option><option>Partnership</option></select></div>
+    <div style="margin-top:12px"><label class="fl">Message</label><textarea class="fc" id="cfm" rows="5" placeholder="Write your message here…"></textarea></div>
+    <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
+      <button class="btn btn-r" onclick="submitCt()" style="flex:1;justify-content:center;min-width:140px"><i class="fa-solid fa-paper-plane"></i>Send Message</button>
+      <a href="https://wa.me/260964809809" target="_blank" rel="noopener" class="wa-btn" style="flex:1;min-width:140px"><i class="fa-brands fa-whatsapp"></i>WhatsApp</a>
+    </div>
+  </div>
+</div></div></section>
+
+<footer><div class="container">
+  <div class="foot-grid">
+    <div><div class="logo"><div class="lm">BT</div><div class="lt">Braidfield Transport<small>Cross-Border Logistics</small></div></div><p class="fb-desc">9-step cross-border process — from ZRA Ascuyda entry to Congo final delivery. Trusted, transparent, and real-time.</p><div class="foot-badges"><span class="fbadge">ZRA Registered</span><span class="fbadge">Licensed</span><span class="fbadge">Insured</span></div></div>
+    <div><div class="fc-ttl">Process</div><ul class="fc-links"><li><a href="#process">9-Step Flow</a></li><li><a href="#process">ZRA Ascuyda</a></li><li><a href="#process">T1 Tracking</a></li><li><a href="#process">Congo TR8</a></li><li><a href="#process">48h Parking Alert</a></li></ul></div>
+    <div><div class="fc-ttl">Border Posts</div><ul class="fc-links">
+      <li><a href="#borders" onclick="onBorderClick('Kasumbalesa')">Kasumbalesa</a></li>
+      <li><a href="#borders" onclick="onBorderClick('Nakonde')">Nakonde</a></li>
+      <li><a href="#borders" onclick="onBorderClick('Sakania')">Sakania</a></li>
+      <li><a href="#borders" onclick="onBorderClick('Mokambo')">Mokambo</a></li>
+      <li><a href="#borders" onclick="onBorderClick('Tunduma')">Tunduma</a></li>
+    </ul></div>
+    <div><div class="fc-ttl">Company</div><ul class="fc-links"><li><a href="#why">About Us</a></li><li><a href="#contact">Contact</a></li><li><a href="#booking">Book Now</a></li><li><a href="#" onclick="openLogin();return false" style="color:var(--red);font-weight:700">⚙ Staff Portal</a></li></ul></div>
+  </div>
+  <div class="foot-bot"><p>© 2026 <a href="https://braidfieldtransport.com">Braidfield Transport Limited</a>. All rights reserved. Registered in Zambia.</p><p>Suite 220, Goldman House, Arcades, Lusaka · <a href="tel:+260964809809">+260 964 809 809</a></p></div>
+</div></footer>
+
+<!-- LOGIN MODAL -->
+<div class="overlay" id="login-ov">
+  <div class="lm-box">
+    <button class="lm-x" onclick="closeLogin()"><i class="fa-solid fa-xmark"></i></button>
+    <div class="lm-top">
+      <div class="logo"><div class="lm" style="width:36px;height:36px;font-size:14px">BT</div><div class="lt" style="font-size:14px">Braidfield Transport<small>Secure Portal</small></div></div>
+      <p>Sign in to access the staff or driver portal.</p>
+      <div class="ltabs">
+        <button class="ltab active" id="lt-staff"  onclick="switchLTab('staff')"><i class="fa-solid fa-building"></i> Staff</button>
+        <button class="ltab"         id="lt-driver" onclick="switchLTab('driver')"><i class="fa-solid fa-truck"></i> Driver</button>
+      </div>
+    </div>
+    <div class="lm-body">
+      <div class="lpane active" id="pane-staff">
+        <div class="note-box"><i class="fa-solid fa-lock"></i><span>Restricted to <strong>@braidfieldtransport.com</strong> Google Workspace accounts. All sign-ins are logged.</span></div>
+        <button class="g-btn" onclick="triggerGoogle()">
+          <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34.5 6.5 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34.5 6.5 29.6 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.5 0 10.4-2.1 14.1-5.5l-6.5-5.5C29.5 34.9 26.9 36 24 36c-5.2 0-9.6-3.3-11.3-8H6.3C9.6 35.5 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.1-2.1 4-3.9 5.4l6.5 5.5C42 34.8 44 29.8 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
+          Sign in with Google (@braidfieldtransport.com)
+        </button>
+        <p id="g-note" style="display:none;text-align:center;font-size:11px;color:var(--warn);margin-top:4px">⚠ Replace GOOGLE_CLIENT_ID in shared.js to activate Google Sign-In.</p>
+        <div class="divider">or email &amp; password</div>
+        <div style="margin-bottom:12px"><label class="fl">Work Email</label><input class="fc" type="email" id="s-email" placeholder="yourname@braidfieldtransport.com" onkeydown="if(event.key==='Enter')doStaffLogin()"/></div>
+        <div style="margin-bottom:14px"><label class="fl">Password</label><input class="fc" type="password" id="s-pass" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doStaffLogin()"/></div>
+        <button class="btn btn-r" onclick="doStaffLogin()" style="width:100%;justify-content:center"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Dashboard</button>
+        <div class="demo-block"><div class="demo-hd">Demo Staff Accounts</div>
+          <div class="demo-row"><span class="d-id">admin@braidfieldtransport.com</span><span class="d-pw">admin123</span></div>
+          <div class="demo-row"><span class="d-id">customs@braidfieldtransport.com</span><span class="d-pw">customs123</span></div>
+          <div class="demo-row"><span class="d-id">executive@braidfieldtransport.com</span><span class="d-pw">exec123</span></div>
+        </div>
+      </div><!-- /pane-staff -->
+
+      <!-- DRIVER LOGIN PANE -->
+      <div class="lpane" id="pane-driver">
+        <div class="note-box"><i class="fa-solid fa-truck"></i><span>Enter your <strong>phone number</strong> or <strong>truck plate</strong> and your assigned password.</span></div>
+        <div style="margin-bottom:12px">
+          <label class="fl">Phone Number or Truck Plate</label>
+          <input class="fc" type="text" id="d-id" placeholder="+260 971 234 567 or ABZ 1234 ZM" onkeydown="if(event.key==='Enter')doDriverLogin()"/>
+        </div>
+        <div style="margin-bottom:14px">
+          <label class="fl">Password</label>
+          <input class="fc" type="password" id="d-pass" placeholder="Your driver password" onkeydown="if(event.key==='Enter')doDriverLogin()"/>
+        </div>
+        <button class="btn btn-r" onclick="doDriverLogin()" style="width:100%;justify-content:center"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Driver Portal</button>
+        <div class="demo-block"><div class="demo-hd">Demo Driver Accounts</div>
+          <div class="demo-row"><span class="d-id">+260971234567 (ABZ 1234 ZM)</span><span class="d-pw">jb1234</span></div>
+          <div class="demo-row"><span class="d-id">+260972345678 (GRZ 5678 ZM)</span><span class="d-pw">pm5678</span></div>
+          <div class="demo-row"><span class="d-id">+260975678901 (ALZ 7890 ZM)</span><span class="d-pw">gm7890</span></div>
+        </div>
+      </div><!-- /pane-driver -->
+
+    </div><!-- /lm-body -->
+  </div><!-- /lm-box -->
+</div><!-- /login-ov -->
+
+<div class="toast-wrap" id="toast-wrap"></div>
+<script src="shared.js"></script>
+<script>
+/* ── PUBLIC SITE JS ── */
+window.addEventListener('scroll',()=>document.getElementById('nav')?.classList.toggle('scrolled',scrollY>40));
+function toggleMob(){document.getElementById('mob-nav')?.classList.toggle('open')}
+function closeMob(){document.getElementById('mob-nav')?.classList.remove('open')}
+function swT(t){document.querySelectorAll('.b-tab').forEach((b,i)=>b.classList.toggle('active',i===(t==='book'?0:1)));document.getElementById('tp-book')?.classList.toggle('active',t==='book');document.getElementById('tp-quote')?.classList.toggle('active',t==='quote')}
+function submitBk(){if(!document.getElementById('bn')?.value||!document.getElementById('bp')?.value||!document.getElementById('bbo')?.value){toast('Missing fields','Please fill all required fields.','er');return;}toast('Booking Received! 🎉','Our team will contact you via WhatsApp shortly.','ok')}
+function submitQt(){toast('Quote Request Sent!','We will respond within 2 business hours.','ok')}
+function submitCt(){if(!document.getElementById('cfn')?.value||!document.getElementById('cfe')?.value||!document.getElementById('cfm')?.value){toast('Fill all fields','Name, email and message required.','er');return;}toast('Message Sent!','We will get back to you within 24 hours.','ok');['cfn','cfe','cfm'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''})}
+
+/* ── CLICKABLE SVG BORDER POST SHAPES ── */
+function onBorderClick(name) {
+  const info = BORDER_POSTS[name]; if (!info) return;
+  // Deactivate all shapes and list items
+  document.querySelectorAll('.bp-circle').forEach(g => g.classList.remove('active'));
+  document.querySelectorAll('.b-item').forEach(b => b.classList.remove('active'));
+  // Activate clicked
+  const gId = 'bp-' + name.toLowerCase();
+  document.getElementById(gId)?.classList.add('active');
+  const liId = 'bl-' + name.toLowerCase();
+  document.getElementById(liId)?.classList.add('active');
+  // Get live truck count from fleet data
+  const fleet = getFleet();
+  const trucksHere = fleet.filter(f => f.border === name && !f.closed).length;
+  // Build info panel
+  const panel = document.getElementById('border-info-panel'); if (!panel) return;
+  panel.innerHTML = `
+    <div class="bip-title"><i class="fa-solid fa-border-all"></i>${name} Border Post — <span style="color:var(--ok);font-size:12px">${info.code}</span></div>
+    <div class="bip-rows">
+      <div class="bip-row"><span>Corridor</span><span>${info.corridor}</span></div>
+      <div class="bip-row"><span>Crossing Point</span><span>${info.crossing}</span></div>
+      <div class="bip-row"><span>Operating Hours</span><span>${info.hours}</span></div>
+      <div class="bip-row"><span>Assigned Agent</span><span>${info.agent}</span></div>
+      <div class="bip-row"><span>Active Trucks</span><span style="color:var(--ok)">${trucksHere} truck${trucksHere!==1?'s':''} currently here</span></div>
+      <div class="bip-row"><span>Agent Status</span><span style="color:var(--ok)">● On-Site</span></div>
+    </div>`;
+  panel.classList.add('show');
+  // Scroll to panel on mobile
+  if (window.innerWidth < 768) panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+/* ── LEAFLET MAP ── */
+const MAP_TRUCKS = [
+  { id:'BT-0142', label:'Truck BT-0142', cargo:'General Merchandise', weight:'4,200 kg', origin:'Lusaka',  dest:'Lubumbashi, DRC', border:'Kasumbalesa', status:'moving',   processStep:6,
+    route:[[-15.42,28.28],[-14.9,28.1],[-14.1,28.0],[-13.5,28.05],[-12.95,28.15],[-12.82,28.22],[-12.5,28.0],[-12.22,27.80]], prog:0.44, speed:'82 km/h' },
+  { id:'BT-0098', label:'Truck BT-0098', cargo:'Agricultural Produce', weight:'6,800 kg', origin:'Chipata', dest:'Dar es Salaam',   border:'Nakonde',     status:'clearing', processStep:7,
+    route:[[-13.63,32.65],[-12.5,32.4],[-11.2,32.2],[-10.1,32.5],[-9.33,32.75]], prog:0.88, speed:'0 km/h' },
+  { id:'BT-0201', label:'Truck BT-0201', cargo:'Mining Equipment',    weight:'12,500 kg', origin:'Kitwe',  dest:'Kolwezi, DRC',    border:'Mokambo',     status:'moving',   processStep:4,
+    route:[[-12.82,28.22],[-12.6,28.05],[-12.45,27.9],[-12.37,27.72]], prog:0.62, speed:'68 km/h' },
+];
+MAP_TRUCKS[0].eta=()=>{const d=new Date();d.setHours(d.getHours()+2,d.getMinutes()+45);return d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+' (~2h)'};
+MAP_TRUCKS[1].eta=()=>{const d=new Date();d.setMinutes(d.getMinutes()+40);return d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+' (~40m)'};
+MAP_TRUCKS[2].eta=()=>{const d=new Date();d.setHours(d.getHours()+1,d.getMinutes()+20);return d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+' (~1h)'};
+function interp(r,p){const t=r.length-1,s=p*t,i=Math.min(Math.floor(s),t-1),f=s-i,a=r[i],b=r[i+1];return[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f]}
+const stepLabel=['','Docs','Loaded','Exit Border','ZRA Entry','Paid','T1 Issued','Crossed','Congo','Offloaded'];
+function popHtml(t){return`<div class="pu-ttl"><i class="fa-solid fa-truck" style="color:#CC1010;margin-right:6px"></i>${t.label}</div><div class="pu-row"><span class="pu-k">Status</span><span class="pu-v" style="color:${t.status==='clearing'?'#F0A500':'#0ECB7A'}">${t.status==='clearing'?'At Border':'Moving'}</span></div><div class="pu-row"><span class="pu-k">Step</span><span class="pu-v">${t.processStep}/9 — ${stepLabel[t.processStep]}</span></div><div class="pu-row"><span class="pu-k">Cargo</span><span class="pu-v">${t.cargo}</span></div><div class="pu-row"><span class="pu-k">Border</span><span class="pu-v">${t.border}</span></div><div class="pu-row"><span class="pu-k">ETA</span><span class="pu-v" style="color:#CC1010">${t.eta()}</span></div>`}
+let mapObj,mapMarkers={},selTruck=null;
+function initMap(){
+  const el=document.getElementById('truck-map'); if(!el) return;
+  if(typeof L==='undefined'){el.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#5A6A80;flex-direction:column;gap:10px"><i class="fa-solid fa-map" style="font-size:30px;opacity:.2"></i><span style="font-size:13px">Map requires internet.</span></div>';return;}
+  mapObj=L.map('truck-map',{zoomControl:true,attributionControl:false}).setView([-12.5,30.5],6);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:18}).addTo(mapObj);
+  MAP_TRUCKS.forEach(t=>{
+    L.polyline(t.route,{color:'rgba(180,10,10,0.3)',weight:2.5,dashArray:'6,5'}).addTo(mapObj);
+    L.circleMarker(t.route[0],{radius:5,fillColor:'#3B8BEB',color:'#fff',weight:1.5,fillOpacity:1}).addTo(mapObj).bindTooltip(t.origin,{direction:'top'});
+    L.circleMarker(t.route[t.route.length-1],{radius:5,fillColor:'#0ECB7A',color:'#fff',weight:1.5,fillOpacity:1}).addTo(mapObj).bindTooltip(t.dest,{direction:'top'});
+    const ic=L.divIcon({html:'<div class="tmw"><i class="fa-solid fa-truck" style="font-size:13px"></i></div>',iconSize:[34,34],iconAnchor:[17,17],className:'truck-icon'});
+    const m=L.marker(interp(t.route,t.prog),{icon:ic}).addTo(mapObj);
+    m.bindPopup(popHtml(t),{maxWidth:230}); mapMarkers[t.id]=m;
+  });
+  renderCards();
+}
+function renderCards(){
+  const c=document.getElementById('tcards'); if(!c) return; c.innerHTML='';
+  MAP_TRUCKS.forEach(t=>{
+    const d=document.createElement('div');
+    d.className='truck-card'+(selTruck===t.id?' sel':'');
+    d.innerHTML=`<div class="tc-top"><div class="tc-id"><i class="fa-solid fa-truck" style="color:#CC1010;margin-right:5px;font-size:10px"></i>${t.label}</div><span class="tc-badge ${t.status==='clearing'?'clearing':'moving'}">${t.status==='clearing'?'At Border':'Moving'}</span></div>
+      <div class="tc-route">${t.origin} → ${t.dest}</div>
+      <div class="tc-bw"><div class="tc-bar" style="width:${Math.round(t.prog*100)}%"></div></div>
+      <div class="tc-meta"><span>Step ${t.processStep}/9 · ${Math.round(t.prog*100)}%</span><span class="tc-eta">ETA ${t.eta()}</span></div>`;
+    d.onclick=()=>selT(t.id); c.appendChild(d);
+  });
+}
+function selT(id){
+  selTruck=id; const t=MAP_TRUCKS.find(x=>x.id===id); if(!t||!mapObj) return;
+  mapObj.flyTo(interp(t.route,t.prog),9,{duration:1.2}); mapMarkers[id].openPopup(); renderCards();
+  document.getElementById('drows').innerHTML=`<div class="id-row"><span class="id-key">Tracking ID</span><span class="id-val" style="color:#CC1010">${t.id}</span></div><div class="id-row"><span class="id-key">Process Step</span><span class="id-val">${t.processStep}/9 — ${stepLabel[t.processStep]}</span></div><div class="id-row"><span class="id-key">Cargo</span><span class="id-val">${t.cargo}</span></div><div class="id-row"><span class="id-key">Weight</span><span class="id-val">${t.weight}</span></div><div class="id-row"><span class="id-key">Origin</span><span class="id-val">${t.origin}</span></div><div class="id-row"><span class="id-key">Destination</span><span class="id-val">${t.dest}</span></div><div class="id-row"><span class="id-key">Border Post</span><span class="id-val">${t.border}</span></div><div class="id-row"><span class="id-key">ETA</span><span class="id-val" style="color:#CC1010">${t.eta()}</span></div>`;
+  document.getElementById('wa-upd').style.display='block';
+}
+function searchT(){const v=(document.getElementById('tid')?.value||'').trim().toUpperCase();const t=MAP_TRUCKS.find(x=>x.id===v);if(t){selT(t.id);document.getElementById('tid').value='';document.getElementById('livetrack')?.scrollIntoView({behavior:'smooth'});}else toast('Not Found','Check your tracking ID and try again.','er');}
+function animateMap(){MAP_TRUCKS.forEach(t=>{if(t.status==='moving')t.prog=Math.min(t.prog+0.0018,0.99);else t.prog=0.88+Math.sin(Date.now()/2000)*0.004;if(mapMarkers[t.id]){mapMarkers[t.id].setLatLng(interp(t.route,t.prog));if(mapMarkers[t.id].isPopupOpen())mapMarkers[t.id].setPopupContent(popHtml(t));}});renderCards();}
+/* Scroll animations */
+window.addEventListener('load',()=>{
+  if(typeof L!=='undefined'){initMap();setInterval(animateMap,2000);}
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)'}})},{threshold:.08});
+  document.querySelectorAll('.proc-step,.b-item,.wi,.testi').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(16px)';el.style.transition='opacity .5s ease,transform .5s ease';obs.observe(el)});
+});
+</script>
+</body>
+</html>
