@@ -310,13 +310,6 @@ function sendResetLink() {
 /* ── LOGIN MODAL ── */
 function openLogin()  { var o=document.getElementById('login-ov'); if(o){o.style.display='flex';document.body.style.overflow='hidden';} }
 function closeLogin() { var o=document.getElementById('login-ov'); if(o){o.style.display='none';document.body.style.overflow='';} }
-function switchLTab(t) {
-  ['staff','client'].forEach(function(x) {
-    var tab=document.getElementById('lt-'+x), pane=document.getElementById('pane-'+x);
-    if(tab)  tab.classList.toggle('active', x===t);
-    if(pane) pane.classList.toggle('active', x===t);
-  });
-}
 function setDid(type, btn) {
   document.querySelectorAll('.did-btn').forEach(function(b){ b.classList.remove('active'); });
   btn.classList.add('active');

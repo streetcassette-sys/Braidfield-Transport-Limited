@@ -138,6 +138,40 @@ a{text-decoration:none;color:inherit}
 </head>
 <body>
 
+<!-- ══ DRIVER AUTH SCREEN (standalone — no staff modal involved) ══ -->
+<div id="drv-auth" style="display:none;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px">
+  <div style="width:100%;max-width:430px">
+    <div style="text-align:center;margin-bottom:22px">
+      <div style="width:58px;height:58px;border-radius:15px;background:var(--grad);display:inline-flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;font-size:21px;color:#fff;margin-bottom:12px">BT</div>
+      <h2 style="font-size:21px;font-weight:800">Driver Portal</h2>
+      <p style="font-size:12.5px;color:var(--muted);margin-top:5px">Braidfield Transport Limited — drivers only</p>
+    </div>
+    <div class="drv-sec">
+      <div style="background:rgba(59,139,235,.06);border:1px solid rgba(59,139,235,.2);border-radius:9px;padding:11px 13px;margin-bottom:16px;font-size:12px;color:var(--text)"><i class="fa-solid fa-circle-info" style="color:var(--info);margin-right:6px"></i>Access is only for drivers <strong style="color:#fff">registered by a client</strong>. Sign in with your phone number, email, or full name.</div>
+      <div style="margin-bottom:12px">
+        <label class="fl">Phone Number, Email, or Full Name</label>
+        <input class="fc" type="text" id="d-id" placeholder="+260 971 234 567 / you@email.com / John Banda" onkeydown="if(event.key==='Enter')doDriverLogin()"/>
+      </div>
+      <div style="margin-bottom:14px">
+        <label class="fl">Password</label>
+        <input class="fc" type="password" id="d-pass" placeholder="Your password" onkeydown="if(event.key==='Enter')doDriverLogin()"/>
+      </div>
+      <button class="btn btn-r" onclick="doDriverLogin()" style="width:100%;justify-content:center"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In</button>
+      <p style="text-align:center;margin-top:13px;font-size:12px"><a href="#" onclick="var w=document.getElementById('d-setup-wrap');w.style.display=w.style.display==='none'?'block':'none';return false" style="color:var(--red);font-weight:600">First time? Create your password</a></p>
+      <div id="d-setup-wrap" style="display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:14px">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:10px"><i class="fa-solid fa-circle-info" style="margin-right:5px;color:var(--info)"></i>Your client must have registered your details first. Enter them exactly as registered, then choose your own password.</div>
+        <div style="margin-bottom:10px"><label class="fl">Registered Phone, Email, or Full Name</label><input class="fc" type="text" id="ds-id" placeholder="As registered by your client"/></div>
+        <div style="margin-bottom:10px"><label class="fl">Create Password (min. 6 characters)</label><input class="fc" type="password" id="ds-pass1" placeholder="Choose a password"/></div>
+        <div style="margin-bottom:12px"><label class="fl">Confirm Password</label><input class="fc" type="password" id="ds-pass2" placeholder="Repeat the password" onkeydown="if(event.key==='Enter')doDriverSetup()"/></div>
+        <button class="btn btn-o" onclick="doDriverSetup()" style="width:100%;justify-content:center"><i class="fa-solid fa-key"></i> Create Password &amp; Activate</button>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:16px;font-size:11.5px;color:var(--muted)"><a href="index.html" style="color:var(--muted)"><i class="fa-solid fa-arrow-left" style="margin-right:5px"></i>Back to main site</a></p>
+  </div>
+</div>
+
+<!-- ══ DRIVER APP (visible only after sign-in) ══ -->
+<div id="drv-app" style="display:none">
 <!-- NAV -->
 <div class="drv-nav">
   <div class="logo">
@@ -347,28 +381,29 @@ a{text-decoration:none;color:inherit}
   </div>
 
 </div><!-- /drv-content -->
+</div><!-- /drv-app -->
 
 <div class="toast-wrap" id="toast-wrap"></div>
 <script src="shared.js"></script>
 <script>
-/* ── SESSION CHECK ── */
+/* ── SESSION CHECK — standalone auth, no redirect to main site ── */
 var dSession = getSession();
-if (!dSession || dSession.type !== 'driver') { window.location.href = 'index.html'; }
+var isDriverAuthed = !!(dSession && dSession.type === 'driver');
 
 var selectedStatus = '';
-var DRIVER_FLEET = getFleet();
-var myTruck = DRIVER_FLEET.filter(function(f){ return f.id === dSession.truckId; })[0];
-
-/* Find my driver compliance data from clients */
-var myDriverData = null;
-(function(){
-  var clients = getClients();
-  clients.forEach(function(c){
-    (c.drivers||[]).forEach(function(d){
-      if(d.plate_horse === dSession.plate || d.name === dSession.name) myDriverData = d;
+var DRIVER_FLEET = [], myTruck = null, myDriverData = null;
+if (isDriverAuthed) {
+  DRIVER_FLEET = getFleet();
+  myTruck = DRIVER_FLEET.filter(function(f){ return f.id === dSession.truckId; })[0];
+  (function(){
+    var clients = getClients();
+    clients.forEach(function(c){
+      (c.drivers||[]).forEach(function(d){
+        if(d.plate_horse === dSession.plate || d.name === dSession.name) myDriverData = d;
+      });
     });
-  });
-})();
+  })();
+}
 
 var STEP_LABELS_FULL = ['',
   'Step 1 — Documents Received',
@@ -399,6 +434,13 @@ var STEP_ALERTS = {
 
 /* ── INIT ── */
 document.addEventListener('DOMContentLoaded', function() {
+  if (!isDriverAuthed) {
+    /* Show the driver's own login screen */
+    var auth = document.getElementById('drv-auth');
+    auth.style.cssText = 'min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px';
+    return;
+  }
+  document.getElementById('drv-app').style.display = 'block';
   document.getElementById('drv-welcome').textContent = 'Hi, ' + dSession.name.split(' ')[0];
 
   if (!myTruck) {

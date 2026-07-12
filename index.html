@@ -225,7 +225,7 @@ footer{background:var(--dark);border-top:1px solid var(--border);padding:56px 0 
     <a href="#hero" class="logo"><div class="lm">BT</div><div class="lt">Braidfield Transport<small>Cross-Border Logistics</small></div></a>
     <div class="nav-links"><a href="#why">Why Us</a><a href="#contact">Contact</a></div>
     <div class="nav-act">
-      <a href="client.html" class="btn btn-o" style="padding:9px 18px;font-size:12.5px"><i class="fa-solid fa-building-user"></i> Client Login</a><button class="btn btn-o" style="padding:9px 18px;font-size:12.5px" onclick="openLogin();switchLTab('staff')"><i class="fa-regular fa-user"></i> Staff Login</button><button class="btn btn-r" style="padding:9px 18px;font-size:12.5px" onclick="openLogin();switchLTab('driver')"><i class="fa-solid fa-truck"></i> Driver Portal</button>
+      <a href="client.html" class="btn btn-o" style="padding:9px 18px;font-size:12.5px"><i class="fa-solid fa-building-user"></i> Client Login</a><button class="btn btn-o" style="padding:9px 18px;font-size:12.5px" onclick="openLogin()"><i class="fa-regular fa-user"></i> Staff Login</button><a href="driver.html" class="btn btn-r" style="padding:9px 18px;font-size:12.5px"><i class="fa-solid fa-truck"></i> Driver Portal</a>
     </div>
     <div class="ham" onclick="toggleMob()"><span></span><span></span><span></span></div>
   </div>
@@ -236,8 +236,8 @@ footer{background:var(--dark);border-top:1px solid var(--border);padding:56px 0 
   <a href="#contact"  onclick="closeMob()"><i class="fa-solid fa-envelope"></i>Contact</a>
   <div style="margin-top:8px;border-top:1px solid var(--border);padding-top:14px;display:flex;flex-direction:column;gap:9px">
     <a href="client.html" onclick="closeMob()" class="btn btn-o" style="justify-content:center"><i class="fa-solid fa-building-user"></i> Client Login</a>
-    <button class="btn btn-o" onclick="openLogin();switchLTab('staff')" style="justify-content:center">Staff Login</button>
-    <button class="btn btn-r" onclick="openLogin();switchLTab('driver')" style="justify-content:center"><i class="fa-solid fa-truck"></i> Driver Portal</button>
+    <button class="btn btn-o" onclick="openLogin()" style="justify-content:center">Staff Login</button>
+    <a href="driver.html" class="btn btn-r" onclick="closeMob()" style="justify-content:center"><i class="fa-solid fa-truck"></i> Driver Portal</a>
   </div>
 </div>
 <section id="hero">
@@ -250,7 +250,7 @@ footer{background:var(--dark);border-top:1px solid var(--border);padding:56px 0 
       <p class="hero-desc">From ZRA Ascuyda entry to TR8 at the Congo final destination — Braidfield Transport manages every step of the cross-border logistics process with precision and real-time transparency.</p>
       <div class="hero-acts">
         <a href="client.html" class="btn btn-r"><i class="fa-solid fa-truck-fast"></i>Track a Shipment</a>
-        <button class="btn btn-g" onclick="openLogin();switchLTab('staff')"><i class="fa-solid fa-arrow-right-to-bracket"></i>Staff / Driver Login</button>
+        <button class="btn btn-g" onclick="openLogin()"><i class="fa-solid fa-arrow-right-to-bracket"></i>Staff Login</button>
       </div>
       <div class="hero-stats">
         <div><div class="sn">9<span></span></div><div class="sl">Step Process</div></div>
@@ -329,8 +329,8 @@ footer{background:var(--dark);border-top:1px solid var(--border);padding:56px 0 
     <div><div class="logo"><div class="lm">BT</div><div class="lt">Braidfield Transport<small>Cross-Border Logistics</small></div></div><p class="fb-desc">9-step cross-border process — from ZRA Ascuyda entry to Congo final delivery, with T1 tracking and Congo parking alerts handled for you.</p><div class="foot-badges"><span class="fbadge">ZRA Registered</span><span class="fbadge">Licensed</span><span class="fbadge">Insured</span></div></div>
     <div><div class="fc-ttl">Portals</div><ul class="fc-links">
       <li><a href="client.html">Client Login</a></li>
-      <li><a href="#" onclick="openLogin();switchLTab('staff');return false">Staff Login</a></li>
-      <li><a href="#" onclick="openLogin();switchLTab('driver');return false">Driver Portal</a></li>
+      <li><a href="#" onclick="openLogin();return false">Staff Login</a></li>
+      <li><a href="driver.html">Driver Portal</a></li>
       <li><a href="client.html">Track a Shipment</a></li>
     </ul></div>
     <div><div class="fc-ttl">Company</div><ul class="fc-links"><li><a href="#why">Why Braidfield</a></li><li><a href="#contact">Contact</a></li><li><a href="https://wa.me/260964809809" target="_blank" rel="noopener">WhatsApp Support</a></li></ul></div>
@@ -344,11 +344,7 @@ footer{background:var(--dark);border-top:1px solid var(--border);padding:56px 0 
     <button class="lm-x" onclick="closeLogin()"><i class="fa-solid fa-xmark"></i></button>
     <div class="lm-top">
       <div class="logo"><div class="lm" style="width:36px;height:36px;font-size:14px">BT</div><div class="lt" style="font-size:14px">Braidfield Transport<small>Secure Portal</small></div></div>
-      <p>Sign in to access the staff or driver portal.</p>
-      <div class="ltabs">
-        <button class="ltab active" id="lt-staff"  onclick="switchLTab('staff')"><i class="fa-solid fa-building"></i> Staff</button>
-        <button class="ltab"         id="lt-driver" onclick="switchLTab('driver')"><i class="fa-solid fa-truck"></i> Driver</button>
-      </div>
+      <p>Staff Portal — Braidfield team members only. Drivers use the <a href="driver.html" style="color:#fff;text-decoration:underline">Driver Portal</a>.</p>
     </div>
     <div class="lm-body">
       <div class="lpane active" id="pane-staff">
@@ -364,27 +360,7 @@ footer{background:var(--dark);border-top:1px solid var(--border);padding:56px 0 
         <button class="btn btn-r" onclick="doStaffLogin()" style="width:100%;justify-content:center"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Dashboard</button>
       </div><!-- /pane-staff -->
 
-      <!-- DRIVER LOGIN PANE -->
-      <div class="lpane" id="pane-driver">
-        <div class="note-box"><i class="fa-solid fa-truck"></i><span>Access is only for drivers <strong>registered by a client</strong>. Sign in with your phone number, email, or full name.</span></div>
-        <div style="margin-bottom:12px">
-          <label class="fl">Phone Number, Email, or Full Name</label>
-          <input class="fc" type="text" id="d-id" placeholder="+260 971 234 567 / you@email.com / John Banda" onkeydown="if(event.key==='Enter')doDriverLogin()"/>
-        </div>
-        <div style="margin-bottom:14px">
-          <label class="fl">Password</label>
-          <input class="fc" type="password" id="d-pass" placeholder="Your password" onkeydown="if(event.key==='Enter')doDriverLogin()"/>
-        </div>
-        <button class="btn btn-r" onclick="doDriverLogin()" style="width:100%;justify-content:center"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Driver Portal</button>
-        <p style="text-align:center;margin-top:12px;font-size:12px"><a href="#" onclick="var w=document.getElementById('d-setup-wrap');w.style.display=w.style.display==='none'?'block':'none';return false" style="color:var(--red);font-weight:600">First time? Create your password</a></p>
-        <div id="d-setup-wrap" style="display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:14px">
-          <div style="font-size:12px;color:var(--muted);margin-bottom:10px"><i class="fa-solid fa-circle-info" style="margin-right:5px;color:var(--info)"></i>Your client must have registered your details first. Enter them exactly as registered, then choose your own password.</div>
-          <div style="margin-bottom:10px"><label class="fl">Registered Phone, Email, or Full Name</label><input class="fc" type="text" id="ds-id" placeholder="As registered by your client"/></div>
-          <div style="margin-bottom:10px"><label class="fl">Create Password (min. 6 characters)</label><input class="fc" type="password" id="ds-pass1" placeholder="Choose a password"/></div>
-          <div style="margin-bottom:12px"><label class="fl">Confirm Password</label><input class="fc" type="password" id="ds-pass2" placeholder="Repeat the password" onkeydown="if(event.key==='Enter')doDriverSetup()"/></div>
-          <button class="btn btn-g" onclick="doDriverSetup()" style="width:100%;justify-content:center"><i class="fa-solid fa-key"></i> Create Password &amp; Activate</button>
-        </div>
-      </div><!-- /pane-driver -->
+
 
     </div><!-- /lm-body -->
   </div><!-- /lm-box -->
