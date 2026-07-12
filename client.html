@@ -3,10 +3,6 @@
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Client Portal — Braidfield Transport</title>
-<link rel="icon" type="image/png" sizes="64x64" href="favicon.png"/>
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
-<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
-
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous"/>
@@ -454,9 +450,9 @@ a{text-decoration:none;color:inherit}
         <div class="input-row"><label class="fl">Fitness Expiry</label><input class="fc" type="date" id="ad-fitness"/></div>
         <div class="input-row"><label class="fl">Road Tax Expiry</label><input class="fc" type="date" id="ad-roadtax"/></div>
         <div class="input-row"><label class="fl">Identity Expiry</label><input class="fc" type="date" id="ad-identity"/></div>
-        <div class="input-row"><label class="fl">Driver Email (optional)</label><input class="fc" id="ad-email" type="email" placeholder="driver@email.com"/></div>
+        <div class="input-row"><label class="fl">Driver Portal Password</label><input class="fc" id="ad-pass" placeholder="Set portal password"/></div>
       </div>
-      <p style="font-size:11px;color:var(--muted);margin-top:10px"><i class="fa-solid fa-circle-info" style="margin-right:5px"></i>Once registered, your driver visits the Driver Portal, taps "First time? Create your password", and sets their own password using the phone number, email, or name you registered here.</p>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px"><i class="fa-solid fa-circle-info" style="margin-right:5px"></i>Your driver signs in to the Driver Portal with their phone number and this password to report status and upload documents.</p>
     </div>
     <div class="mft">
       <button class="btn btn-o btn-sm" onclick="closeM('add-driver-modal')">Cancel</button>
@@ -807,25 +803,23 @@ function addClientDriver(){
   var name=document.getElementById('ad-name')?.value.trim(),phone=document.getElementById('ad-phone')?.value.trim(),
       horse=document.getElementById('ad-horse')?.value.trim().toUpperCase(),trailer=document.getElementById('ad-trailer')?.value.trim().toUpperCase(),
       fit=document.getElementById('ad-fitness')?.value,rt=document.getElementById('ad-roadtax')?.value,idd=document.getElementById('ad-identity')?.value,
-      email=(document.getElementById('ad-email')?.value||'').trim().toLowerCase();
-  if(!name||!phone||!horse){toast('Missing Fields','Name, phone and horse plate are required.','er');return;}
-  /* Prevent duplicate registration */
-  if(getDrivers().some(function(d){return d.phone.replace(/\s/g,'')===phone.replace(/\s/g,'')||(email&&d.email===email);})){toast('Already Registered','A driver with this phone/email already exists.','er');return;}
+      pass=document.getElementById('ad-pass')?.value;
+  if(!name||!phone||!horse||!pass){toast('Missing Fields','Name, phone, horse plate and portal password are required.','er');return;}
   /* 1. Attach driver to this client (compliance tracking) */
   var clients=getClients();
   var me=clients.filter(function(c){return c.id===clientData.id;})[0];
   if(!me){toast('Error','Account not found.','er');return;}
   me.drivers=me.drivers||[];
-  me.drivers.push({name:name,plate_horse:horse,plate_trailer:trailer||'—',fitness:fit||'',roadTax:rt||'',identity:idd||'',whatsapp:phone,email:email});
+  me.drivers.push({name:name,plate_horse:horse,plate_trailer:trailer||'—',fitness:fit||'',roadTax:rt||'',identity:idd||'',whatsapp:phone,email:''});
   setClients(clients);clientData=me;
   /* 2. Create Driver Portal login */
   var drivers=getDrivers();
-  drivers.push({id:'D'+String(drivers.length+1).padStart(3,'0'),name:name,phone:phone,email:email,pass:null,truckId:null,plate:horse,status:'approved',approvedBy:clientData.name,approvedOn:new Date().toLocaleDateString()});
+  drivers.push({id:'D'+String(drivers.length+1).padStart(3,'0'),name:name,phone:phone,pass:pass,truckId:null,plate:horse});
   setDrivers(drivers);
   sendEmailNotification('admin@braidfieldtransport.com','New Driver Onboarded — '+clientData.name,name+' ('+horse+') onboarded. Driver portal access created.');
-  toast('Driver Registered ✓',name+' can now visit the Driver Portal and create their own password to activate access.','ok');
+  toast('Driver Onboarded ✓',name+' can now sign in to the Driver Portal with their phone number.','ok');
   closeM('add-driver-modal');
-  ['ad-name','ad-phone','ad-horse','ad-trailer','ad-fitness','ad-roadtax','ad-identity','ad-email'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  ['ad-name','ad-phone','ad-horse','ad-trailer','ad-fitness','ad-roadtax','ad-identity','ad-pass'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
   renderTrucks();renderComplianceDates();
 }
 function doLogout(){sessionStorage.removeItem('bt_session');window.location.href='index.html';}

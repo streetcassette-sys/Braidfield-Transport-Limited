@@ -182,53 +182,21 @@ function getDrivers() {
 function setDrivers(d) { sessionStorage.setItem('bt_drivers', JSON.stringify(d)); }
 
 /* ── DRIVER AUTH ── */
-function findRegisteredDriver(id) {
-  /* Match by phone, email, or full name — details must have been registered by the client */
-  var idL = id.toLowerCase();
-  return getDrivers().filter(function(d){
-    return (d.phone && d.phone.replace(/\s/g,'') === id.replace(/\s/g,''))
-        || (d.email && d.email.toLowerCase() === idL)
-        || (d.name  && d.name.toLowerCase()  === idL)
-        || (d.plate && d.plate.toUpperCase() === id.toUpperCase());
-  })[0];
-}
 function doDriverLogin() {
   var id    = ((document.getElementById('d-id')  ||{}).value||'').trim();
   var pass  = ((document.getElementById('d-pass')||{}).value||'').trim();
-  if (!id||!pass) { toast('Fill all fields','Phone/email/name and password required.','er'); return; }
-  var drv = findRegisteredDriver(id);
-  if (!drv) { toast('Not Registered','No driver found with these details. Your client must register you first from their portal.','er'); return; }
-  if (drv.status && drv.status !== 'approved') { toast('Access Pending','Your registration has not been approved yet. Contact your transport manager.','wa'); return; }
-  if (!drv.pass) { toast('Set Up Your Password','First time here? Tap "First time? Create your password" below to set one up.','wa'); var st=document.getElementById('d-setup-wrap'); if(st)st.style.display='block'; return; }
-  if (drv.pass !== pass) { toast('Login Failed','Incorrect password. Try again or contact your transport manager.','er'); return; }
+  if (!id||!pass) { toast('Fill all fields','Phone/plate and password required.','er'); return; }
+  var drivers = getDrivers();
+  // Match by phone, name, or plate (case-insensitive)
+  var drv = drivers.filter(function(d){
+    return d.phone===id || d.plate.toUpperCase()===id.toUpperCase() || d.name.toLowerCase()===id.toLowerCase() || d.id===id;
+  })[0];
+  if (!drv || drv.pass !== pass) { toast('Login Failed','Incorrect credentials. Try your phone number and password.','er'); return; }
   if(!sessionStorage.getItem('bt_fleet'))   setFleet(DEFAULT_FLEET.map(function(f){return Object.assign({},f);}));
   if(!sessionStorage.getItem('bt_clients')) setClients(DEFAULT_CLIENTS.map(function(c){return Object.assign({},c);}));
   sessionStorage.setItem('bt_session', JSON.stringify({ type:'driver', driverId:drv.id, name:drv.name, phone:drv.phone, truckId:drv.truckId, plate:drv.plate }));
   toast('Welcome, '+drv.name.split(' ')[0]+'!','Loading your portal…','ok');
   setTimeout(function(){ window.location.href='driver.html'; }, 700);
-}
-function doDriverSetup() {
-  /* First-time password creation — only for driver details already registered by the client */
-  var id  = ((document.getElementById('ds-id')   ||{}).value||'').trim();
-  var p1  = ((document.getElementById('ds-pass1')||{}).value||'').trim();
-  var p2  = ((document.getElementById('ds-pass2')||{}).value||'').trim();
-  if (!id||!p1||!p2) { toast('Fill all fields','Enter your registered details and choose a password.','er'); return; }
-  if (p1.length < 6) { toast('Password Too Short','Use at least 6 characters.','er'); return; }
-  if (p1 !== p2) { toast('Passwords Do Not Match','Both password fields must be identical.','er'); return; }
-  var drivers = getDrivers();
-  var idL = id.toLowerCase();
-  var drv = drivers.filter(function(d){
-    return (d.phone && d.phone.replace(/\s/g,'') === id.replace(/\s/g,''))
-        || (d.email && d.email.toLowerCase() === idL)
-        || (d.name  && d.name.toLowerCase()  === idL);
-  })[0];
-  if (!drv) { toast('Not Registered','No driver found with these details. Your client must register you first — ask your transport manager.','er'); return; }
-  if (drv.pass) { toast('Already Set Up','A password already exists for this account. Sign in above, or contact dispatch to reset it.','wa'); return; }
-  drv.pass = p1;
-  setDrivers(drivers);
-  toast('Password Created ✓','You can now sign in with your details and new password.','ok');
-  var idField = document.getElementById('d-id'); if (idField) idField.value = id;
-  var st = document.getElementById('d-setup-wrap'); if (st) st.style.display = 'none';
 }
 
 
