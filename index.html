@@ -147,12 +147,7 @@ section{padding:90px 0}
 .wi-ic{width:44px;height:44px;background:rgba(180,10,10,.09);border:1px solid var(--bdr);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .wi-ic i{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:17px}
 .wi h4{font-size:14px;font-weight:700;margin-bottom:4px}.wi p{font-size:13px;color:var(--muted);line-height:1.6}
-.testi-box{background:var(--d3);border:1px solid var(--border);border-radius:var(--r);padding:30px;position:relative;overflow:hidden}
-.testi-box::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad)}
-.testi{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:11px;padding:22px;margin-bottom:14px}
 .stars{color:#F0A500;font-size:12px;margin-bottom:9px}
-.testi-txt{font-size:13.5px;color:var(--text);line-height:1.7;font-style:italic;margin-bottom:14px}
-.testi-auth{display:flex;align-items:center;gap:11px}
 .av{width:38px;height:38px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:13px;flex-shrink:0}
 .av-name{font-size:13px;font-weight:600;color:#fff}.av-role{font-size:11px;color:var(--muted)}
 /* CTA */
@@ -282,13 +277,6 @@ footer{background:var(--dark);border-top:1px solid var(--border);padding:56px 0 
       <div class="wi"><div class="wi-ic"><i class="fa-solid fa-chart-bar"></i></div><div><h4>Reports by Client &amp; Truck</h4><p>Generate detailed trip reports filtered by client, truck plate, or both — with full document trail.</p></div></div>
     </div>
   </div>
-  <div class="testi-box">
-    <div class="testi"><div class="stars">★★★★★</div><div style="font-size:13.5px;color:var(--text);line-height:1.7;font-style:italic;margin-bottom:14px">"Braidfield's ZRA Ascuyda handling is flawless. T1 tracking means we've never missed the 5-day window."</div><div class="testi-auth"><div class="av">MC</div><div><div class="av-name">Mulenga Chanda</div><div class="av-role">Ops Manager, Copperbelt Mining Ltd</div></div></div></div>
-    <div class="testi"><div class="stars">★★★★★</div><div style="font-size:13.5px;color:var(--text);line-height:1.7;font-style:italic;margin-bottom:14px">"The 48h Congo parking alert saved us $150 in fines last month. The real-time reports by truck are excellent."</div><div class="testi-auth"><div class="av">JK</div><div><div class="av-name">Jean-Pierre K.</div><div class="av-role">Director, DRC Minerals Corp</div></div></div></div>
-    <div style="margin-top:4px">
-      <div style="background:rgba(180,10,10,.09);border:1px solid rgba(180,10,10,.18);border-radius:10px;padding:16px;text-align:center"><div style="font-size:26px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">98%</div><div style="font-size:11px;color:var(--muted);margin-top:3px">On-Time Delivery</div></div>
-    </div>
-  </div>
 </div></div></section>
 
 <!-- CTA -->
@@ -378,7 +366,7 @@ function submitCt(){if(!document.getElementById('cfn')?.value||!document.getElem
 /* Scroll animations */
 window.addEventListener('load',()=>{
   const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)'}})},{threshold:.08});
-  document.querySelectorAll('.wi,.testi').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(16px)';el.style.transition='opacity .5s ease,transform .5s ease';obs.observe(el)});
+  document.querySelectorAll('.wi').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(16px)';el.style.transition='opacity .5s ease,transform .5s ease';obs.observe(el)});
 });
 </script>
 </body>
