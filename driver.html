@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Driver Portal — Braidfield Transport</title>
+<link rel="icon" type="image/png" sizes="64x64" href="favicon.png"/>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous"/>
@@ -259,14 +263,30 @@ a{text-decoration:none;color:inherit}
     <!-- UPLOAD & CAPTURE -->
     <div class="drv-sec">
       <h3><i class="fa-solid fa-camera"></i>Upload &amp; Capture</h3>
-      <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px">Capture trip documents as you go — your client and dispatch see these instantly.</p>
-      <div class="doc-grid">
-        <div class="doc-item" id="up-pod" onclick="drvCapture('pod','Proof of Delivery')"><i class="fa-solid fa-file-circle-check" style="color:var(--muted)"></i><label style="flex:1;cursor:pointer">Proof of Delivery</label></div>
-        <div class="doc-item" id="up-gatepass" onclick="drvCapture('gatepass','Gate Pass')"><i class="fa-solid fa-id-card-clip" style="color:var(--muted)"></i><label style="flex:1;cursor:pointer">Gate Pass</label></div>
-        <div class="doc-item" id="up-newt1" onclick="drvCapture('newt1','New T1 (Congo)')"><i class="fa-solid fa-file-signature" style="color:var(--muted)"></i><label style="flex:1;cursor:pointer">New T1 (Congo)</label></div>
-        <div class="doc-item" id="up-photo" onclick="drvCapture('photo','Cargo Photo')"><i class="fa-solid fa-camera" style="color:var(--muted)"></i><label style="flex:1;cursor:pointer">Cargo Photo</label></div>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px">Upload trip videos and documents — your client and dispatch see these instantly.</p>
+
+      <div style="border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:10px" onclick="document.getElementById('vid-input').click()">
+        <input type="file" id="vid-input" accept="video/*" style="display:none" onchange="drvVideoUpload(this)"/>
+        <i class="fa-solid fa-video" style="font-size:24px;color:var(--red);display:block;margin-bottom:8px"></i>
+        <div style="font-size:13px;font-weight:700;color:#fff">Upload Video</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px">Cargo condition, offloading proof, incidents — max 100 MB</div>
       </div>
-      <div id="up-list" style="margin-top:12px;font-size:12px;color:var(--muted)"></div>
+
+      <div style="border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px" onclick="document.getElementById('doc-input').click()">
+        <input type="file" id="doc-input" accept=".pdf,image/*" multiple style="display:none" onchange="drvDocsUpload(this)"/>
+        <i class="fa-solid fa-file-arrow-up" style="font-size:24px;color:var(--info);display:block;margin-bottom:8px"></i>
+        <div style="font-size:13px;font-weight:700;color:#fff">Upload Documents</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px">POD, Gate Pass, New T1, receipts — select multiple (PDF or photos)</div>
+      </div>
+
+      <div id="up-list" style="font-size:12px;color:var(--muted)"></div>
+    </div>
+
+    <!-- DOCUMENTATION MONITOR -->
+    <div class="drv-sec">
+      <h3><i class="fa-solid fa-list-check"></i>Documentation Progress</h3>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px">Live status of your trip's paperwork — submitted by your client, verified by Braidfield customs.</p>
+      <div id="doc-monitor"></div>
     </div>
   </div>
 
@@ -444,6 +464,7 @@ document.addEventListener('DOMContentLoaded', function() {
   renderZRADetails();
   renderCompliance();
   renderUpList();
+  renderDocMonitor();
 });
 
 /* ── STEP TRACKER ── */
@@ -625,22 +646,62 @@ function sendDispatchMsg() {
 
 
 /* ── UPLOAD & CAPTURE (visible to client & dispatch) ── */
-function drvCapture(key,label){
-  if(!myTruck){toast('No Active Truck','You have no active trip. Contact dispatch.','er');return;}
+var MAX_VIDEO_BYTES = 100 * 1024 * 1024; /* 100 MB */
+function fmtSize(b){return b>1048576?(b/1048576).toFixed(1)+' MB':(b/1024).toFixed(0)+' KB';}
+function saveUpload(entry){
+  if(!myTruck){toast('No Active Truck','You have no active trip. Contact dispatch.','er');return false;}
   if(!myTruck.uploads)myTruck.uploads={};
-  myTruck.uploads[key]={label:label,time:new Date().toLocaleString()};
+  var key='u'+Date.now()+Math.floor(Math.random()*99);
+  myTruck.uploads[key]=entry;
   DRIVER_FLEET=getFleet();
   var t=DRIVER_FLEET.filter(function(f){return f.id===myTruck.id;})[0];
-  if(t){if(!t.uploads)t.uploads={};t.uploads[key]=myTruck.uploads[key];t.lastUpdate='Just now';setFleet(DRIVER_FLEET);}
-  var el=document.getElementById('up-'+key);
-  if(el){el.classList.add('yes');var ic=el.querySelector('i');if(ic)ic.style.color='var(--ok)';}
-  renderUpList();
-  toast('Captured ✓',label+' recorded — client and dispatch notified.','ok');
+  if(t){if(!t.uploads)t.uploads={};t.uploads[key]=entry;t.lastUpdate='Just now';setFleet(DRIVER_FLEET);}
+  return true;
+}
+function drvVideoUpload(input){
+  var f=input.files[0];if(!f)return;
+  if(f.size>MAX_VIDEO_BYTES){toast('Video Too Large','Maximum size is 100 MB. Your file is '+fmtSize(f.size)+'. Please trim or compress it.','er');input.value='';return;}
+  if(saveUpload({label:'🎥 '+f.name,type:'video',size:fmtSize(f.size),time:new Date().toLocaleString()})){
+    renderUpList();
+    toast('Video Uploaded ✓',f.name+' ('+fmtSize(f.size)+') — client and dispatch notified.','ok');
+  }
+  input.value='';
+}
+function drvDocsUpload(input){
+  var files=Array.from(input.files);if(!files.length)return;
+  var ok=0;
+  files.forEach(function(f){
+    if(saveUpload({label:'📄 '+f.name,type:'document',size:fmtSize(f.size),time:new Date().toLocaleString()}))ok++;
+  });
+  if(ok){renderUpList();toast('Documents Uploaded ✓',ok+' file'+(ok!==1?'s':'')+' uploaded — visible to client and dispatch.','ok');}
+  input.value='';
 }
 function renderUpList(){
   var el=document.getElementById('up-list');if(!el||!myTruck||!myTruck.uploads)return;
   var keys=Object.keys(myTruck.uploads);
-  el.innerHTML=keys.length?keys.map(function(k){var u=myTruck.uploads[k];return '<div style="padding:4px 0"><i class="fa-solid fa-check" style="color:var(--ok);margin-right:6px"></i>'+u.label+' — '+u.time+'</div>';}).join(''):'';
+  el.innerHTML=keys.length?'<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px">Uploaded ('+keys.length+')</div>'+keys.map(function(k){var u=myTruck.uploads[k];return '<div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)"><span style="color:var(--text)">'+u.label+(u.size?' <span style="color:var(--muted)">· '+u.size+'</span>':'')+'</span><span style="color:var(--muted);white-space:nowrap">'+u.time+'</span></div>';}).join(''):'';
+}
+/* ── DOCUMENTATION MONITOR ── */
+function renderDocMonitor(){
+  var el=document.getElementById('doc-monitor');if(!el)return;
+  if(!myTruck){el.innerHTML='<div style="text-align:center;padding:16px;color:var(--muted);font-size:12.5px">No active trip assigned. Documentation appears here once dispatch assigns you a shipment.</div>';return;}
+  var html='';
+  /* Client submission status for this truck's client */
+  var subs=JSON.parse(sessionStorage.getItem('bt_submissions')||'[]').filter(function(x){return x.client===myTruck.client;});
+  if(subs.length){
+    var latest=subs[0];
+    html+='<div class="comp-item '+(latest.status==='verified'?'ok':'warn')+'"><div class="comp-row"><span class="comp-label">Client Document Submission</span><span class="comp-val" style="color:'+(latest.status==='verified'?'var(--ok)':'var(--warn)')+'">'+(latest.status==='verified'?'✓ Verified by Customs':'Under Review — 12h SLA')+'</span></div><div style="font-size:11px;color:var(--muted);margin-top:4px">'+latest.docs.join(' · ')+' — '+latest.time+'</div></div>';
+  }
+  /* Truck transaction docs */
+  var labels={invoice:'Commercial Invoice',deliveryNote:'Delivery Note',customsT1:'Customs T1',movementSheet:'Movement Sheet'};
+  Object.keys(labels).forEach(function(k){
+    var have=myTruck.docs&&myTruck.docs[k];
+    html+='<div class="comp-item '+(have?'ok':'')+'"><div class="comp-row"><span class="comp-label">'+labels[k]+'</span><span class="comp-val" style="color:'+(have?'var(--ok)':'var(--muted)')+'">'+(have?'✓ On File':'Pending')+'</span></div></div>';
+  });
+  /* Key references */
+  var refs=[['ZRA Entry',myTruck.zraEntry],['T1 Number',myTruck.t1Number],['TR8 Number',myTruck.tr8Number]];
+  refs.forEach(function(r){ if(r[1])html+='<div class="comp-item ok"><div class="comp-row"><span class="comp-label">'+r[0]+'</span><span class="comp-val" style="color:var(--info)">'+r[1]+'</span></div></div>'; });
+  el.innerHTML=html||'<div style="text-align:center;padding:16px;color:var(--muted);font-size:12.5px">No documentation recorded yet.</div>';
 }
 /* ── TAB SWITCH ── */
 function swDTab(t) {

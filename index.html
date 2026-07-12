@@ -5,6 +5,10 @@
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <meta name="description" content="Braidfield Transport Limited — Zambia's trusted cross-border freight. 9-step ZRA Ascuyda process, T1 tracking, real-time GPS."/>
 <title>Braidfield Transport Limited | Cross-Border Logistics Zambia</title>
+<link rel="icon" type="image/png" sizes="64x64" href="favicon.png"/>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous"/>
@@ -362,16 +366,24 @@ footer{background:var(--dark);border-top:1px solid var(--border);padding:56px 0 
 
       <!-- DRIVER LOGIN PANE -->
       <div class="lpane" id="pane-driver">
-        <div class="note-box"><i class="fa-solid fa-truck"></i><span>Enter your <strong>phone number</strong> or <strong>truck plate</strong> and your assigned password.</span></div>
+        <div class="note-box"><i class="fa-solid fa-truck"></i><span>Access is only for drivers <strong>registered by a client</strong>. Sign in with your phone number, email, or full name.</span></div>
         <div style="margin-bottom:12px">
-          <label class="fl">Phone Number or Truck Plate</label>
-          <input class="fc" type="text" id="d-id" placeholder="+260 971 234 567 or ABZ 1234 ZM" onkeydown="if(event.key==='Enter')doDriverLogin()"/>
+          <label class="fl">Phone Number, Email, or Full Name</label>
+          <input class="fc" type="text" id="d-id" placeholder="+260 971 234 567 / you@email.com / John Banda" onkeydown="if(event.key==='Enter')doDriverLogin()"/>
         </div>
         <div style="margin-bottom:14px">
           <label class="fl">Password</label>
-          <input class="fc" type="password" id="d-pass" placeholder="Your driver password" onkeydown="if(event.key==='Enter')doDriverLogin()"/>
+          <input class="fc" type="password" id="d-pass" placeholder="Your password" onkeydown="if(event.key==='Enter')doDriverLogin()"/>
         </div>
         <button class="btn btn-r" onclick="doDriverLogin()" style="width:100%;justify-content:center"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Driver Portal</button>
+        <p style="text-align:center;margin-top:12px;font-size:12px"><a href="#" onclick="var w=document.getElementById('d-setup-wrap');w.style.display=w.style.display==='none'?'block':'none';return false" style="color:var(--red);font-weight:600">First time? Create your password</a></p>
+        <div id="d-setup-wrap" style="display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:14px">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px"><i class="fa-solid fa-circle-info" style="margin-right:5px;color:var(--info)"></i>Your client must have registered your details first. Enter them exactly as registered, then choose your own password.</div>
+          <div style="margin-bottom:10px"><label class="fl">Registered Phone, Email, or Full Name</label><input class="fc" type="text" id="ds-id" placeholder="As registered by your client"/></div>
+          <div style="margin-bottom:10px"><label class="fl">Create Password (min. 6 characters)</label><input class="fc" type="password" id="ds-pass1" placeholder="Choose a password"/></div>
+          <div style="margin-bottom:12px"><label class="fl">Confirm Password</label><input class="fc" type="password" id="ds-pass2" placeholder="Repeat the password" onkeydown="if(event.key==='Enter')doDriverSetup()"/></div>
+          <button class="btn btn-g" onclick="doDriverSetup()" style="width:100%;justify-content:center"><i class="fa-solid fa-key"></i> Create Password &amp; Activate</button>
+        </div>
       </div><!-- /pane-driver -->
 
     </div><!-- /lm-body -->
